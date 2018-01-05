@@ -6,7 +6,7 @@ var express = require('express'),
 var Movie = require('../models/movie');
 
 // list page
-router.get('/list', function (request, response) {
+router.get('/', function (request, response) {
     Movie.fetch(function (err, movies) {
         if(err){
             console.log(err);

@@ -38,7 +38,8 @@ MovieSchema.pre('save', function (next) {
 
 MovieSchema.statics = {
     fetch: function (cb) {
-      return this.find({}).sort('meta.updateAt').exec(cb);
+        //throw new Error('输出个错误看看');
+        return this.find({}).sort('meta.updateAt').exec(cb);
     },
     findById: function (id, cb) {
         return this.findOne({_id: id}).exec(cb);
