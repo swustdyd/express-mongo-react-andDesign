@@ -22,6 +22,3 @@ This branch `master` is for webpack 2, use branch `webpack_1` if you need the ol
     * `npm run production` to emit outputs and run the express for production.
     * `npm run build` if you care about what is hold in memory for development...
 
-## Preview
-
-![example preview](https://raw.githubusercontent.com/kenanpengyou/kenanpengyou.github.io/master/assets/used-images/projects/express-webpack-full-live-reload-example/preview.gif)
