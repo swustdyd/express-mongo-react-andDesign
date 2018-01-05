@@ -4,6 +4,7 @@
 var express = require('express'),
     router = express.Router();
 var Movie = require('../models/movie');
+var _ = require('underscore');
 
 // admin page
 router.get('/', function (request, response) {
@@ -38,7 +39,7 @@ router.post('/movie/new', function (request, response) {
                 if(err){
                     console.log(err);
                 }
-                response.redirect('/movie/' + movie._id)
+                response.redirect('/detail/movie/' + movie._id)
             });
         })
     }else{
@@ -56,7 +57,7 @@ router.post('/movie/new', function (request, response) {
             if(err){
                 console.log(err);
             }
-            response.redirect('/movie/' + movie._id)
+            response.redirect('/detail/movie/' + movie._id)
         })
     }
 });
@@ -65,7 +66,7 @@ router.post('/movie/new', function (request, response) {
 router.get('/update/:id', function (request, response) {
     var id =  request.params.id;
     Movie.findById(id, function (err, movie) {
-        response.render('admin', {
+        response.render('pages/admin', {
             title: 'imooc 更新页',
             movie: movie
         })
@@ -73,15 +74,21 @@ router.get('/update/:id', function (request, response) {
 });
 
 //delete movie
-router.delete('/list', function (request, response) {
+router.get('/movie/delete', function (request, response) {
     var id = request.query.id;
-    Movie.remove({_id: id}, function (err, movie) {
-        if(err){
-            console.log(err);
-        }else{
-            response.json({ success: 1});
-        }
-    })
+    if(id){
+        Movie.remove({_id: id}, function (err, movie) {
+            if(err){
+                console.log(err);
+                response.json({ success: false, message: '删除失败'});
+            }else{
+                response.json({ success: true, message: '删除成功'});
+            }
+        })
+    }else{
+        response.json({ success: false, message: 'id不能为空'});
+    }
+
 });
 
 module.exports = router;
