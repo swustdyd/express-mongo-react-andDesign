@@ -1,0 +1,41 @@
+.navbar.navbar-default
+  .container
+    .collapse.navbar-collapse
+      ul.nav.navbar-nav
+        li: a(href="/") 主页
+        li: a(href="/admin") 新增
+        li: a(href="/list") 列表
+      p.navbar-text.navbar-right
+        a.navbar-link(href="#", data-target="#signupModal", data-toggle="modal") 注册
+        span &nbsp;|&nbsp;
+        a.navbar-link(href="#", data-target="#signinModal", data-toggle="modal") 登录
+#signupModal.modal.fade
+  .modal-dialog
+    .modal-content
+      form(method="POST", action="/user/signup")
+        .modal-header 注册
+        .modal-body
+          .form-group
+            label(for="signupName") 用户名
+            input#signupName.form-control(name="user[name]", type="text")
+          .form-group
+            label(for="signupPassword") 密码
+            input#signupPassword.form-control(name="user[password]", type="text")
+        .modal-footer
+          button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+          button.btn.btn-success(type="submit") 提交
+#signinModal.modal.fade
+  .modal-dialog
+    .modal-content
+      form(method="POST", action="/user/signin")
+        .modal-header 登录
+        .modal-body
+          .form-group
+            label(for="signinName") 用户名
+            input#signinName.form-control(name="user[name]", type="text")
+          .form-group
+            label(for="signinPassword") 密码
+            input#signinPassword.form-control(name="user[password]", type="password")
+        .modal-footer
+          button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+          button.btn.btn-success(type="submit") 登录
