@@ -9,18 +9,22 @@
   "author": "aaron",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=dev supervisor -w server,app.js -e node,js,jade app",
+    "start": "cross-env NODE_ENV=dev supervisor -w server,customizations.scss,app.js -e node,js,jade app",
     "browsersync": "cross-env NODE_ENV=dev node app_browsersync",
     "build": "webpack",
     "production": "webpack --config webpack.production.config.js -p & cross-env NODE_ENV=production node app"
   },
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "colors": "^1.1.2",
+    "connect-mongo": "^2.0.1",
     "consolidate": "^0.14.5",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "jade": "^1.11.0",
     "jquery": "^3.2.1",
     "moment": "^2.20.1",

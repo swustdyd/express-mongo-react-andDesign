@@ -11,10 +11,8 @@ var bootstraprcPath = path.resolve(__dirname + '/bootstraprc');
 console.log(bootstraprcPath);
 var devConfig = {
     entry: {
-        admin: ['./client/pages/admin/admin', hotMiddlewareScript],
-        detail: ['./client/pages/detail/detail', hotMiddlewareScript],
         index: ['./client/pages/index/index', hotMiddlewareScript],
-        list: ['./client/pages/list/list', hotMiddlewareScript]
+        movie: ['./client/pages/movie/movie', hotMiddlewareScript]
     },
     output: {
         filename: './[name]/bundle.js',

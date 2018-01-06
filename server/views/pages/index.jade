@@ -7,9 +7,9 @@ block content
       each  item in movies
         .col-md-2
           .thumbnail
-            a(href="/movie/#{item._id}")
+            a(href="/movie/detail.html/#{item._id}")
               img(src="#{item.poster}", alt="#{item.title}")
             .caption
               //h3 #{item.title}
-              p: a.btn.btn-primary(href="/detail/movie/#{item._id}", role="button") 观看预告片
+              p: a.btn.btn-primary(href="/movie/detail.html/#{item._id}", role="button") 观看预告片
   script(src='/index/bundle.js')

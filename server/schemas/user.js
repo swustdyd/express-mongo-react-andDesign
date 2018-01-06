@@ -3,6 +3,7 @@
  */
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+//计算长度，数值越大，破解难度越大
 var SALT_WORK_FACTOR = 10;
 var UserSchema = new mongoose.Schema({
     name: {
@@ -35,10 +36,12 @@ UserSchema.pre('save', function (next) {
     }else{
         user.meta.updateAt = Date.now();
     }
+    //对用户的密码加密，获取一个随机salt
     bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
        if(err){
            return next(err);
        }
+       //用获取的salt对密码进行加密，存储加密后的hash值
        bcrypt.hash(user.password, salt, function (err, hash) {
            if(err){
                return next(err);
@@ -55,6 +58,17 @@ UserSchema.statics = {
     },
     findById: function (id, cb) {
         return this.findOne({_id: id}).exec(cb);
+    }
+};
+UserSchema.methods = {
+    comparePassword: function (_password, cb) {
+        bcrypt.compare(_password, this.password, function (err, isMatch) {
+            if(err){
+                return cb(err);
+            }else{
+                cb(null, isMatch);
+            }
+        })
     }
 };
 module.exports = UserSchema;

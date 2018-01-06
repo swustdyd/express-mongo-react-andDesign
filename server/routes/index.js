@@ -1,9 +1,7 @@
 var Movie = require('../models/movie');
 
 module.exports = function (app) {
-    app.use('/admin', require('./admin'));
-    app.use('/detail', require('./detail'));
-    app.use('/list', require('./list'));
+    app.use('/movie', require('./movie'));
     app.use('/user', require('./user'));
 
     app.get('/', function (request, response) {

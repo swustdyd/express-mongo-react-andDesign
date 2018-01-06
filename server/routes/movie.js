@@ -1,31 +1,45 @@
 /**
- * Created by Aaron on 2018/1/4.
+ * Created by Aaron on 2018/1/6.
  */
 var express = require('express'),
     router = express.Router();
 var Movie = require('../models/movie');
 var _ = require('underscore');
 
-// admin page
-router.get('/', function (request, response) {
-    response.render('pages/admin', {
-        title: 'imooc 录入页',
-        movie: {
-            _id: '',
-            doctor: '',
-            title: '',
-            country: '',
-            language: '',
-            year: '',
-            poster: '',
-            summary: '',
-            flash: ''
+// movie movie page
+router.get('/list.html', function (request, response) {
+    Movie.fetch(function (err, movies) {
+        if(err){
+            console.log(err);
         }
+        response.render('pages/movie/list', {
+            title: 'imooc 电影列表页',
+            movies: movies
+        })
+    });
+});
+
+// mvoie detail page
+router.get('/detail.html/:id', function (request, response) {
+    var id =  request.params.id;
+    Movie.findById(id, function (err, movie) {
+        response.render('pages/movie/detail', {
+            title: 'imooc 详情页',
+            movie: movie
+        })
     })
 });
 
-// admin post movie
-router.post('/movie/new', function (request, response) {
+// movie new page
+router.get('/new.html', function (request, response) {
+    response.render('pages/movie/edit', {
+        title: 'imooc 录入页',
+        movie: ''
+    })
+});
+
+// movie newOrUpdate action
+router.post('/newOrUpdate', function (request, response) {
     var id = request.body.movie._id;
     var movieObj = request.body.movie;
     var _movie;
@@ -39,7 +53,7 @@ router.post('/movie/new', function (request, response) {
                 if(err){
                     console.log(err);
                 }
-                response.redirect('/detail/movie/' + movie._id)
+                response.redirect('/movie/list.html');
             });
         })
     }else{
@@ -57,24 +71,24 @@ router.post('/movie/new', function (request, response) {
             if(err){
                 console.log(err);
             }
-            response.redirect('/detail/movie/' + movie._id)
+            response.redirect('/movie/list.html');
         })
     }
 });
 
-//admin update page
-router.get('/update/:id', function (request, response) {
+//movie update page
+router.get('/update.html/:id', function (request, response) {
     var id =  request.params.id;
     Movie.findById(id, function (err, movie) {
-        response.render('pages/admin', {
+        response.render('pages/movie/edit', {
             title: 'imooc 更新页',
             movie: movie
         })
     })
 });
 
-//delete movie
-router.get('/movie/delete', function (request, response) {
+// movie delete movie
+router.get('/delete', function (request, response) {
     var id = request.query.id;
     if(id){
         Movie.remove({_id: id}, function (err, movie) {

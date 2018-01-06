@@ -2,7 +2,6 @@
  * Created by Aaron on 2018/1/4.
  */
 require('../../common/common');
-console.log($);
 /**
  * 删除一项数据
  */

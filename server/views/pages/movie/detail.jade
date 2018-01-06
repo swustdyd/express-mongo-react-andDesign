@@ -1,6 +1,6 @@
-extends  ../layout
+extends  ../../layout
 block style
-  link(rel="stylesheet", href="/detail/index.css")
+  link(rel="stylesheet", href="/movie/index.css")
 block content
   .container
     .row
@@ -21,4 +21,4 @@ block content
           dd= movie.year
           dt 简介
           dd= movie.summary
-  script(src="/detail/bundle.js")
+  script(src="/movie/bundle.js")

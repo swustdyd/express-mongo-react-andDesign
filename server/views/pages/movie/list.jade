@@ -1,6 +1,6 @@
-extends  ../layout
+extends  ../../layout
 block style
-  link(rel="stylesheet", href="/list/index.css")
+  link(rel="stylesheet", href="/movie/index.css")
 block content
   .container
     .row
@@ -23,8 +23,8 @@ block content
               td #{item.country}
               td #{item.year}
               td #{moment(item.meta.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-              td: a(target="_blank", href="../movie/#{item._id}") 查看
-              td: a(target="_blank", href="../admin/update/#{item._id}") 修改
+              td: a(target="_blank", href="/movie/detail.html/#{item._id}") 查看
+              td: a(target="_blank", href="/movie/update.html/#{item._id}") 修改
               td
                 button.btn.btn-danger.btn-xs.del(type="button", data-id="#{item._id}") 删除
-  script(src="/list/bundle.js")
+  script(src="/movie/bundle.js")

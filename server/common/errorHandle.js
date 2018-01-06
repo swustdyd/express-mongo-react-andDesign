@@ -11,10 +11,20 @@ module.exports = function (app) {
     // error handler
     app.use(function(err, req, res, next) {
         // set locals, only providing error in development
-        res.locals.message = err.message;
-        res.locals.error = req.app.get('env') === 'dev' ? err : {};
+        var message = err.message;
+        var error = err;
+        if(res.app.get('env') !== 'dev'){
+            message =  '系统错误，请联系管理员';
+        }
+        res.locals.message = message;
+        res.locals.error = res.app.get('env') === 'dev' ? err : null;
         // render the error page
         res.status(err.status || 500);
-        res.render('error');
+        //xhr请求，返回json数据
+        if(req.xhr){
+            res.json({message: message, success: false});
+        }else{
+            res.render('pages/error');
+        }
     });
 };

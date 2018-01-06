@@ -4,10 +4,8 @@ var CleanWebpackPlugin = require('clean-webpack-plugin');
 var baseConfig = require('./baseConfig');
 var productionConfig = [{
     entry: {
-        admin: ['./client/pages/index/index'],
-        detail: ['./client/pages/detail/detail'],
         index: ['./client/pages/index/index'],
-        list: ['./client/pages/list/list']
+        movie: ['./client/pages/movie/movie']
     },
     output: {
         filename: './[name]/bundle.js',
