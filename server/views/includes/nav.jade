@@ -11,6 +11,8 @@
           span 欢迎您，#{user.name}
           span &nbsp;|&nbsp;
           a.navbar-link(href="/user/logout") 登出
+          span &nbsp;|&nbsp;
+          a.navbar-link(href="#", data-target="#updatePwdModal", data-toggle="modal") 修改密码
         else
           a.navbar-link(href="#", data-target="#signupModal", data-toggle="modal") 注册
           span &nbsp;|&nbsp;
@@ -48,3 +50,21 @@
       .modal-footer
         button.btn.btn-default(type="button", data-dismiss="modal") 关闭
         button.btn.btn-success(type="submit", id="signinAction") 登录
+#updatePwdModal.modal.fade
+  .modal-dialog
+    .modal-content
+      //form(method="POST", action="/user/signin")
+      .modal-header 修改密码
+      .modal-body
+        .form-group
+          label(for="originPwd") 原密码
+          input#originPwd.form-control(type="password")
+        .form-group
+          label(for="newPwd") 新密码
+          input#newPwd.form-control(type="password")
+        .form-group
+          label(for="confirmUpPassword") 确认密码
+          input#confirmUpPassword.form-control(type="password")
+      .modal-footer
+        button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+        button.btn.btn-success(type="submit", id="updatePwd") 确认修改

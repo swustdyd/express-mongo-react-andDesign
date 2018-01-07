@@ -4,6 +4,7 @@
 var express = require('express'),
     router = express.Router();
 var User = require('../models/user');
+var _ = require('underscore');
 
 //用户注册
 router.post('/signup', function (request, response) {
@@ -47,6 +48,51 @@ router.get('/logout', function (request, response) {
     delete request.session.user;
     delete request.app.locals.user;
     response.redirect('/');
+});
+
+//用户列表
+router.get('/list.html', function (request, response) {
+    User.fetch(function (err, users) {
+        if(err){
+            console.log(err);
+        }else {
+            response.render('pages/user/list', {
+                title: '用户列表页',
+                users: users
+            });
+        }
+    })
+});
+
+//修改密码
+router.post('/updatePwd', function (request, response) {
+    var originPwd = request.param('originPwd');
+    var newPwd = request.param('newPwd');
+    User.findById(request.session.user._id, function (err, currentUser) {
+        if(err){
+            console.log(err);
+        }else {
+            currentUser.comparePassword(originPwd, function (err, isMatch) {
+                if(err){
+                    console.log(err);
+                }
+                if(isMatch){
+                    currentUser = _.extend(currentUser, {password: newPwd});
+                    currentUser.save(function (err, user) {
+                        if(err){
+                            console.log(err);
+                            response.json({message: '修改密码失败', success: false})
+                        }else {
+                            response.json({message: '修改密码成功', success: true})
+                        }
+                    })
+                }else{
+                    response.json({message: '原密码不正确', success: false})
+                }
+            })
+        }
+    });
+
 });
 
 module.exports = router;

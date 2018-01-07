@@ -13,6 +13,14 @@ window.alertTip = function (params) {
     }
 };
 
+$(document).ajaxError(function (event, xhr, options, exc) {
+    var errorData = xhr.responseJson;
+    if(!errorData){
+        errorData = JSON.parse(xhr.responseText);
+    }
+    alertTip("errorMessage: " + errorData.message);
+});
+
 //用户登录
 $('#signinAction').click(function () {
    var name = $('#signinName').val().trim();
@@ -71,4 +79,37 @@ $('#signupAction').click(function () {
         }
     })
 });
+
+$('#updatePwd').click(function () {
+    var originPwd = $('#originPwd').val().trim();
+    var newPwd = $('#newPwd').val().trim();
+    var confirmPassword = $('#confirmUpPassword').val().trim();
+    if(!originPwd){
+        alertTip('原密码不能为空！');
+        return;
+    }
+    if(!newPwd){
+        alertTip('新密码不能为空！');
+        return;
+    }
+    if(!confirmPassword){
+        alertTip('确认密码不能为空！');
+        return;
+    }
+    if(confirmPassword !== newPwd){
+        alertTip('密码不一致！');
+        return;
+    }
+    $.ajax({
+        url: '/user/updatePwd',
+        type: 'post',
+        data: {'originPwd': originPwd, 'newPwd': newPwd},
+        success: function (data) {
+            alertTip(data.message);
+            if(data.success){
+                $('#updatePwdModal').modal('hide');
+            }
+        }
+    })
+})
 

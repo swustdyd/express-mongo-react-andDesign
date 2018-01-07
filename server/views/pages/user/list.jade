@@ -1,0 +1,22 @@
+extends  ../../layout
+block style
+    link(rel="stylesheet", href="/user/index.css")
+block content
+    .container
+        .row
+            table.table.table-hover.table-bordered
+                thead
+                    tr
+                        th 用户名
+                        th 创建时间
+                        th 最后更新时间
+                        th 删除
+                tbody
+                    each item in users
+                        tr(class="item-id-#{item._id}")
+                            td #{item.name}
+                            td #{moment(item.meta.createAt).format('YYYY-MM-DD HH:mm:ss')}
+                            td #{moment(item.meta.updateAt).format('YYYY-MM-DD HH:mm:ss')}
+                            td
+                                button.btn.btn-danger.btn-xs.del(type="button", data-id="#{item._id}") 删除
+    script(src="/user/bundle.js")

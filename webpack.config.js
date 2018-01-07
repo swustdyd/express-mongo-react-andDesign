@@ -12,7 +12,8 @@ console.log(bootstraprcPath);
 var devConfig = {
     entry: {
         index: ['./client/pages/index/index', hotMiddlewareScript],
-        movie: ['./client/pages/movie/movie', hotMiddlewareScript]
+        movie: ['./client/pages/movie/movie', hotMiddlewareScript],
+        user: ['./client/pages/user/user', hotMiddlewareScript]
     },
     output: {
         filename: './[name]/bundle.js',

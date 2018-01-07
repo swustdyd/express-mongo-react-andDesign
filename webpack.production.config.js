@@ -5,7 +5,8 @@ var baseConfig = require('./baseConfig');
 var productionConfig = [{
     entry: {
         index: ['./client/pages/index/index'],
-        movie: ['./client/pages/movie/movie']
+        movie: ['./client/pages/movie/movie'],
+        user: ['./client/pages/user/user']
     },
     output: {
         filename: './[name]/bundle.js',

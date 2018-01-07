@@ -7,9 +7,9 @@ var path = require('path');
 var mongoose = require('mongoose');
 //body-parser 可将user[name]这种参数转化为user对象
 var bodyParser = require('body-parser');
-//express-session依赖于该中间件
+//使用connect-mongo,cookie-parser,express-session做session持久化
+var cookieParser = require('cookie-parser');
 var session = require('express-session');
-//使用connect-mongo 做session持久化
 var MongoStore = require('connect-mongo')(session);
 var isDev = process.env.NODE_ENV !== 'production';
 var baseConfig = require('./baseConfig');
@@ -28,20 +28,21 @@ app.locals.env = process.env.NODE_ENV || 'dev';
 app.locals.reload = true;
 app.locals.moment = require('moment');
 
-
 app.use(bodyParser());
+app.use(cookieParser());
 app.use(session({
     secret: 'imooc',
     store: new MongoStore({
-        mongooseConnection: mongoose.connection,
-        ttl: 30 * 60// = 30 minute
+        mongooseConnection: mongoose.connection
     })
 }));
 app.use(logger('dev'));
 
 //在引用所有路由前，可在此做拦截器
 app.use(function (req, res, next) {
-    //console.log(req.session.user);
+    if(req.session.user){
+        app.locals.user = req.session.user;
+    }
     next();
 });
 

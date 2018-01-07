@@ -28,11 +28,14 @@ var MovieSchema = new mongoose.Schema({
  * 每次调用save前都会调用该方法
  */
 MovieSchema.pre('save', function (next) {
+    console.log(this.isNew);
+    console.log(this);
     if(this.isNew){
         this.meta.createAt = this.meta.updateAt = Date.now();
     }else{
         this.meta.updateAt = Date.now();
     }
+
     next();
 });
 
