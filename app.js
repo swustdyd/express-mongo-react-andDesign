@@ -1,5 +1,7 @@
 //格式化输出信息
-var logger = require('morgan');
+var morgan = require('morgan');
+//文件的创建
+var fs = require('fs');
 //自定义error
 var errorHandle = require('./server/common/errorHandle');
 var express = require('express');
@@ -27,6 +29,7 @@ app.set('views', path.resolve(__dirname, './server/views'));
 app.locals.env = process.env.NODE_ENV || 'dev';
 app.locals.reload = true;
 app.locals.moment = require('moment');
+app.locals.logLevel = 'info';
 
 app.use(bodyParser());
 app.use(cookieParser());
@@ -34,14 +37,31 @@ app.use(session({
     secret: 'imooc',
     store: new MongoStore({
         mongooseConnection: mongoose.connection
-    })
+        //ttl: 30 * 60// 30 minute 存储在mongo的有效时间，默认为14天，过期后会自动删除
+    }),
+    cookie: {
+        maxAge: 30 * 60 * 1000// 30 minute session和cookie的有效时间，默认是浏览器关闭，该设置优先级大于ttl
+    },
+    rolling: true,
+    resave: true,
+    saveUninitialized: false
 }));
-app.use(logger('dev'));
+if(isDev){
+    app.use(morgan('dev'));
+}else{
+    app.use(morgan('combined', {
+        stream: fs.createWriteStream(path.join(__dirname, 'access.log'))
+    }));
+}
 
 //在引用所有路由前，可在此做拦截器
 app.use(function (req, res, next) {
+    //console.log("locals.user: " + app.locals.user);
+    //当session过期之后，需要手动删除app.locals.user，系统不会自动删除
     if(req.session.user){
         app.locals.user = req.session.user;
+    }else{
+        delete app.locals.user;
     }
     next();
 });
@@ -83,12 +103,12 @@ if (isDev) {
         console.log('App (dev) is now running on port 3000!');
     });
 } else {
-
     // static assets served by express.static() for production
     app.use(express.static(path.join(__dirname, baseConfig.webpackPath)));
-    //放在所有的routes和static资源的匹配后面，匹配到该处，证明为error
+    //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
     errorHandle(app);
     app.listen(port, function () {
         console.log('App (production) is now running on port 3000!');
     });
 }
+

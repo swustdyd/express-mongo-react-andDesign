@@ -10,7 +10,7 @@ var _ = require('underscore');
 router.get('/list.html', function (request, response) {
     Movie.fetch(function (err, movies) {
         if(err){
-            console.log(err);
+            throw err;
         }
         response.render('pages/movie/list', {
             title: 'imooc 电影列表页',
@@ -23,6 +23,9 @@ router.get('/list.html', function (request, response) {
 router.get('/detail.html/:id', function (request, response) {
     var id =  request.params.id;
     Movie.findById(id, function (err, movie) {
+        if(err){
+            throw err;
+        }
         response.render('pages/movie/detail', {
             title: 'imooc 详情页',
             movie: movie
@@ -46,15 +49,9 @@ router.post('/newOrUpdate', function (request, response) {
     if(id){
         Movie.findById(id, function (err, movie) {
             if(err){
-                console.log(err);
+                throw err;
             }
             _movie = _.extend(movie, movieObj);
-            _movie.save(function (err, movie) {
-                if(err){
-                    console.log(err);
-                }
-                response.redirect('/movie/list.html');
-            });
         })
     }else{
         _movie = new Movie({
@@ -67,19 +64,22 @@ router.post('/newOrUpdate', function (request, response) {
             summary: movieObj.summary,
             flash: movieObj.flash
         });
-        _movie.save(function (err, movie) {
-            if(err){
-                console.log(err);
-            }
-            response.redirect('/movie/list.html');
-        })
     }
+    _movie.save(function (err, movie) {
+        if(err){
+            throw err;
+        }
+        response.redirect('/movie/list.html');
+    })
 });
 
 //movie update page
 router.get('/update.html/:id', function (request, response) {
     var id =  request.params.id;
     Movie.findById(id, function (err, movie) {
+        if(err){
+            throw err;
+        }
         response.render('pages/movie/edit', {
             title: 'imooc 更新页',
             movie: movie
@@ -93,11 +93,9 @@ router.get('/delete', function (request, response) {
     if(id){
         Movie.remove({_id: id}, function (err, movie) {
             if(err){
-                console.log(err);
-                response.json({ success: false, message: '删除失败'});
-            }else{
-                response.json({ success: true, message: '删除成功'});
+                throw err;
             }
+            response.json({ success: true, message: '删除成功'});
         })
     }else{
         response.json({ success: false, message: 'id不能为空'});

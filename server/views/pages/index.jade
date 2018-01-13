@@ -10,6 +10,6 @@ block content
             a(href="/movie/detail.html/#{item._id}")
               img(src="#{item.poster}", alt="#{item.title}")
             .caption
-              //h3 #{item.title}
+              span #{item.title}
               p: a.btn.btn-primary(href="/movie/detail.html/#{item._id}", role="button") 观看预告片
   script(src='/index/bundle.js')

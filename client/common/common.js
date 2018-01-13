@@ -111,5 +111,5 @@ $('#updatePwd').click(function () {
             }
         }
     })
-})
+});
 
