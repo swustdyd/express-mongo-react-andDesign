@@ -1,0 +1,11 @@
+.signin-container, signup-container{
+  width: 500px;
+  margin-top: 100px;
+  box-shadow: 0 0 10px #ddd;
+  padding: 10px;
+  border-radius: 5px;
+}
+.signin-container h2, signup-container h2{
+  margin-top: 10px;
+  margin-bottom: 30px;
+}

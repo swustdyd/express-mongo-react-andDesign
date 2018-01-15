@@ -34,7 +34,7 @@
           input#confirmPassword.form-control(type="password")
       .modal-footer
         button.btn.btn-default(type="button", data-dismiss="modal") 关闭
-        button.btn.btn-success(type="submit", id="signupAction") 提交
+        button.btn.btn-success.signup(type="submit", id="signupAction") 提交
 #signinModal.modal.fade
   .modal-dialog
     .modal-content
@@ -49,7 +49,7 @@
           input#signinPassword.form-control(name="user[password]", type="password")
       .modal-footer
         button.btn.btn-default(type="button", data-dismiss="modal") 关闭
-        button.btn.btn-success(type="submit", id="signinAction") 登录
+        button.btn.btn-success.signin(type="submit", id="signinAction") 登录
 #updatePwdModal.modal.fade
   .modal-dialog
     .modal-content

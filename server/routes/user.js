@@ -5,6 +5,7 @@ var express = require('express'),
     router = express.Router();
 var User = require('../models/user');
 var _ = require('underscore');
+var Authority = require('../common/authority');
 
 
 //用户注册
@@ -57,7 +58,7 @@ router.get('/logout', function (request, response) {
 });
 
 //用户列表
-router.get('/list.html', function (request, response) {
+router.get('/list.html', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
     User.fetch(function (err, users) {
         if(err){
             throw err;
@@ -98,6 +99,19 @@ router.post('/updatePwd', function (request, response) {
                 }
             })
         }
+    });
+});
+
+//登录页面
+router.get('/signin.html', function (request, response) {
+    response.render('pages/user/signin', {
+        title: '用户登录页'
+    });
+});
+//注册页面
+router.get('/signup.html', function (request, response) {
+    response.render('pages/user/signup', {
+        title: '用户注册页'
     });
 });
 

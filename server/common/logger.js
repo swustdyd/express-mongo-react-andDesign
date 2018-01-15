@@ -31,8 +31,8 @@ module.exports = {
                 console.log(msg[type]);
                 console.log(stack[type]);
             }
-        } else {
-            console.log(message[type]);
+        } else{
+            console.log( JSON.stringify(message)[type]);
         }
     },
     info: function (message) {

@@ -22,7 +22,7 @@ $(document).ajaxError(function (event, xhr, options, exc) {
 });
 
 //用户登录
-$('#signinAction').click(function () {
+$('.signin').click(function () {
    var name = $('#signinName').val().trim();
    var password = $('#signinPassword').val().trim();
    if(!name){
@@ -40,14 +40,14 @@ $('#signinAction').click(function () {
         success: function (data) {
             alertTip(data.message);
             if(data.success){
-                window.location.reload();
+                window.location.href = window.location.origin;
             }
         }
     })
 });
 
 //用户注册
-$('#signupAction').click(function () {
+$('.signup').click(function () {
     var name = $('#signupName').val().trim();
     var password = $('#signupPassword').val().trim();
     var confirmPassword = $('#confirmPassword').val().trim();
