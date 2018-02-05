@@ -6,19 +6,28 @@ var express = require('express'),
 var User = require('../models/user');
 var _ = require('underscore');
 var Authority = require('../common/authority');
+var UserService = require('../service/user');
+var logger = require('../common/logger');
+var PubFunction = require('../common/publicFunc');
 
 
 //用户注册
 router.post('/signup', function (request, response) {
     //request.param('user'),可拿到所有的参数，若在body和query都有user这个参数，routes>query>body
     var _user = request.body.user;
-    var user = new User(_user);
-    user.save(function (err, user) {
-        if(err){
-            throw err;
+    UserService.saveOrUpdateUser(_user).then(function (result) {
+        logger.info(result);
+        var message;
+        if(result.success){
+            message = '注册成功';
         }else{
-            return response.json({success: true, message: '注册成功'});
+            message = result.message || '注册失败';
         }
+        return response.json({success: true, message: message});
+    }).catch(function (err) {
+        logger.error(err);
+        return response.json({success: false, message: err.message});
+        //throw err;
     });
 });
 
@@ -27,26 +36,26 @@ router.post('/signin', function (request, response) {
     var _user = request.body.user,
         name = _user.name,
         password = _user.password;
-    User.findOne({name: name}, function (err, user) {
-        if(err){
-            throw err;
+    UserService.getUsersByCondition({
+        condition:{
+            name: name
         }
-        if(!user){
-            return response.json({success: false, message: '用户名不存在！'});
+    }).then(function (users) {
+        if(!users || users.length < 1) {
+            return Promise.reject({success: false, message: '用户名不存在！'});
         }else{
-            user.comparePassword(password, function (err, isMatch) {
-                if(err){
-                    throw err;
-                }
-                if(isMatch){
-                    request.session.user = user;
-                    request.app.locals.user = user;
-                    return response.json({success: true, message: '登录成功'});
-                }else{
-                    return response.json({success: false, message: '用户名或密码错误！'});
-                }
-            })
+            return PubFunction.comparePassword(password, users[0].password);
         }
+    }).then(function(isMatch){
+        if(isMatch){
+            request.session.user = { name: name };
+            request.app.locals.user = { name: name };
+            return response.json({success: true, message: '登录成功'});
+        }else{
+            return Promise.reject({success: false, message: '用户名或密码错误！'});
+        }
+    }).catch(function (err) {
+        return response.json({success: false, message: err.message});
     });
 });
 
@@ -75,30 +84,32 @@ router.get('/list.html', Authority.requestSignin, Authority.requestAdmin, functi
 router.post('/updatePwd', function (request, response) {
     var originPwd = request.param('originPwd');
     var newPwd = request.param('newPwd');
-    User.findById(request.session.user._id, function (err, currentUser) {
-        if(err){
-            throw err;
-        }else {
-            currentUser.comparePassword(originPwd, function (err, isMatch) {
-                if(err){
-                     throw err;
-                }
-                if(isMatch){
-                    currentUser = _.extend(currentUser, {password: newPwd});
-                    currentUser.save(function (err, user) {
-                        if(err){
-                            throw err;
-                            /*console.log(err);
-                            response.json({message: '修改密码失败', success: false})*/
-                        }else {
-                            response.json({message: '修改密码成功', success: true})
-                        }
-                    })
-                }else{
-                    response.json({message: '原密码不正确', success: false})
-                }
-            })
+    var userId = request.session.user._id;
+    UserService.getUserById(userId).then(function (user) {
+        if(!user){
+            return Promise.reject({message: '该用户不存在'});
+        }else{
+            return PubFunction.comparePassword(originPwd, user.password);
         }
+    }).then(function (isMatch) {
+        if(isMatch){
+            var user = {
+                _id: userId,
+                password: newPwd
+            };
+            return UserService.saveOrUpdateUser(user).then(function (data) {
+                if(!data.success){
+                    return Promise.reject(data.message);
+                }else{
+                    response.json({message: '修改密码成功', success: data.success});
+                }
+            });
+        }else{
+            return Promise.reject({success: false, message: '原密码不正确'});
+        }
+    }).catch(function (err) {
+        logger.error(err);
+        return response.json({success: false, message: err.message});
     });
 });
 

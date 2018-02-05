@@ -5,16 +5,25 @@ var express = require('express'),
     router = express.Router();
 var Movie = require('../models/movie');
 var _ = require('underscore');
+//var Comment = require('../models/comment');
+var logger = require('../common/logger');
+var MovieService = require('../service/movie');
+var CommentService = require('../service/comment');
+var Promise = require('promise');
 
-// movie movie page
+/**
+ * 电影列表页
+ */
 router.get('/list.html', function (request, response) {
-    Movie.fetch(function (err, movies) {
-        if(err){
-            throw err;
-        }
+    MovieService.getMoviesByCondition().then(function (movies) {
         response.render('pages/movie/list', {
             title: 'imooc 电影列表页',
             movies: movies
+        });
+    }).catch(function (e) {
+        logger.error(e);
+        response.render('pages/error', {
+            error: e
         })
     });
 });
@@ -22,15 +31,25 @@ router.get('/list.html', function (request, response) {
 // mvoie detail page
 router.get('/detail.html/:id', function (request, response) {
     var id =  request.params.id;
-    Movie.findById(id, function (err, movie) {
-        if(err){
-            throw err;
-        }
+    Promise.all([
+        CommentService.getCommentsByMovieId(id,{
+            sort: {
+                'meta.createAt': 'desc'
+            }
+        }),
+        MovieService.getMovieById(id)
+    ]).then(function (data) {
         response.render('pages/movie/detail', {
             title: 'imooc 详情页',
-            movie: movie
+            movie: data[1],
+            comments: data[0]
         })
-    })
+    }).catch(function (e) {
+        logger.error(e);
+        response.render('pages/error', {
+            error: e
+        })
+    });
 });
 
 // movie new page
@@ -52,6 +71,12 @@ router.post('/newOrUpdate', function (request, response) {
                 throw err;
             }
             _movie = _.extend(movie, movieObj);
+            _movie.save(function (err, movie) {
+                if(err){
+                    throw err;
+                }
+                response.redirect('/movie/list.html');
+            })
         })
     }else{
         _movie = new Movie({
@@ -64,43 +89,42 @@ router.post('/newOrUpdate', function (request, response) {
             summary: movieObj.summary,
             flash: movieObj.flash
         });
+        _movie.save(function (err, movie) {
+            if(err){
+                throw err;
+            }
+            response.redirect('/movie/list.html');
+        })
     }
-    _movie.save(function (err, movie) {
-        if(err){
-            throw err;
-        }
-        response.redirect('/movie/list.html');
-    })
 });
 
 //movie update page
 router.get('/update.html/:id', function (request, response) {
     var id =  request.params.id;
-    Movie.findById(id, function (err, movie) {
-        if(err){
-            throw err;
-        }
+    MovieService.getMovieById(id).then(function (movie) {
         response.render('pages/movie/edit', {
             title: 'imooc 更新页',
             movie: movie
         })
-    })
+    }).catch(function (e) {
+        logger.error(e);
+        response.render('pages/error', { error: e })
+    });
 });
 
 // movie delete movie
 router.get('/delete', function (request, response) {
     var id = request.query.id;
-    if(id){
-        Movie.remove({_id: id}, function (err, movie) {
-            if(err){
-                throw err;
-            }
+    MovieService.deleteMovieById(id).then(function (result) {
+        if(result){
             response.json({ success: true, message: '删除成功'});
-        })
-    }else{
-        response.json({ success: false, message: 'id不能为空'});
-    }
-
+        }else{
+            response.json({ success: false, message: '删除失败'});
+        }
+    }).catch(function (err) {
+        logger.error(err);
+        response.json({ success: false, message: '删除失败'});
+    });
 });
 
 module.exports = router;

@@ -1,0 +1,59 @@
+// 评论区的样式
+.comment-container{
+  margin-top: 20px;
+  padding: 5px;
+}
+.comment-title{
+  font-size: 18px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+.comment-list{
+  padding: 5px;
+}
+.comment-list-item{
+  margin-top: 10px;
+  padding-bottom: 10px;
+}
+.comment-list-item:not(:last-child){
+  border-bottom: #4b4b4b 1px solid;
+}
+/*.comment-list-item:not(:first-child){
+  margin-top: 10px;
+}*/
+.item-user{
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+}
+.item-user .icon{
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50px;
+  height: 30px;
+  width: 30px;
+  background-image: url("../../images/comment-ico.jpg");
+}
+.item-user .user{
+  display: inline-block;
+  margin-left: 40px;
+}
+.item-content{
+  margin-top: 5px;
+  margin-left: 40px;
+}
+.comment-btn{
+  position: relative;
+  left: 95%;
+}
+.comment-input-group{
+  text-align: right;
+}
+.comment-input-group .btn{
+  margin-top: 10px;
+}
+.tips{
+  text-align: center;
+  padding: 10px;
+}

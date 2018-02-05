@@ -4,6 +4,7 @@ var logger = require('../common/logger');
 module.exports = function (app) {
     app.use('/movie', require('./movie'));
     app.use('/user', require('./user'));
+    app.use('/comment', require('./comment'));
 
     app.get('/', function (request, response) {
         Movie.fetch(function (err, movies) {

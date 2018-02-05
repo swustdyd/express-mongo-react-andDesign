@@ -5,11 +5,11 @@ block content
   .container
     .row
       each  item in movies
-        .col-md-2
+        .col-md-2.view-item
           .thumbnail
             a(href="/movie/detail.html/#{item._id}")
-              img(src="#{item.poster}", alt="#{item.title}")
+              img.poster-img(src="#{item.poster}", alt="#{item.title}")
             .caption
               span #{item.title}
-              p: a.btn.btn-primary(href="/movie/detail.html/#{item._id}", role="button") 观看预告片
+              //p: button.btn.btn-primary(href="/movie/detail.html/#{item._id}", role="button") 观看预告片
   script(src='/index/bundle.js')

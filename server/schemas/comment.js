@@ -1,19 +1,24 @@
 /**
- * Created by Aaron on 2017/12/12.
+ * Created by Aaron on 2018/1/16.
  */
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var ObjectId = Schema.Types.ObjectId;
 
-var MovieSchema = new mongoose.Schema({
-    doctor: String,
-    title: {
-        type: String
+var CommentSchema = new mongoose.Schema({
+    movie: {
+        type: ObjectId,
+        ref: 'Movie'
     },
-    language: String,
-    country: String,
-    summary: String,
-    flash: String,
-    poster: String,
-    year: Number,
+    from: {
+        type: ObjectId,
+        ref: 'User'
+    },
+    to: {
+        type: ObjectId,
+        ref: 'User'
+    },
+    content: String,
     meta: {
         createAt:{
             type: Date,
@@ -29,7 +34,7 @@ var MovieSchema = new mongoose.Schema({
 /**
  * 每次调用save前都会调用该方法
  */
-MovieSchema.pre('save', function (next) {
+CommentSchema.pre('save', function (next) {
     if(this.isNew){
         this.meta.createAt = this.meta.updateAt = Date.now();
     }else{
@@ -38,7 +43,7 @@ MovieSchema.pre('save', function (next) {
     next();
 });
 
-MovieSchema.statics = {
+CommentSchema.statics = {
     fetch: function (cb) {
         return this.find({}).sort('meta.updateAt').exec(cb);
     },
@@ -46,4 +51,4 @@ MovieSchema.statics = {
         return this.findOne({_id: id}).exec(cb);
     }
 };
-module.exports = MovieSchema;
+module.exports = CommentSchema;

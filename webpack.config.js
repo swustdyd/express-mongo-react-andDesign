@@ -11,9 +11,9 @@ var bootstraprcPath = path.resolve(__dirname + '/bootstraprc');
 console.log(bootstraprcPath);
 var devConfig = {
     entry: {
-        index: ['./client/pages/index/index', hotMiddlewareScript],
-        movie: ['./client/pages/movie/movie', hotMiddlewareScript],
-        user: ['./client/pages/user/user', hotMiddlewareScript]
+        index: ['./client/modules/index/index', hotMiddlewareScript],
+        movie: ['./client/modules/movie/movie', hotMiddlewareScript],
+        user: ['./client/modules/user/user', hotMiddlewareScript]
     },
     output: {
         filename: './[name]/bundle.js',
@@ -25,7 +25,7 @@ var devConfig = {
     module: {
         rules: [{
             test: /\.(png|jpg)$/,
-            use: 'url-loader?limit=8192&context=client&name=[path][name].[ext]'
+            use: 'url-loader?limit=8192&context=client&name=./images/[name].[ext]'
         }, {
             test: /\.scss$/,
             use: [

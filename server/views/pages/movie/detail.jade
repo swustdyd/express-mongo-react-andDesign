@@ -21,4 +21,27 @@ block content
           dd= movie.year
           dt 简介
           dd= movie.summary
+    .row
+      .comment-container
+        input(id="movieID", type="hidden", value="#{movie._id}")
+        .comment-title 评论内容
+        .comment-body
+          .comment-list
+            if comments && comments.length > 0
+              each comment in comments
+                .comment-list-item
+                  .item-user
+                    img.icon
+                    span.user #{comment.from}
+                    small
+                      i &emsp;#{moment(comment.meta.createAt).format('YYYY-MM-DD HH:mm:ss')}
+                  .item-content #{comment.content}
+                    span &emsp;
+                    a.replyComment(href="javascript:;") 回复
+            else
+              i.tips 暂无评论！
+          .comment-input-group
+            textarea.form-control(id="commentContent",maxlength="1000", placeholder="输入评论，1000字以内")
+            button#commitComment.btn.btn-success 评论
+        .comment-footer
   script(src="/movie/bundle.js")

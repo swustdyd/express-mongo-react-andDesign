@@ -2,9 +2,6 @@
  * Created by Aaron on 2017/12/15.
  */
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
-//计算长度，数值越大，破解难度越大
-var SALT_WORK_FACTOR = 10;
 var UserSchema = new mongoose.Schema({
     name: {
         unique: true,
@@ -38,7 +35,7 @@ var UserSchema = new mongoose.Schema({
 /**
  * 每次调用save前都会调用该方法
  */
-UserSchema.pre('save', function (next) {
+/*UserSchema.pre('save', function (next) {
     var user = this;
     if(user.isNew){
         user.meta.createAt = user.meta.updateAt = Date.now();
@@ -59,9 +56,9 @@ UserSchema.pre('save', function (next) {
            next();
        })
     });
-});
+});*/
 
-UserSchema.statics = {
+/*UserSchema.statics = {
     fetch: function (cb) {
         return this.find({}).sort('meta.updateAt').exec(cb);
     },
@@ -79,5 +76,5 @@ UserSchema.methods = {
             }
         })
     }
-};
+};*/
 module.exports = UserSchema;

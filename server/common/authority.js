@@ -13,7 +13,7 @@ module.exports = {
         var user = req.session.user;
         if(!user){
             if(req.xhr){
-                res.json({message: '请进行登录', success: false});
+                res.json({message: '请登录', success: false});
             }else{
                 res.redirect('/user/signin.html');
             }
