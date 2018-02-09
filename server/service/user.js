@@ -23,7 +23,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                resolve(user);
+                resolve({success: true, result: user});
             })
         })
     },
@@ -40,7 +40,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                resolve(users);
+                resolve({success: true, result: users});
             }).sort(options.sort)
                 .skip(options.pageSetting.pageIndex * options.pageSetting.pageSize)
                 .limit(options.pageSetting.pageSize);
@@ -67,7 +67,8 @@ module.exports = {
         }).then(function (inputUser) {
             logger.info(inputUser);
             if(inputUser._id){
-                return service.getUserById(inputUser._id).then(function (originUser) {
+                return service.getUserById(inputUser._id).then(function (resData) {
+                    var originUser = resData.result;
                     originUser.meta.updateAt = Date.now();
                     _.extend(originUser, inputUser);
                     return originUser;
@@ -79,7 +80,7 @@ module.exports = {
             }
         }).then(function (inputUser) {
             logger.info(inputUser);
-            inputUser = new User(inputUser);
+            //inputUser = new User(inputUser);
             //保存用户到数据库
             return new Promise(function(resolve, reject){
                 inputUser.save(function (err, user) {
@@ -90,6 +91,20 @@ module.exports = {
                     resolve({success: true, result: user});
                 });
             });
+        });
+    },
+
+    deleteUserById: function (id) {
+        return new Promise(function (resolve, reject) {
+            if(!id){
+                reject(new Error('id不能为空'))
+            }
+            User.remove({_id: id}, function (err, user) {
+                if(err){
+                    reject(err);
+                }
+                resolve({success: true});
+            })
         });
     }
 };

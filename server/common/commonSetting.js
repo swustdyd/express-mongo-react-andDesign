@@ -7,7 +7,7 @@ module.exports = {
         condition: {},
         sort: {},
         pageSetting:{
-            pageSize: 20,
+            pageSize: 10,
             pageIndex: 0
         }
     }

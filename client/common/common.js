@@ -21,6 +21,41 @@ $(document).ajaxError(function (event, xhr, options, exc) {
     alertTip("errorMessage: " + errorData.message);
 });
 
+;(function ($) {
+    $.fn.extend({
+        "jsonSerialize": function () {
+            var obj = {};
+            $(this).find("*").each(function () {
+                if($(this).attr("name")){
+                    var value = getElementValue(this);
+                    if(value){
+                        obj[$(this).attr("name")] = value;
+                    }
+                }
+            });
+            return obj;
+        }
+    });
+
+    function getElementValue(_this) {
+        var value;
+        var tagName = String($(_this)[0].tagName).toLowerCase();
+        switch (tagName){
+            case "input"://序列化input元素
+                var type = $(_this).attr("type");
+                if(type == "radio" || type == "checkbox"){
+                    value = $(_this).is(":checked") ? $(_this).val() : false;
+                }else{
+                    value = $(_this).val();
+                }
+                return value;
+            default:
+                value = $(_this).val();
+                return value;
+        }
+    }
+})(jQuery);
+
 //用户登录
 $('.signin').click(function () {
    var name = $('#signinName').val().trim();
@@ -40,7 +75,7 @@ $('.signin').click(function () {
         success: function (data) {
             alertTip(data.message);
             if(data.success){
-                window.location.href = window.location.origin;
+                window.location.reload();
             }
         }
     })

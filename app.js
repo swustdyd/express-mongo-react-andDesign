@@ -14,12 +14,12 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var isDev = process.env.NODE_ENV !== 'production';
-var baseConfig = require('./baseConfig');
+var BaseConfig = require('./baseConfig');
 var app = express();
-var port = process.env.PORT || baseConfig.port;
+var port = process.env.PORT || BaseConfig.port;
 port = parseInt(port, 10);
 
-mongoose.connect('mongodb://localhost:27017/imooc');
+mongoose.connect(BaseConfig.dbConnectString);
 
 //设置模板引擎为jade
 app.set('view engine', 'jade');
@@ -29,7 +29,6 @@ app.set('views', path.resolve(__dirname, './server/views'));
 app.locals.env = process.env.NODE_ENV || 'dev';
 app.locals.reload = true;
 app.locals.moment = require('moment');
-app.locals.logLevel = 'info';
 
 app.use(bodyParser());
 app.use(cookieParser());
@@ -59,7 +58,7 @@ app.use(function (req, res, next) {
     //console.log("locals.user: " + app.locals.user);
     //当session过期之后，需要手动删除app.locals.user，系统不会自动删除
     if(req.session.user){
-        app.locals.user = req.session.user;
+        app.locals.user = req.session.user.name;
     }else{
         delete app.locals.user;
     }
@@ -104,7 +103,7 @@ if (isDev) {
     });
 } else {
     // static assets served by express.static() for production
-    app.use(express.static(path.join(__dirname, baseConfig.webpackPath)));
+    app.use(express.static(path.join(__dirname, BaseConfig.webpackPath)));
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
     errorHandle(app);
     app.listen(port, function () {

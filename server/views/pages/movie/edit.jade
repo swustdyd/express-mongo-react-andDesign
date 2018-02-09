@@ -4,7 +4,7 @@ block style
 block content
   .container
     .row
-      form.form-horizontal(method="post", action="/movie/newOrUpdate")
+      .form-horizontal(id="movieForm")
         input(type="hidden", value=movie._id name="movie[_id]")
         .form-group
           label.col-md-2.control-label(for="inputTitle") 电影名字
@@ -39,5 +39,5 @@ block content
           .col-sm-10
             textarea#inputSummary.form-control(name="movie[summary]" cols=100 rows=1 style="overflow-y: hidden")= movie.summary
         div(style="text-align: right")
-          button.btn.btn-primary(type="submit") 录入
+          button.btn.btn-primary(id="commitMovie") 录入
   script(src="/movie/bundle.js")

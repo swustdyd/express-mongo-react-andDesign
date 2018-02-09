@@ -21,3 +21,22 @@ $('.del').click(function () {
         }
     });
 });
+
+/**
+ * 提交电影信息
+ */
+$('#commitMovie').click(function () {
+    var movieData = $('#movieForm').jsonSerialize();
+    $.ajax({
+        url: '/movie/newOrUpdate',
+        type: 'post',
+        dataType: 'json',
+        data: movieData,
+        success: function (data) {
+            alert(data.message);
+            if(data.success){
+                location.href = '/movie/list.html'
+            }
+        }
+    });
+});

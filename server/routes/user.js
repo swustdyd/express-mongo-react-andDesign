@@ -23,10 +23,16 @@ router.post('/signup', function (request, response) {
         }else{
             message = result.message || '注册失败';
         }
-        return response.json({success: true, message: message});
+        return response.json({
+            success: true,
+            message: message
+        });
     }).catch(function (err) {
         logger.error(err);
-        return response.json({success: false, message: err.message});
+        return response.json({
+            success: false,
+            message: err.message
+        });
         //throw err;
     });
 });
@@ -40,22 +46,36 @@ router.post('/signin', function (request, response) {
         condition:{
             name: name
         }
-    }).then(function (users) {
+    }).then(function (resData) {
+        var users = resData.result;
         if(!users || users.length < 1) {
             return Promise.reject({success: false, message: '用户名不存在！'});
         }else{
-            return PubFunction.comparePassword(password, users[0].password);
-        }
-    }).then(function(isMatch){
-        if(isMatch){
-            request.session.user = { name: name };
-            request.app.locals.user = { name: name };
-            return response.json({success: true, message: '登录成功'});
-        }else{
-            return Promise.reject({success: false, message: '用户名或密码错误！'});
+            PubFunction.comparePassword(password, users[0].password).then(function (isMatch) {
+                if(isMatch){
+                    var user = users[0];
+                    user.password = '';
+                    request.session.user = user;
+                    request.app.locals.user = user;
+                    logger.info("用户名：" + request.app.locals.user.name);
+                    return response.json({
+                        success: true,
+                        message: '登录成功'
+                    });
+                }else{
+                    return Promise.reject({
+                        success: false,
+                        message: '用户名或密码错误！'
+                    });
+                }
+            });
         }
     }).catch(function (err) {
-        return response.json({success: false, message: err.message});
+        logger.error(err);
+        return response.json({
+            success: false,
+            message: err.message
+        });
     });
 });
 
@@ -68,16 +88,15 @@ router.get('/logout', function (request, response) {
 
 //用户列表
 router.get('/list.html', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
-    User.fetch(function (err, users) {
-        if(err){
-            throw err;
-        }else {
-            response.render('pages/user/list', {
-                title: '用户列表页',
-                users: users
-            });
-        }
-    })
+    UserService.getUsersByCondition().then(function (resData) {
+        var users = resData.result || [];
+        response.render('pages/user/list', {
+            title: '用户列表页',
+            users: users
+        });
+    }).catch(function (err) {
+        response.render('pages/error', {error: err});
+    });
 });
 
 //修改密码
@@ -101,15 +120,24 @@ router.post('/updatePwd', function (request, response) {
                 if(!data.success){
                     return Promise.reject(data.message);
                 }else{
-                    response.json({message: '修改密码成功', success: data.success});
+                    response.json({
+                        message: '修改密码成功',
+                        success: data.success
+                    });
                 }
             });
         }else{
-            return Promise.reject({success: false, message: '原密码不正确'});
+            return Promise.reject({
+                success: false,
+                message: '原密码不正确'
+            });
         }
     }).catch(function (err) {
         logger.error(err);
-        return response.json({success: false, message: err.message});
+        return response.json({
+            success: false,
+            message: err.message
+        });
     });
 });
 

@@ -32,12 +32,12 @@ block content
                 .comment-list-item
                   .item-user
                     img.icon
-                    span.user #{comment.from}
+                    span.user #{comment.from.name}
                     small
                       i &emsp;#{moment(comment.meta.createAt).format('YYYY-MM-DD HH:mm:ss')}
                   .item-content #{comment.content}
                     span &emsp;
-                    a.replyComment(href="javascript:;") 回复
+                    a.replyComment(href="javascript:;" _id="#{comment.from._id}") 回复
             else
               i.tips 暂无评论！
           .comment-input-group

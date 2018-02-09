@@ -7,20 +7,25 @@ var Comment = require('../models/comment');
 var _ = require('underscore');
 var Authority = require('../common/authority');
 var logger = require('../common/logger');
+var CommentService = require('../service/comment');
 
 router.post('/commit', Authority.requestSignin, function (req, res) {
-    var _comment = req.body.comment;
-    var comment = new Comment(_comment);
+    var comment = req.body.comment;
     var currentUser = req.session.user;
-    logger.debug(currentUser._id);
     comment.from = currentUser._id;
-    comment.save(function (err, comment) {
-        if(err){
-            throw err;
-        }else{
-            res.json({message: '评论成功', success: true, result: comment});
-        }
-    })
+    CommentService.saveOrUpdateComment(comment).then(function (resData) {
+        res.json({
+            message: resData.message,
+            success: resData.success,
+            result: resData.result
+        });
+    }).catch(function (err) {
+        logger.error(err);
+        res.json({
+            message: err.message,
+            success: false
+        });
+    });
 });
 
 module.exports = router;

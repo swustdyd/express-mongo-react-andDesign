@@ -20,7 +20,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                resolve(movies);
+                resolve({success: true, result: movies});
             }).sort(options.sort)
                 .skip(options.pageSetting.pageIndex * options.pageSetting.pageSize)
                 .limit(options.pageSetting.pageSize);
@@ -39,7 +39,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                resolve(movie);
+                resolve({success: true, result: movie});
             })
         });
     },
@@ -52,8 +52,36 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                resolve(true);
+                resolve({success: true});
             });
         });
+    },
+    saveOrUpdateMovie: function (movie) {
+        var service = this;
+        return new Promise(function (resolve, reject) {
+            //修改
+            if(movie._id){
+                return service.getMovieById(movie._id).then(function (resData) {
+                    var originMovie = resData.result;
+                    _.extend(originMovie, movie);
+                    originMovie.meta.updateAt = Date.now();
+                    resolve(originMovie);
+                });
+            }else{
+                movie = new Movie(movie);
+                movie.meta.createAt = movie.meta.updateAt = Date.now();
+                resolve(movie);
+            }
+        }).then(function (movie) {
+            logger.info(movie);
+            return new Promise(function (resolve, reject) {
+                movie.save(function (err, movie) {
+                    if(err){
+                        reject(err);
+                    }
+                    resolve({success: true, result: movie, message: '保存成功'});
+                })
+            });
+        })
     }
 };
