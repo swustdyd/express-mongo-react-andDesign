@@ -1,15 +1,25 @@
 /**
  * Created by Aaron on 2018/1/4.
  */
-require('../../common/common');
-require("../comment/comment");
+import '../../common/common'
+//import '../comment/comment'
 
-/**
+import React from 'react'
+import ReactDom from 'react-dom'
+import CustomLayout from '../layout'
+
+ReactDom.render(
+    <CustomLayout defaultSelectedKeys={['2']}>
+
+    </CustomLayout>,
+    document.getElementById('app')
+);
+/*
+/!**
  * 删除一项数据
- */
+ *!/
 $('.del').click(function () {
-    var id = $(this).attr('data-id');
-    var _this = this;
+    let id = $(this).attr('data-id');
     $.ajax({
         url: '/movie/delete',
         data: {'id': id},
@@ -22,11 +32,11 @@ $('.del').click(function () {
     });
 });
 
-/**
+/!**
  * 提交电影信息
- */
+ *!/
 $('#commitMovie').click(function () {
-    var movieData = $('#movieForm').jsonSerialize();
+    let movieData = $('#movieForm').jsonSerialize();
     $.ajax({
         url: '/movie/newOrUpdate',
         type: 'post',
@@ -39,4 +49,4 @@ $('#commitMovie').click(function () {
             }
         }
     });
-});
+});*/

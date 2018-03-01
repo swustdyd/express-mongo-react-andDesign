@@ -1,2 +1,2 @@
-require('../../common/common');
-require('./user.scss');
+import '../../common/common'
+import './user.scss'

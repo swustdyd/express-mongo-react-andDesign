@@ -1,7 +1,7 @@
-extends  ../../layout
-block style
+//extends  ../../layout
+//block style
   link(rel="stylesheet", href="/movie/index.css")
-block content
+//block content
   .container
     .row
       .form-horizontal(id="movieForm")
@@ -40,4 +40,7 @@ block content
             textarea#inputSummary.form-control(name="movie[summary]" cols=100 rows=1 style="overflow-y: hidden")= movie.summary
         div(style="text-align: right")
           button.btn.btn-primary(id="commitMovie") 录入
+  script(src="/movie/bundle.js")
+extends ../../layout
+block script
   script(src="/movie/bundle.js")

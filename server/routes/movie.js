@@ -28,6 +28,22 @@ router.get('/list.html', function (request, response) {
 });
 
 /**
+ * 获取电影列表
+ */
+router.get('/getMovies', function (req, res) {
+    MovieService.getMoviesByCondition()
+        .then(function (resData) {
+            res.json({
+                success: true,
+                result: resData.result
+            })
+        }).catch(function (err) {
+        //logger.error(err);
+        throw err;
+    });
+});
+
+/**
  * 电影详情页
  */
 router.get('/detail.html/:id', function (request, response) {

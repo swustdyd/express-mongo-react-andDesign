@@ -1,15 +1,15 @@
 /**
  * Created by Aaron on 2018/1/17.
  */
-require('./comment.scss');
+import './comment.scss'
 
 /**
  * 提交一条评论
  */
 $('#commitComment').click(function () {
-    var movieID = $('#movieID').val();
-    var content = $('#commentContent').val();
-    var $commitComment = $(this);
+    let movieID = $('#movieID').val();
+    let content = $('#commentContent').val();
+    let $commitComment = $(this);
     $.ajax({
         url: '/comment/commit',
         type: 'post',

@@ -1,15 +1,3 @@
-extends  ../layout
-block style
-  link(rel="stylesheet" href="/index/index.css")
-block content
-  .container
-    .row
-      each  item in movies
-        .col-md-2.view-item
-          .thumbnail
-            a(href="/movie/detail.html/#{item._id}")
-              img.poster-img(src="#{item.poster}", alt="#{item.title}")
-            .caption
-              span #{item.title}
-              //p: button.btn.btn-primary(href="/movie/detail.html/#{item._id}", role="button") 观看预告片
+extends ../layout
+block script
   script(src='/index/bundle.js')

@@ -1,7 +1,7 @@
-extends  ../../layout
-block style
+//extends  ../../layout
+//block style
   link(rel="stylesheet", href="/movie/index.css")
-block content
+//block content
   .container
     .row
       .col-md-7
@@ -44,4 +44,7 @@ block content
             textarea.form-control(id="commentContent",maxlength="1000", placeholder="输入评论，1000字以内")
             button#commitComment.btn.btn-success 评论
         .comment-footer
+  script(src="/movie/bundle.js")
+extends ../../layout
+block script
   script(src="/movie/bundle.js")
