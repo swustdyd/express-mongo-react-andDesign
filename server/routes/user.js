@@ -99,6 +99,22 @@ router.get('/list.html', Authority.requestSignin, Authority.requestAdmin, functi
     });
 });
 
+//获取用户信息
+router.get('/getUsers', function (request, response) {
+    UserService.getUsersByCondition().then(function (resData) {
+        let users = resData.result || [];
+        response.json({
+            success: true,
+            result: users
+        });
+    }).catch(function (err) {
+        response.json({
+            success: true,
+            message: err.message
+        });
+    });
+});
+
 //修改密码
 router.post('/updatePwd', function (request, response) {
     var originPwd = request.param('originPwd');

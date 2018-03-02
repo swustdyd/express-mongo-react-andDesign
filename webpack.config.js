@@ -10,9 +10,8 @@ let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
 //console.log(vueLoaderConfig);
 let devConfig = {
     entry: {
-        index: ['./client/modules/index/index', hotMiddlewareScript],
-        movie: ['./client/modules/movie/movie', hotMiddlewareScript],
-        user: ['./client/modules/user/user', hotMiddlewareScript]
+        index: ['./client/app', hotMiddlewareScript],
+        vendor: ['react','react-dom','react-router-dom']
     },
     output: {
         filename: './[name]/bundle.js',
@@ -64,7 +63,11 @@ let devConfig = {
         new ExtractTextPlugin({
             filename: './[name]/index.css',
             allChunks: true
-        })/*,
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            filename: 'vendor.bundle.js'
+        }),/*,
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery'

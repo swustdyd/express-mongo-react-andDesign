@@ -1,12 +1,10 @@
 /**
  * Created by Aaron on 2018/1/4.
  */
-import '../../common/common'
+import '../../common/common.scss'
 import './index.scss'
 import React from 'react'
 import MoviePoster from '../../components/moviePoster'
-import ReactDom from 'react-dom'
-import CustomLayout from '../layout'
 
 class IndexPage extends React.Component{
     constructor(){
@@ -51,13 +49,7 @@ class IndexPage extends React.Component{
         );
     }
 }
-
-ReactDom.render(
-    <CustomLayout defaultSelectedKeys={['1']}>
-        <IndexPage/>
-    </CustomLayout>,
-    document.getElementById('app')
-);
+export default IndexPage;
 
 
 
