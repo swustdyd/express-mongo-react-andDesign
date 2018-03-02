@@ -19,6 +19,10 @@ class CustomLayout extends React.Component{
         };
         this.handleMenuClick = this.handleMenuClick.bind(this);
     }
+    componentDidMount(){
+        console.log(this.refs);
+        console.log(this.refs.header.offeSetWidth);
+    }
     handleMenuClick(e){
         this.setState({
             currentKey: e.key
@@ -27,7 +31,7 @@ class CustomLayout extends React.Component{
     render(){
         return(
             <Layout className="layout">
-                <Header>
+                <Header ref="header">
                     <div className="logo" >LOGO</div>
                     <Menu
                         theme="dark"
@@ -41,10 +45,10 @@ class CustomLayout extends React.Component{
                         <Menu.Item key="userPage"><Link to="/userPage/userList">用户管理</Link></Menu.Item>
                     </Menu>
                 </Header>
-                <Content style={{ padding: '0 50px' }}>
+                <Content style={{ padding: '0 50px', minHeight: 680 }}>
                     {this.props.children}
                 </Content>
-                <Footer style={{ textAlign: 'center'}}>
+                <Footer ref="footer" style={{ textAlign: 'center'}}>
                     Ant Design ©2016 Created by AaronDeng
                 </Footer>
             </Layout>

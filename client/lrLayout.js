@@ -14,7 +14,7 @@ class LRLayout extends React.Component{
                     {this.props.left}
                 </Sider>
                 <Layout style={{ padding: '0 24px' }}>
-                    <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
+                    <Content style={{ background: '#fff', padding: 24, margin: 0}}>
                         {this.props.right}
                     </Content>
                 </Layout>
