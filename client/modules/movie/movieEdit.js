@@ -121,30 +121,22 @@ class MovieEdit extends React.Component{
             <Form onSubmit={this.handleSubmit}>
                 <FormItem
                     {...formItemLayout}
-                    label="E-mail"
+                    label="电影名称"
                 >
-                    {getFieldDecorator('email', {
-                        rules: [{
-                            type: 'email', message: 'The input is not valid E-mail!',
-                        }, {
-                            required: true, message: 'Please input your E-mail!',
-                        }],
-                    })(
+                    {getFieldDecorator('name')(
                         <Input />
                     )}
                 </FormItem>
                 <FormItem
                     {...formItemLayout}
-                    label="Password"
+                    label="国家"
                 >
-                    {getFieldDecorator('password', {
+                    {getFieldDecorator('country', {
                         rules: [{
-                            required: true, message: 'Please input your password!',
-                        }, {
                             validator: this.checkConfirm,
                         }],
                     })(
-                        <Input type="password" />
+                        <Input />
                     )}
                 </FormItem>
                 <FormItem
