@@ -1,14 +1,31 @@
 /**
  * Created by Aaron on 2018/1/6.
  */
-var express = require('express'),
+const express = require('express'),
     router = express.Router();
-var Movie = require('../models/movie');
-var _ = require('underscore');
-var logger = require('../common/logger');
-var MovieService = require('../service/movie');
-var CommentService = require('../service/comment');
-var Promise = require('promise');
+const Movie = require('../models/movie');
+const _ = require('underscore');
+const logger = require('../common/logger');
+const MovieService = require('../service/movie');
+const CommentService = require('../service/comment');
+const Promise = require('promise');
+const PublicFunc = require('../common/publicFunc');
+const multer = require('multer');
+
+let storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/movie/poster/')
+    },
+    filename: function (req, file, cb) {
+        let index = file.originalname.lastIndexOf('.');
+        let fileName = file.originalname.substr(0, index);
+        let ext = file.originalname.substr(index);
+        cb(null, fileName + '-' + Date.now() + ext);
+        //cb(null, file.fieldname  + '-' + Date.now());
+    }
+});
+
+let moviePosterUpload = multer({ storage: storage });
 
 /**
  * 电影列表页
@@ -129,6 +146,12 @@ router.get('/delete', function (request, response) {
         logger.error(err);
         response.json({ success: false, message: '删除失败'});
     });
+});
+
+router.post('/uploadPoster', moviePosterUpload.any(), function (req, res) {
+    //PublicFunc.uploadFiles(req);
+    console.log(req.files);
+    res.json({success: false, message: 'hahaha'})
 });
 
 module.exports = router;

@@ -3,7 +3,9 @@
  */
 
 import React from 'react'
-import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete } from 'antd';
+import { Form, Input, Tooltip, Icon, Select,Button, AutoComplete } from 'antd'
+import PicturesWall from '../../components/picturesWall'
+const {TextArea} = Input;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const AutoCompleteOption = AutoComplete.Option;
@@ -96,11 +98,11 @@ class MovieEdit extends React.Component{
             wrapperCol: {
                 xs: {
                     span: 24,
-                    offset: 0,
+                    offset: 16,
                 },
                 sm: {
-                    span: 16,
-                    offset: 8,
+                    span: 24,
+                    offset: 22,
                 },
             },
         };
@@ -123,7 +125,11 @@ class MovieEdit extends React.Component{
                     {...formItemLayout}
                     label="电影名称"
                 >
-                    {getFieldDecorator('name')(
+                    {getFieldDecorator('name',{
+                        rules: [{
+                            required: true
+                        }]
+                    })(
                         <Input />
                     )}
                 </FormItem>
@@ -133,6 +139,8 @@ class MovieEdit extends React.Component{
                 >
                     {getFieldDecorator('country', {
                         rules: [{
+                            required: true,
+                        },{
                             validator: this.checkConfirm,
                         }],
                     })(
@@ -141,9 +149,9 @@ class MovieEdit extends React.Component{
                 </FormItem>
                 <FormItem
                     {...formItemLayout}
-                    label="Confirm Password"
+                    label="年代"
                 >
-                    {getFieldDecorator('confirm', {
+                    {getFieldDecorator('year', {
                         rules: [{
                             required: true, message: 'Please confirm your password!',
                         }, {
@@ -157,83 +165,34 @@ class MovieEdit extends React.Component{
                     {...formItemLayout}
                     label={(
                         <span>
-              Nickname&nbsp;
-                            <Tooltip title="What do you want others to call you?">
-                <Icon type="question-circle-o" />
-              </Tooltip>
-            </span>
+                            封面&nbsp;
+                            <Tooltip title="文件格式：JPG、PNG">
+                                <Icon type="question-circle-o" />
+                            </Tooltip>
+                        </span>
                     )}
                 >
-                    {getFieldDecorator('nickname', {
-                        rules: [{ required: true, message: 'Please input your nickname!', whitespace: true }],
+                    {getFieldDecorator('poster', {
+                        rules: [{ required: true, message: '请上传封面', whitespace: true }],
                     })(
-                        <Input />
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label="Habitual Residence"
-                >
-                    {getFieldDecorator('residence', {
-                        initialValue: ['zhejiang', 'hangzhou', 'xihu'],
-                        rules: [{ type: 'array', required: true, message: 'Please select your habitual residence!' }],
-                    })(
-                        <Cascader options={residences} />
+                        <PicturesWall
+                            action="/movie/uploadPoster"
+                            listType="picture-card"
+                        />
                     )}
                 </FormItem>
                 <FormItem
                     {...formItemLayout}
-                    label="Phone Number"
+                    label="简介"
                 >
-                    {getFieldDecorator('phone', {
-                        rules: [{ required: true, message: 'Please input your phone number!' }],
+                    {getFieldDecorator('desc', {
+                        rules: [{required: true, message: '请输入电影简介' }],
                     })(
-                        <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label="Website"
-                >
-                    {getFieldDecorator('website', {
-                        rules: [{ required: true, message: 'Please input website!' }],
-                    })(
-                        <AutoComplete
-                            dataSource={websiteOptions}
-                            onChange={this.handleWebsiteChange}
-                            placeholder="website"
-                        >
-                            <Input />
-                        </AutoComplete>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label="Captcha"
-                    extra="We must make sure that your are a human."
-                >
-                    <Row gutter={8}>
-                        <Col span={12}>
-                            {getFieldDecorator('captcha', {
-                                rules: [{ required: true, message: 'Please input the captcha you got!' }],
-                            })(
-                                <Input />
-                            )}
-                        </Col>
-                        <Col span={12}>
-                            <Button>Get captcha</Button>
-                        </Col>
-                    </Row>
-                </FormItem>
-                <FormItem {...tailFormItemLayout}>
-                    {getFieldDecorator('agreement', {
-                        valuePropName: 'checked',
-                    })(
-                        <Checkbox>I have read the <a href="">agreement</a></Checkbox>
+                        <TextArea placeholder="请输入电影简介" autosize={{minRows: 5}}/>
                     )}
                 </FormItem>
                 <FormItem {...tailFormItemLayout}>
-                    <Button type="primary" htmlType="submit">Register</Button>
+                    <Button type="primary" htmlType="submit">提交</Button>
                 </FormItem>
             </Form>
         );
