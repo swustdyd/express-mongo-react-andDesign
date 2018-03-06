@@ -60,22 +60,24 @@ module.exports = {
     },
     /**
      * 文件上传工具类
-     * @param request request请求
+     * @param request
      * @param response
-     * @param options 存储的子路径
-     * @return {Array} 上传文件数组
+     * @param options
+     * @returns {Promise}
      */
     uploadFiles: (request, response, options) => {
         let defaultOptions = {
             subDir: '',
-            maxSize: 1000,
-            fileFilter: 'any',
-            preservePath: ''
+            maxSize: 1024 * 1024,//1 MB
+            fileFilter: []
         };
+
         let finalOption = {};
         _.extend(finalOption, defaultOptions, options);
+        logger.info(finalOption);
         let storage = multer.diskStorage({
             destination: function (req, file, cb) {
+                logger.info(`subDir is '${finalOption.subDir}'`);
                 cb(null, `uploads/${finalOption.subDir}`)
             },
             filename: function (req, file, cb) {
@@ -83,26 +85,56 @@ module.exports = {
                 let fileName = file.originalname.substr(0, index);
                 let ext = file.originalname.substr(index);
                 cb(null, fileName + '-' + Date.now() + ext);
-                //cb(null, file.fieldname  + '-' + Date.now());
             }
         });
 
-        let moviePosterUpload = multer({ storage: storage });
-        let files = request.files;
-        let fileArray = [];
-        console.log(request.files);
-        logger.info(files);
-        if(files){
-            files.map(function (item, key) {
-                logger.info(item);
-                logger.info(key);
+        let upload = multer({
+            storage: storage,
+            limits: {
+                fileSize: finalOption.maxSize
+            },
+            fileFilter: (req, file, cb) =>{
+                // 这个函数应该调用 `cb` 用boolean值来
+                // 指示是否应接受该文件
+
+                // 拒绝这个文件，使用`false`，像这样:
+                //cb(null, false)
+
+                // 接受这个文件，使用`true`，像这样:
+                //cb(null, true)
+                logger.info('start fileFilter');
+                let index = file.originalname.lastIndexOf('.');
+                let ext = file.originalname.substr(index);
+                if(finalOption.fileFilter && finalOption.fileFilter.length > 0){
+                    let extValidate = false;
+                    finalOption.fileFilter.forEach(function (item, index) {
+                        if(item.toLowerCase() === ext.toLowerCase()){
+                            extValidate = true;
+                            return false;
+                        }
+                    });
+                    if(extValidate){
+                        cb(null, true);
+                    }else{
+                        cb(new Error(`不支持文件格式：${ext}`));
+                    }
+                }else {
+                    cb(null, true);
+                }
+
+                // 如果有问题，你可以总是这样发送一个错误:
+                //cb(new Error('I don\'t have a clue!'))
+            }
+        }).any();
+        return new Promise(function (resolve, reject) {
+            upload(request, response, function (err) {
+                if (err) {
+                    // 发生错误
+                    reject(err);
+                }
+                // 一切都好
+                resolve(request.files);
             })
-        }
-        let file = {
-            fileName: 'fileName',
-            srcName: 'srcName'
-        };
-        fileArray.push(file);
-        return fileArray;
+        });
     }
 };

@@ -10,12 +10,7 @@ class PicturesWall extends React.Component {
         this.state = {
             previewVisible: false,
             previewImage: '',
-            fileList: props.fileList || [{
-                uid: -1,
-                name: 'xxx.png',
-                status: 'done',
-                url: 'http://www.baidu.com/xxx.png',
-            }],
+            fileList: props.fileList || []
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -31,8 +26,8 @@ class PicturesWall extends React.Component {
         });
     }
 
-    handleChange({ fileList }){
-        console.log(fileList)
+    handleChange(info){
+        let fileList = info.fileList;
         this.setState({ fileList });
     }
 
@@ -50,7 +45,7 @@ class PicturesWall extends React.Component {
                 <Upload
                     action={this.props.action}
                     listType={this.props.listType}
-                    fileList={this.props.fileList}
+                    fileList={this.state.fileList}
                     onPreview={this.handlePreview}
                     onChange={this.handleChange}
                 >

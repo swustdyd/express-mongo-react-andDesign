@@ -10,22 +10,6 @@ const MovieService = require('../service/movie');
 const CommentService = require('../service/comment');
 const Promise = require('promise');
 const PublicFunc = require('../common/publicFunc');
-const multer = require('multer');
-
-let storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/movie/poster/')
-    },
-    filename: function (req, file, cb) {
-        let index = file.originalname.lastIndexOf('.');
-        let fileName = file.originalname.substr(0, index);
-        let ext = file.originalname.substr(index);
-        cb(null, fileName + '-' + Date.now() + ext);
-        //cb(null, file.fieldname  + '-' + Date.now());
-    }
-});
-
-let moviePosterUpload = multer({ storage: storage });
 
 /**
  * 电影列表页
@@ -148,10 +132,16 @@ router.get('/delete', function (request, response) {
     });
 });
 
-router.post('/uploadPoster', moviePosterUpload.any(), function (req, res) {
-    //PublicFunc.uploadFiles(req);
-    console.log(req.files);
-    res.json({success: false, message: 'hahaha'})
+router.post('/uploadPoster', function (req, res) {
+    PublicFunc.uploadFiles(req, res, {
+        subDir: 'movie/poster',
+        fileFilter: ['.png', '.jpg']
+    }).then(function (files) {
+        res.json({success: true, message: 'hahaha', result: files});
+    }).catch(function (err) {
+        logger.error(err);
+        res.json({success: false, message: err.message});
+    });
 });
 
 module.exports = router;
