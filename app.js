@@ -33,7 +33,7 @@ app.locals.moment = require('moment');
 app.use(bodyParser());
 app.use(cookieParser());
 app.use(session({
-    secret: 'imooc',
+    secret: 'demo',
     store: new MongoStore({
         mongooseConnection: mongoose.connection
         //ttl: 30 * 60// 30 minute 存储在mongo的有效时间，默认为14天，过期后会自动删除

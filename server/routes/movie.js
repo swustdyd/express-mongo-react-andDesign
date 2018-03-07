@@ -84,7 +84,15 @@ router.get('/new.html', function (request, response) {
  * 保存或者修改电影
  */
 router.post('/newOrUpdate', function (request, response) {
-    var movie = request.body.movie;
+    let movie = request.body.movie;
+    logger.info(request.sessionID);
+    logger.info(`poster srcName is '${request.session.movieUploadPoster}'`);
+    response.json({
+        success: true,
+        message: 'test'
+    });
+    /*movie.poster = request.session.movieUploadPoster || '';
+     request.session.movieUploadPoster = undefined;
     MovieService.saveOrUpdateMovie(movie).then(function (resData) {
         response.json({
             success: true,
@@ -96,7 +104,7 @@ router.post('/newOrUpdate', function (request, response) {
             success: false,
             message: err.message
         })
-    });
+    });*/
 });
 
 /**
@@ -137,6 +145,8 @@ router.post('/uploadPoster', function (req, res) {
         subDir: 'movie/poster',
         fileFilter: ['.png', '.jpg']
     }).then(function (files) {
+        req.session.movieUploadPoster = files[0].filename;
+        //logger.info(req.sessionID);
         res.json({success: true, message: 'hahaha', result: files});
     }).catch(function (err) {
         logger.error(err);

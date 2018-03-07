@@ -43,6 +43,7 @@ class PicturesWall extends React.Component {
         return (
             <div className="clearfix">
                 <Upload
+                    name={this.props.name}
                     action={this.props.action}
                     listType={this.props.listType}
                     fileList={this.state.fileList}

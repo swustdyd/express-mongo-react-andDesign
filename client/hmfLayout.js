@@ -20,8 +20,8 @@ class CustomLayout extends React.Component{
         this.handleMenuClick = this.handleMenuClick.bind(this);
     }
     componentDidMount(){
-        console.log(this.refs);
-        console.log(this.refs.header.offeSetWidth);
+        /*console.log(this.refs);
+        console.log(this.refs.header.offeSetWidth);*/
     }
     handleMenuClick(e){
         this.setState({
