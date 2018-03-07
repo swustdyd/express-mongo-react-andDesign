@@ -53,6 +53,9 @@ if(isDev){
     }));
 }
 
+
+app.use(express.static(path.join(__dirname, 'public')));//设置静态目录
+
 //在引用所有路由前，可在此做拦截器
 app.use(function (req, res, next) {
     //console.log("locals.user: " + app.locals.user);
@@ -80,6 +83,7 @@ if (isDev) {
     // attach to the compiler & the server
     app.use(webpackDevMiddleware(compiler, {
 
+
         // public path should be the same with webpack config
         publicPath: webpackDevConfig.output.publicPath,
         noInfo: true,
@@ -88,7 +92,6 @@ if (isDev) {
         }
     }));
     app.use(webpackHotMiddleware(compiler));
-
     // add "reload" to express, see: https://www.npmjs.com/package/reload
     var reload = require('reload');
     var http = require('http');

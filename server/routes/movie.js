@@ -34,6 +34,9 @@ router.get('/list.html', function (request, response) {
 router.get('/getMovies', function (req, res) {
     MovieService.getMoviesByCondition()
         .then(function (resData) {
+            resData.result.forEach((item, index) => {
+                item.poster = `/uploads/movie/poster/${item.poster}`;
+            });
             res.json({
                 success: true,
                 result: resData.result
@@ -85,13 +88,7 @@ router.get('/new.html', function (request, response) {
  */
 router.post('/newOrUpdate', function (request, response) {
     let movie = request.body.movie;
-    logger.info(request.sessionID);
-    logger.info(`poster srcName is '${request.session.movieUploadPoster}'`);
-    response.json({
-        success: true,
-        message: 'test'
-    });
-    /*movie.poster = request.session.movieUploadPoster || '';
+    movie.poster = request.session.movieUploadPoster || '';
      request.session.movieUploadPoster = undefined;
     MovieService.saveOrUpdateMovie(movie).then(function (resData) {
         response.json({
@@ -104,7 +101,7 @@ router.post('/newOrUpdate', function (request, response) {
             success: false,
             message: err.message
         })
-    });*/
+    });
 });
 
 /**

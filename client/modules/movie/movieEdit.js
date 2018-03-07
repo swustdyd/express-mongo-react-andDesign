@@ -81,8 +81,8 @@ class MovieEdit extends React.Component{
             },
         };
         const {initData} = this.state;
-        console.log('start render');
-        console.log(initData);
+        //console.log('start render');
+        //console.log(initData);
         return (
             <Spin tip="提交中..." spinning={this.state.submiting}>
                 <Form onSubmit={this.handleSubmit}>

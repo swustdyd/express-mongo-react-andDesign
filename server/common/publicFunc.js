@@ -83,7 +83,7 @@ const uploadFiles = (request, response, options) => {
     _.extend(finalOption, defaultOptions, options);
     let storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            let path = `uploads/${finalOption.subDir}`;
+            let path = `public/uploads/${finalOption.subDir}`;
             //logger.info(`path is '${path}'`);
             if(!fs.existsSync(path)){
                 //logger.info('create upload directory');

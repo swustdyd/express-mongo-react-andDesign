@@ -32,7 +32,7 @@ class MovieList extends React.Component{
             title: '电影名',
             dataIndex: 'title',
             key: 'title',
-            render: text => <a href="#">{text}</a>,
+            render: text => <a href="#">{text}</a>
         },{
             title: '国家',
             dataIndex: 'country',
@@ -45,6 +45,11 @@ class MovieList extends React.Component{
             title: '年代',
             dataIndex: 'year',
             key: 'year'
+        },{
+            title: '编辑',
+            dataIndex: '_id',
+            key: 'edit',
+            render: id => <a href={`#/movie/detail.html/${id}`}>编辑</a>
         }];
         return(
             <div>

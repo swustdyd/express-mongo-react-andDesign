@@ -1,12 +1,11 @@
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var path = require('path');
-var CleanWebpackPlugin = require('clean-webpack-plugin');
-var baseConfig = require('./baseConfig');
-var productionConfig = [{
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const baseConfig = require('./baseConfig');
+const productionConfig = [{
     entry: {
-        index: ['./client/modules/index/index'],
-        movie: ['./client/modules/movie/movie'],
-        user: ['./client/modules/user/user']
+        index: ['./client/app'],
+        vendor: ['react','react-dom','react-router-dom']
     },
     output: {
         filename: './[name]/bundle.js',
@@ -15,6 +14,13 @@ var productionConfig = [{
     },
     module: {
         rules: [{
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'babel-loader',
+            query: {
+                presets: ['react']
+            }
+        },{
             test: /\.(png|jpg)$/,
             use: 'url-loader?limit=8192&context=client&name=[path][name].[ext]'
         }, {
@@ -36,7 +42,7 @@ var productionConfig = [{
         }]
     },
     plugins: [
-        new CleanWebpackPlugin(['public']),
+        new CleanWebpackPlugin([baseConfig.webpackPath]),
         new ExtractTextPlugin({
             filename: './[name]/index.css',
             allChunks: true
