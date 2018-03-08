@@ -14,13 +14,18 @@ import Common from '../../common/common'
 class MoviePage extends React.Component{
     constructor(props){
         super(props);
-        //根据当前路径，初始化二级导航的当前项
-        let paths = Common.getHashPath( window.location.href);
-        let currentKey = paths[1];
         this.state = {
-            currentKey: currentKey
+            currentKey: 'movieList'
         };
         this.handleMenuClick = this.handleMenuClick.bind(this);
+    }
+    componentDidMount(){
+        //根据当前路径，初始化二级导航的当前项
+        let paths = Common.getHashPath(window.location.href);
+        let currentKey = paths[1];
+        this.setState({
+            currentKey: currentKey
+        });
     }
     handleMenuClick(e){
         this.setState({
@@ -38,14 +43,12 @@ class MoviePage extends React.Component{
                         style={{ height: '100%', borderRight: 0 }}
                     >
                         <Menu.Item key="movieList"><Link to="/moviePage/movieList" >电影列表</Link></Menu.Item>
-                        <Menu.Item key="movieNew"><Link to="/moviePage/movieNew" >新增电影</Link></Menu.Item>
                         <Menu.Item key="movieCount"><Link to="/moviePage/movieCount" >统计</Link></Menu.Item>
                     </Menu>
                 }
                 right={
                     <div>
                         <Route path="/moviePage/movieList" component={MovieList}/>
-                        <Route path="/moviePage/movieNew" component={MovieEdit}/>
                         <Route path="/moviePage/movieCount" component={MovieCount}/>
                     </div>
                 }

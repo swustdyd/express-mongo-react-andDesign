@@ -10,7 +10,7 @@ class PicturesWall extends React.Component {
         this.state = {
             previewVisible: false,
             previewImage: '',
-            fileList: props.fileList || []
+            fileList: this.props.fileList || []
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -41,7 +41,7 @@ class PicturesWall extends React.Component {
         );
         const maxLength = this.props.maxLength || 3;
         return (
-            <div className="clearfix">
+            <div className="pictures-wall">
                 <Upload
                     name={this.props.name}
                     action={this.props.action}

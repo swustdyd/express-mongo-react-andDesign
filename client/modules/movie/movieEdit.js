@@ -3,19 +3,17 @@
  */
 
 import React from 'react'
-import { Form, Input, Tooltip, Icon, Select,Button, AutoComplete, message, Spin} from 'antd'
+import { Form, Input, Tooltip, Icon, Button, message, Spin} from 'antd'
 import PicturesWall from '../../components/picturesWall'
 const {TextArea} = Input;
 const FormItem = Form.Item;
-const Option = Select.Option;
-const AutoCompleteOption = AutoComplete.Option;
 
 class MovieEdit extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             submiting: false,
-            initData: this.props.initData || {}
+            initData: this.props.initData
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -27,6 +25,7 @@ class MovieEdit extends React.Component{
                 let movie = this.props.form.getFieldsValue();
                 _this.setState({submiting: true});
                 movie._id = this.state.initData._id;
+                movie.poster = this.state.initData.poster;
                 fetch('/movie/newOrUpdate', {
                     method: 'post',
                     headers: {
@@ -38,16 +37,19 @@ class MovieEdit extends React.Component{
                 })
                 .then(res => res.json())
                 .then(data => {
-                    setTimeout(function () {
-                        if(data.success){
-                            message.success(data.message)
-                            _this.setState({initData: {}});
-                        }else{
-                            message.error(data.message);
-
+                    if(data.success){
+                        message.success(data.message);
+                        //window.location.href = '/#/moviePage/movieList';
+                        if( _this.props.onSubmitSuccess){
+                            _this.props.onSubmitSuccess();
                         }
-                        _this.setState({submiting: false});
-                    }, 3000);
+                    }else{
+                        message.error(data.message);
+                        if( _this.props.onSubmitFail){
+                            _this.props.onSubmitFail();
+                        }
+                    }
+                    _this.setState({submiting: false});
                 }).catch(err => {
                     message.error(err.message);
                      _this.setState({submiting: false});
@@ -80,9 +82,14 @@ class MovieEdit extends React.Component{
                 },
             },
         };
-        const {initData} = this.state;
-        //console.log('start render');
-        //console.log(initData);
+        let { initData } = this.state;
+        const fileList = initData ? [{
+            uid: -1,
+            name: initData.poster.displayName,
+            status: 'done',
+            url: initData.poster.src
+        }] : [];
+        initData = initData || {};
         return (
             <Spin tip="提交中..." spinning={this.state.submiting}>
                 <Form onSubmit={this.handleSubmit}>
@@ -147,6 +154,8 @@ class MovieEdit extends React.Component{
                                 name="poster"
                                 action="/movie/uploadPoster"
                                 listType="picture-card"
+                                maxLength={1}
+                                fileList={fileList}
                             />
                         )}
                     </FormItem>

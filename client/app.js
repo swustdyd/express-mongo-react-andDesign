@@ -9,6 +9,8 @@ import IndexPage from './modules/index/index'
 import MoviePage from './modules/movie/movie'
 import UserPage from './modules/user/user'
 
+import './common/common.scss'
+
 ReactDom.render(
     <HashRouter>
         <HMFLayout>

@@ -1,10 +1,9 @@
 /**
  * Created by Aaron on 2018/1/4.
  */
-import '../../common/common.scss'
-import './index.scss'
 import React from 'react'
 import MoviePoster from '../../components/moviePoster'
+import './index.scss'
 
 class IndexPage extends React.Component{
     constructor(){
@@ -13,7 +12,6 @@ class IndexPage extends React.Component{
             movies: []
         }
     }
-
     componentDidMount(){
         let _this = this;
         setTimeout(function () {
@@ -33,7 +31,7 @@ class IndexPage extends React.Component{
                 moviePosters.push(<MoviePoster
                     key={index}
                     href={`/movie/detail.html/${item._id}`}
-                    poster={item.poster}
+                    poster={item.poster.src}
                     name={item.title}
                 />)
             })
