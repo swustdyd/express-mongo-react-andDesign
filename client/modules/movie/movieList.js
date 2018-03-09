@@ -15,6 +15,9 @@ class MovieList extends React.Component{
     constructor(){
         super();
         this.state = {
+            total: 0,
+            pageIndex: 0,
+            pageSize: 0,
             movies: [],
             modalTitle: '',
             modalVisible: false,
@@ -22,7 +25,6 @@ class MovieList extends React.Component{
         };
     }
     handleDeleteClick(id){
-        //console.log(id);
         let _this = this;
         fetch(`/movie/delete?id=${id}`)
         .then(res => res.json())
@@ -58,15 +60,27 @@ class MovieList extends React.Component{
                 message.error(err.message);
         });
     }
-    handleSearch(){
-
+    handleSearch(e){
+        e.preventDefault();
+        this.loadMovieList(0);
     }
     componentDidMount(){
         this.loadMovieList();
     }
-    loadMovieList(){
+    loadMovieList(pageIndex){
         let _this = this;
-        fetch('/movie/getMovies')
+        let { searchTitle, searchYear, searchLanguage } = this.props.form.getFieldsValue();
+        let condition = {};
+        if(searchTitle){
+            condition.title = searchTitle;
+        }
+        if(searchYear){
+            condition.year = searchYear;
+        }
+        if(searchLanguage){
+            condition.language = searchLanguage;
+        }
+        fetch(`/movie/getMovies?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition)}`)
         .then(res => res.json())
         .then(data => {
             if(data.result && data.result.length > 0){
@@ -75,7 +89,10 @@ class MovieList extends React.Component{
                 });
             }
             _this.setState({
-                movies: data.result
+                movies: data.result,
+                total: data.total,
+                pageIndex: data.pageIndex,
+                pageSize: data.pageSize
             })
         });
     }
@@ -85,16 +102,26 @@ class MovieList extends React.Component{
         });
     }
     handleNewClick(){
+        let _this = this;
         this.setState({
             modalTitle: '新增电影',
             modalVisible: true,
             modalContent: <MovieEdit
-                onSubmitSuccess={this.loadMovieList}
+                onSubmitSuccess={() => {
+                    _this.handleModalCancel();
+                    _this.loadMovieList();
+                }}
             />
         });
     }
     render(){
+        let _this = this;
         let columns = [
+            {
+                title: '序号',
+                key: 'index',
+                render: (text, record, index) => this.state.pageIndex * this.state.pageSize + index + 1
+            },
             {
                 title: '电影名',
                 dataIndex: 'title',
@@ -148,10 +175,18 @@ class MovieList extends React.Component{
                 }
             }
         ];
+        let pagination = {
+            total: this.state.total,
+            pageSize: this.state.pageSize,
+            current: this.state.pageIndex + 1,
+            onChange: (pageIndex) => {
+                _this.loadMovieList(pageIndex - 1)
+            }
+        };
         const { getFieldDecorator } = this.props.form;
         return(
             <div>
-                <Form onSubmit={() => this.handleSearch()}>
+                <Form onSubmit={this.handleSearch.bind(this)}>
                     <Row gutter={24}>
                         <Col span={8}>
                             <FormItem label="电影名">
@@ -182,14 +217,18 @@ class MovieList extends React.Component{
                     </Row>
                     <Row span={24}>
                         <Col span={24}>
-                            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClick.bind(this)}>新增电影</Button>
+                            <Button type="primary" htmlType="submit" icon="search">搜索</Button>
                             &emsp;
-                            <Button type="primary" icon="search">搜索</Button>
+                            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClick.bind(this)}>新增电影</Button>
                         </Col>
                     </Row>
                     <Divider />
                     <Row span={24}>
-                        <Table columns={columns} dataSource={this.state.movies}/>
+                        <Table
+                            columns={columns}
+                            dataSource={this.state.movies}
+                            pagination={pagination}
+                        />
                     </Row>
                 </Form>
                 <Modal

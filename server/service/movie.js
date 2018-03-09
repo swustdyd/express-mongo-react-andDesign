@@ -13,17 +13,25 @@ module.exports = {
      * @param {Object} options
      * @return {Promise}
      */
-    getMoviesByCondition: function (options) {
-        options = _.extend({}, queryDefaultOptions, options);
+    getMoviesByCondition: function (customOptions) {
+        let options = _.extend({}, queryDefaultOptions, customOptions);
         return new Promise(function (resolve, reject) {
-            Movie.find(options.condition, function (err, movies) {
-                if(err){
-                    reject(err);
-                }
-                resolve({success: true, result: movies});
-            }).sort(options.sort)
-                .skip(options.pageSetting.pageIndex * options.pageSetting.pageSize)
-                .limit(options.pageSetting.pageSize);
+            Movie.count(options.condition, function (err, count) {
+                Movie.find(options.condition, function (err, movies) {
+                    if(err){
+                        reject(err);
+                    }
+                    resolve({
+                        success: true,
+                        result: movies,
+                        total: count,
+                        pageIndex: options.pageIndex,
+                        pageSize: options.pageSize
+                    });
+                }).sort(options.sort)
+                    .skip(options.pageIndex * options.pageSize)
+                    .limit(options.pageSize);
+            });
         });
     },
     /**

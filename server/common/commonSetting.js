@@ -6,9 +6,7 @@ module.exports = {
     queryDefaultOptions: {
         condition: {},
         sort: {},
-        pageSetting:{
-            pageSize: 10,
-            pageIndex: 0
-        }
+        pageSize: 5,
+        pageIndex: 0
     }
 };

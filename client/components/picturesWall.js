@@ -36,7 +36,6 @@ class PicturesWall extends React.Component {
                     displayName: item.displayName || file.response.result[0].originalname,
                     src: item.src || file.response.result[0].src
                 };
-                console.log(obj);
                 newFileList.push(obj);
             }
             this.props.onChangeCallBack(newFileList)

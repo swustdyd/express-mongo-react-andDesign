@@ -16,15 +16,21 @@ const PublicFunc = require('../common/publicFunc');
  */
 router.get('/getMovies', function (req, res) {
     let condition = req.query.condition || '{}';
+    let pageIndex = 0;
+    if(/^[0-9]*$/.test(req.query.pageIndex)){
+        pageIndex = parseInt(req.query.pageIndex);
+    }
     condition = JSON.parse(condition);
+    if(condition.title){
+        condition.title = new RegExp(`^${condition.title}.*$`, 'i');
+    }
+    logger.info(condition);
     MovieService.getMoviesByCondition({
-        condition: condition
+        condition: condition,
+        pageIndex: pageIndex
     })
     .then(function (resData) {
-        res.json({
-            success: true,
-            result: resData.result
-        })
+        res.json(resData);
     }).catch(function (err) {
         //logger.error(err);
         throw err;
