@@ -8,6 +8,8 @@ import {
     Divider, Col, Row, Form, Input, Modal
 } from 'antd'
 import MovieEdit from './movieEdit'
+import momont from 'moment'
+
 const FormItem = Form.Item;
 class MovieList extends React.Component{
     constructor(){
@@ -41,7 +43,7 @@ class MovieList extends React.Component{
         fetch(`/movie/getMovies?condition=${JSON.stringify(condition)}`)
             .then(res => res.json())
             .then(data => {
-                this.setState({
+                _this.setState({
                     modalTitle: title,
                     modalVisible: true,
                     modalContent: <MovieEdit
@@ -112,6 +114,12 @@ class MovieList extends React.Component{
                 title: '年代',
                 dataIndex: 'year',
                 key: 'year'
+            },
+            {
+                title: '最后更新时间',
+                dataIndex: 'meta',
+                key: 'update',
+                render: (text) => momont(text.updateAt).format('YYYY-MM-DD HH:mm:ss')
             },
             {
                 title: '编辑',

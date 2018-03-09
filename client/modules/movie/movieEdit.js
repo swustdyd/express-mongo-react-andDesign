@@ -11,9 +11,12 @@ const FormItem = Form.Item;
 class MovieEdit extends React.Component{
     constructor(props){
         super(props);
+        let { initData } = this.props;
+        let fileList = initData && initData.poster ? [initData.poster] : [];
         this.state = {
             submiting: false,
-            initData: this.props.initData
+            initData: initData || {},
+            fileList: fileList
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -25,7 +28,12 @@ class MovieEdit extends React.Component{
                 let movie = this.props.form.getFieldsValue();
                 _this.setState({submiting: true});
                 movie._id = this.state.initData._id;
-                movie.poster = this.state.initData.poster;
+                let fileList = this.state.fileList;
+                if(fileList &&  fileList.length > 0){
+                    movie.poster = fileList[0];
+                }else {
+                    movie.poster = '';
+                }
                 fetch('/movie/newOrUpdate', {
                     method: 'post',
                     headers: {
@@ -33,7 +41,10 @@ class MovieEdit extends React.Component{
                     },
                     //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
                     credentials: 'include',
-                    body: JSON.stringify({movie: movie})
+                    body: JSON.stringify({
+                        movie: movie,
+                        fileList: fileList
+                    })
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -57,7 +68,11 @@ class MovieEdit extends React.Component{
             }
         });
     }
-
+    handleFileUploadChange(fileList){
+        this.setState({
+            fileList: fileList
+        });
+    }
     render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
@@ -82,14 +97,17 @@ class MovieEdit extends React.Component{
                 },
             },
         };
-        let { initData } = this.state;
-        const fileList = initData ? [{
-            uid: -1,
-            name: initData.poster.displayName,
-            status: 'done',
-            url: initData.poster.src
-        }] : [];
-        initData = initData || {};
+        let { initData, fileList } = this.state;
+        let fileListTemps = [];
+        fileList.forEach((item, index) => {
+            fileListTemps.push({
+                uid: index,
+                name: item.displayName,
+                status: 'done',
+                url: item.src,
+                test: 'test'
+            })
+        });
         return (
             <Spin tip="提交中..." spinning={this.state.submiting}>
                 <Form onSubmit={this.handleSubmit}>
@@ -103,6 +121,20 @@ class MovieEdit extends React.Component{
                                 message: '请输入电影名称'
                             }],
                             initialValue: initData.title
+                        })(
+                            <Input />
+                        )}
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
+                        label="导演"
+                    >
+                        {getFieldDecorator('doctor', {
+                            rules: [{
+                                required: true,
+                                message: '请输入导演'
+                            }],
+                            initialValue: initData.doctor
                         })(
                             <Input />
                         )}
@@ -140,6 +172,34 @@ class MovieEdit extends React.Component{
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
+                        label="语种"
+                    >
+                        {getFieldDecorator('language', {
+                            rules: [{
+                                required: true,
+                                message: '请输入语种'
+                            }],
+                            initialValue: initData.language
+                        })(
+                            <Input />
+                        )}
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
+                        label="简介"
+                    >
+                        {getFieldDecorator('summary', {
+                            rules: [{
+                                required: true,
+                                message: '请输入电影简介'
+                            }],
+                            initialValue: initData.summary
+                        })(
+                            <TextArea placeholder="请输入电影简介" autosize={{minRows: 3}}/>
+                        )}
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
                         label={(
                             <span>
                                 封面&nbsp;
@@ -155,22 +215,9 @@ class MovieEdit extends React.Component{
                                 action="/movie/uploadPoster"
                                 listType="picture-card"
                                 maxLength={1}
-                                fileList={fileList}
+                                fileList={fileListTemps}
+                                onChangeCallBack={this.handleFileUploadChange.bind(this)}
                             />
-                        )}
-                    </FormItem>
-                    <FormItem
-                        {...formItemLayout}
-                        label="简介"
-                    >
-                        {getFieldDecorator('summary', {
-                            rules: [{
-                                required: true,
-                                message: '请输入电影简介'
-                            }],
-                            initialValue: initData.summary
-                        })(
-                            <TextArea placeholder="请输入电影简介" autosize={{minRows: 3}}/>
                         )}
                     </FormItem>
                     <FormItem {...tailFormItemLayout}>

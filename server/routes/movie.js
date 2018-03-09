@@ -36,11 +36,6 @@ router.get('/getMovies', function (req, res) {
  */
 router.post('/newOrUpdate', function (request, response) {
     let movie = request.body.movie;
-    logger.info(request.session.movieUploadPoster);
-    if(request.session.movieUploadPoster){
-        movie.poster = request.session.movieUploadPoster;
-        request.session.movieUploadPoster = undefined;
-    }
     MovieService.saveOrUpdateMovie(movie).then(function (resData) {
         response.json({
             success: true,
@@ -78,13 +73,10 @@ router.post('/uploadPoster', function (req, res) {
         subDir: 'movie/poster',
         fileFilter: ['.png', '.jpg']
     }).then(function (files) {
-        req.session.movieUploadPoster = {
-            filename: files[0].filename,
-            displayName: files[0].originalname,
-            src: `uploads/movie/poster/${files[0].filename}`
-        };
-        //logger.info(req.sessionID);
-        res.json({success: true, message: 'hahaha', result: files});
+        if(files){
+            files.forEach((item, index) => item.src = `uploads/movie/poster/${item.filename}`)
+        }
+        res.json({success: true, message: '上传成功', result: files});
     }).catch(function (err) {
         logger.error(err);
         res.json({success: false, message: err.message});

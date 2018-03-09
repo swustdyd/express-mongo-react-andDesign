@@ -73,7 +73,6 @@ module.exports = {
                 resolve(movie);
             }
         }).then(function (movie) {
-            logger.info(movie);
             return new Promise(function (resolve, reject) {
                 movie.save(function (err, movie) {
                     if(err){
