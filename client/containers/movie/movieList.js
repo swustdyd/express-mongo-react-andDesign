@@ -18,7 +18,7 @@ const FormItem = Form.Item;
 class MovieList extends React.Component{
     constructor(){
         super();
-        this.state = {
+        /*this.state = {
             total: 0,
             pageIndex: 0,
             pageSize: 0,
@@ -26,18 +26,20 @@ class MovieList extends React.Component{
             modalTitle: '',
             modalVisible: false,
             modalContent: ''
-        };
+        };*/
     }
     handleDeleteClick(id){
         let _this = this;
-        fetch(`/movie/delete?id=${id}`)
-        .then(res => res.json())
-        .then(data => {
-            if(data.success){
-                message.success(data.message);
-                _this.loadMovieList();
+        _this.props.movieListAction.deleteMovie(id, (err, data) => {
+            if(err){
+                message.error(err.message);
             }else{
-                message.error(data.message);
+                if(data.success){
+                    message.success(data.message);
+                    _this.searchAndLoadMovies(_this.props.movieListState.pageIndex);
+                }else{
+                    message.error(data.message);
+                }
             }
         });
     }
@@ -46,33 +48,31 @@ class MovieList extends React.Component{
             _id: id
         };
         let _this = this;
-        fetch(`/movie/getMovies?condition=${JSON.stringify(condition)}`)
-            .then(res => res.json())
-            .then(data => {
-                _this.setState({
-                    modalTitle: title,
-                    modalVisible: true,
-                    modalContent: <MovieEdit
-                        onSubmitSuccess={() => {
-                            _this.handleModalCancel();
-                            _this.loadMovieList();
-                        }}
-                        initData={data.result[0]}
-                    />
-                });
-            }).catch(err => {
+        _this.props.movieListAction.searchMovies(condition, 0, (err, data) => {
+            if(err){
                 message.error(err.message);
+            }else{
+                if(data.success){
+                    _this.props.modalAction.showModal({
+                        title: title,
+                        maskClosable: true,
+                        modalContent: <MovieEdit
+                            onSubmitSuccess={() => {
+                                _this.props.modalAction.hideModal();
+                                _this.searchAndLoadMovies(_this.props.movieListState.pageIndex);
+                            }}
+                            initData={data.result[0]}
+                        />,
+                        width: 800
+                    });
+                }else {
+                    message.error(data.message);
+                }
+            }
         });
     }
-    handleSearch(e){
+    handleSearchClick(e){
         e.preventDefault();
-        this.loadMovieList(0);
-    }
-    componentDidMount(){
-        this.loadMovieList();
-    }
-    loadMovieList(pageIndex){
-        let _this = this;
         let { searchTitle, searchYear, searchLanguage } = this.props.form.getFieldsValue();
         let condition = {};
         if(searchTitle){
@@ -84,51 +84,50 @@ class MovieList extends React.Component{
         if(searchLanguage){
             condition.language = searchLanguage;
         }
-        fetch(`/movie/getMovies?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition)}`)
-        .then(res => res.json())
-        .then(data => {
-            if(data.result && data.result.length > 0){
-                data.result.forEach(function (item) {
-                    item.key = item._id;
-                });
-            }
-            _this.setState({
-                movies: data.result,
-                total: data.total,
-                pageIndex: data.pageIndex,
-                pageSize: data.pageSize
-            })
-        });
+        this.searchAndLoadMovies(0, condition);
     }
-    handleModalCancel(){
-        this.setState({
-            modalVisible: false
+    componentDidMount(){
+        this.searchAndLoadMovies();
+    }
+    searchAndLoadMovies(pageIndex, condition){
+        let _this = this;
+        _this.props.movieListAction.searchMovies(condition, pageIndex, (err, data) => {
+            if(err){
+                message.error(err.message)
+            }else {
+                if(data.success){
+                    data.result.forEach(function (item) {
+                        item.key = item._id;
+                    });
+                    _this.props.movieListAction.loadMovieList(data.result, data.pageIndex, data.pageSize, data.total);
+                }else {
+                    message.error(data.message)
+                }
+            }
         });
     }
     handleNewClick(){
-        /*let _this = this;
-        this.setState({
-            modalTitle: '新增电影',
-            modalVisible: true,
+        let _this = this;
+        _this.props.modalAction.showModal({
+            title: '新增电影',
+            maskClosable: false,
             modalContent: <MovieEdit
                 onSubmitSuccess={() => {
-                    _this.handleModalCancel();
-                    _this.loadMovieList();
+                    _this.props.modalAction.hideModal();
+                    _this.searchAndLoadMovies(_this.props.movieListState.pageIndex);
                 }}
-            />
-        });*/
-        this.props.modalAction.showModal({
-            title: 'test',
-            modalContent: 'test'
+            />,
+            width: 800
         });
     }
     render(){
         let _this = this;
+        let {total, pageIndex, pageSize, movies } = _this.props.movieListState;
         let columns = [
             {
                 title: '序号',
                 key: 'index',
-                render: (text, record, index) => this.state.pageIndex * this.state.pageSize + index + 1
+                render: (text, record, index) => pageIndex * pageSize + index + 1
             },
             {
                 title: '电影名',
@@ -184,17 +183,28 @@ class MovieList extends React.Component{
             }
         ];
         let pagination = {
-            total: this.state.total,
-            pageSize: this.state.pageSize,
-            current: this.state.pageIndex + 1,
+            total: total,
+            pageSize: pageSize,
+            current: pageIndex + 1,
             onChange: (pageIndex) => {
-                _this.loadMovieList(pageIndex - 1)
+                let { searchTitle, searchYear, searchLanguage } = _this.props.form.getFieldsValue();
+                let condition = {};
+                if(searchTitle){
+                    condition.title = searchTitle;
+                }
+                if(searchYear){
+                    condition.year = searchYear;
+                }
+                if(searchLanguage){
+                    condition.language = searchLanguage;
+                }
+                _this.searchAndLoadMovies(pageIndex - 1, condition)
             }
         };
-        const { getFieldDecorator } = this.props.form;
+        const { getFieldDecorator } = _this.props.form;
         return(
             <div>
-                <Form onSubmit={this.handleSearch.bind(this)}>
+                <Form onSubmit={this.handleSearchClick.bind(this)}>
                     <Row gutter={24}>
                         <Col span={8}>
                             <FormItem label="电影名">
@@ -234,23 +244,11 @@ class MovieList extends React.Component{
                     <Row span={24}>
                         <Table
                             columns={columns}
-                            dataSource={this.state.movies}
+                            dataSource={movies}
                             pagination={pagination}
                         />
                     </Row>
                 </Form>
-                {/*<Modal
-                    title={this.state.modalTitle}
-                    visible={this.state.modalVisible}
-                    maskClosable={false}
-                    destroyOnClose={true}
-                    onCancel={this.handleModalCancel.bind(this)}
-                    footer={null}
-                    width={800}
-                    style={{top: '20px'}}
-                >
-                    {this.state.modalContent}
-                </Modal>*/}
             </div>
         );
     }

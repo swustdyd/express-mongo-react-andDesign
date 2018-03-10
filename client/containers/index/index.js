@@ -3,6 +3,11 @@
  */
 import React from 'react'
 import MoviePoster from '../../components/moviePoster'
+import { message } from 'antd'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import MovieListAction from '../../actions/movie/movieList'
+
 import './index.scss'
 
 class IndexPage extends React.Component{
@@ -14,14 +19,17 @@ class IndexPage extends React.Component{
     }
     componentDidMount(){
         let _this = this;
-        setTimeout(function () {
-            fetch('/movie/getMovies')
-                .then(res => res.json())
-                .then(data => {
-                    //console.log(data);
-                    _this.setState({movies: data.result})
-                });
-        }, 0);
+        _this.props.movieListAction.searchMovies({}, 0, (err, data) => {
+            if(err){
+                message.error(err.message);
+            }else{
+                if(data.success){
+                    _this.setState({ movies: data.result});
+                }else{
+                    message.error(data.message);
+                }
+            }
+        });
     }
 
     getMoviePosters(movies){
@@ -35,6 +43,8 @@ class IndexPage extends React.Component{
                     name={item.title}
                 />)
             })
+        }else {
+            moviePosters.push(<h1 key={-1} style={{textAlign: 'center'}}>暂无数据</h1>);
         }
         return moviePosters;
     }
@@ -47,7 +57,16 @@ class IndexPage extends React.Component{
         );
     }
 }
-export default IndexPage;
+
+const mapStateToPros = state => ({
+});
+
+const mapDispatchToProps = dispatch => ({
+    movieListAction: bindActionCreators(MovieListAction, dispatch)
+});
+
+export default connect(mapStateToPros, mapDispatchToProps)(IndexPage);
+//export default IndexPage;
 
 
 

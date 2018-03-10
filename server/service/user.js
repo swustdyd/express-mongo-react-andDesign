@@ -33,17 +33,26 @@ module.exports = {
      * @param options
      * @return {*}
      */
-    getUsersByCondition: function (options) {
-        options = _.extend({}, queryDefaultOptions, options);
+    getUsersByCondition: function (customOptions) {
+        let options = _.extend({}, queryDefaultOptions, customOptions);
         return new Promise(function (resolve, reject) {
-            User.find(options.condition, function (err, users) {
-                if(err){
-                    reject(err);
-                }
-                resolve({success: true, result: users});
-            }).sort(options.sort)
-                .skip(options.pageSetting.pageIndex * options.pageSetting.pageSize)
-                .limit(options.pageSetting.pageSize);
+            User.count(options.condition, function (err, count) {
+                User.find(options.condition, function (err, users) {
+                    if(err){
+                        reject(err);
+                    }
+                    resolve({
+                        success: true,
+                        result: users,
+                        total: count,
+                        pageIndex: options.pageIndex,
+                        pageSize: options.pageSize
+                    });
+                    resolve({success: true, result: users});
+                }).sort(options.sort)
+                    .skip(options.pageIndex * options.pageSize)
+                    .limit(options.pageSize);
+            });
         });
     },
 

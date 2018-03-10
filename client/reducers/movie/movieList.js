@@ -7,13 +7,12 @@ let initState = {
     total: 0,
     pageIndex: 0,
     pageSize: 0,
-    movies: [],
-    modalTitle: '',
-    modalVisible: false,
-    modalContent: ''
+    movies: []
 };
 export default (state = initState, action) => {
     switch (action.type){
+        case 'LOAD_MOVIE_LIST':
+            return Object.assign({}, state, action.payload);
         default:
             return state;
     }

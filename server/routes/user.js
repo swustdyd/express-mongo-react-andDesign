@@ -102,14 +102,10 @@ router.get('/list.html', Authority.requestSignin, Authority.requestAdmin, functi
 //获取用户信息
 router.get('/getUsers', function (request, response) {
     UserService.getUsersByCondition().then(function (resData) {
-        let users = resData.result || [];
-        response.json({
-            success: true,
-            result: users
-        });
+        response.json(resData);
     }).catch(function (err) {
         response.json({
-            success: true,
+            success: false,
             message: err.message
         });
     });

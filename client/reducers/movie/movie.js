@@ -3,9 +3,7 @@
  */
 import { combineReducers } from 'redux'
 import MovieListReducer from './movieList'
-import MovieEditReducer from './movieEdit'
 
 export default combineReducers({
-    movieList: MovieListReducer,
-    movieEdit: MovieEditReducer
+    movieList: MovieListReducer
 });

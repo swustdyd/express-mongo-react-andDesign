@@ -10,8 +10,8 @@ import ModalAction from '../../actions/common/modal'
 class CustomModal extends React.Component{
     render(){
         let { modalState } = this.props;
-        console.log(modalState);
-        console.log('modal render');
+        /*console.log(modalState);
+        console.log('modal render');*/
         return(
             <Modal
                 title={modalState.title}
