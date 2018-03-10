@@ -27,7 +27,7 @@
 /******/ 	}
 /******/
 /******/
-/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	// expose the containers object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
 /******/
 /******/ 	// expose the module cache
@@ -47,7 +47,7 @@
 /******/ 		}
 /******/ 	};
 /******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	// getDefaultExport function for compatibility with non-harmony containers
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
 /******/ 			function getDefault() { return module['default']; } :
@@ -5057,7 +5057,7 @@ if(false) {
 module.exports = function() {
 	var list = [];
 
-	// return the list of modules as css string
+	// return the list of containers as css string
 	list.toString = function toString() {
 		var result = [];
 		for(var i = 0; i < this.length; i++) {
@@ -5071,7 +5071,7 @@ module.exports = function() {
 		return result.join("");
 	};
 
-	// import a list of modules into the list
+	// import a list of containers into the list
 	list.i = function(modules, mediaQuery) {
 		if(typeof modules === "string")
 			modules = [[null, modules, ""]];

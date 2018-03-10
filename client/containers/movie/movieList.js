@@ -9,6 +9,10 @@ import {
 } from 'antd'
 import MovieEdit from './movieEdit'
 import momont from 'moment'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import MovieListAction from '../../actions/movie/movieList'
+import ModalAction from '../../actions/common/modal'
 
 const FormItem = Form.Item;
 class MovieList extends React.Component{
@@ -102,7 +106,7 @@ class MovieList extends React.Component{
         });
     }
     handleNewClick(){
-        let _this = this;
+        /*let _this = this;
         this.setState({
             modalTitle: '新增电影',
             modalVisible: true,
@@ -112,6 +116,10 @@ class MovieList extends React.Component{
                     _this.loadMovieList();
                 }}
             />
+        });*/
+        this.props.modalAction.showModal({
+            title: 'test',
+            modalContent: 'test'
         });
     }
     render(){
@@ -231,7 +239,7 @@ class MovieList extends React.Component{
                         />
                     </Row>
                 </Form>
-                <Modal
+                {/*<Modal
                     title={this.state.modalTitle}
                     visible={this.state.modalVisible}
                     maskClosable={false}
@@ -242,9 +250,19 @@ class MovieList extends React.Component{
                     style={{top: '20px'}}
                 >
                     {this.state.modalContent}
-                </Modal>
+                </Modal>*/}
             </div>
         );
     }
 }
-export default Form.create()(MovieList);
+const mapStateToPros = state => ({
+    movieListState: state.movie.movieList
+});
+
+const mapDispatchToProps = dispatch => ({
+    movieListAction: bindActionCreators(MovieListAction, dispatch),
+    modalAction: bindActionCreators(ModalAction, dispatch)
+});
+
+export default connect(mapStateToPros, mapDispatchToProps)(Form.create()(MovieList));
+//export default Form.create()(MovieList);
