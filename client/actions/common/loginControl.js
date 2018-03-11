@@ -14,20 +14,36 @@ const loginControlAction = {
         .then(res => res.json())
         .then((data) => {
             if(data.success){
-                dispatch(loginControlAction.loginSuccess(name))
+                dispatch(loginControlAction.loginSuccess(name, data.message))
             }else {
-                console.log(data);
+                //console.log(data);
                 dispatch(loginControlAction.loginFail(data.message))
             }
         });
     },
     logout: () => (dispatch, getState) =>{
-
+        fetch('/user/logout',{credentials: 'include'})
+            .then(res => res.json())
+            .then((data) => {
+                if(data.success){
+                    dispatch(loginControlAction.logoutSuccess());
+                }
+            });
     },
-    loginSuccess: (name) =>({
+    checkLogin: () => (dispatch, getState) =>{
+        fetch('/user/checkLogin',{credentials: 'include'})
+            .then(res => res.json())
+            .then((data) => {
+                if(data.success){
+                    dispatch(loginControlAction.loginSuccess(data.result.name));
+                }
+            });
+    },
+    loginSuccess: (name, message) =>({
         type: 'LOGIN_SUCCESS',
         payload: {
-            name: name
+            name: name,
+            message: message
         }
     }),
     loginFail: (message) =>({

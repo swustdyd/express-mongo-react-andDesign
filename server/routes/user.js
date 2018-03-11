@@ -39,7 +39,8 @@ router.post('/signup', function (request, response) {
 
 //用户登录
 router.post('/signin', function (request, response) {
-    var _user = request.body.user,
+    //logger.info(request.sessionID);
+    let _user = request.body.user,
         name = _user.name,
         password = _user.password;
     UserService.getUsersByCondition({
@@ -47,13 +48,13 @@ router.post('/signin', function (request, response) {
             name: name
         }
     }).then(function (resData) {
-        var users = resData.result;
+        let users = resData.result;
         if(!users || users.length < 1) {
             return Promise.reject({success: false, message: '用户名不存在！'});
         }else{
-            PubFunction.comparePassword(password, users[0].password).then(function (isMatch) {
+            return PubFunction.comparePassword(password, users[0].password).then(function (isMatch) {
                 if(isMatch){
-                    var user = users[0];
+                    let user = users[0];
                     user.password = '';
                     request.session.user = user;
                     request.app.locals.user = user;
@@ -139,6 +140,14 @@ router.post('/updatePwd', function (request, response) {
             message: err.message
         });
     });
+});
+
+router.get('/checkLogin', function (request, response) {
+    if(request.session.user){
+        response.json({success: true, result: {name: request.session.user.name}})
+    }else {
+        response.json({success: false})
+    }
 });
 
 module.exports = router;

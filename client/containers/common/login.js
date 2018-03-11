@@ -9,7 +9,6 @@ import './login.scss'
 const FormItem = Form.Item;
 
 class Login extends React.Component{
-
     handleLoginClick(e){
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, valus) => {
@@ -40,7 +39,14 @@ class Login extends React.Component{
                     )}
                 </FormItem>
                 <FormItem>
-                    {getFieldDecorator(`password`)(
+                    {getFieldDecorator(`password`,{
+                        rules:[
+                            {
+                                required: true,
+                                message: '请输入密码'
+                            }
+                        ]
+                    })(
                         <Input type='password' prefix={<Icon type="lock"/>} placeholder="密码" />
                     )}
                 </FormItem>

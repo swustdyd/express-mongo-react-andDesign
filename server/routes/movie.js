@@ -24,7 +24,7 @@ router.get('/getMovies', function (req, res) {
     if(condition.title){
         condition.title = new RegExp(`^${condition.title}.*$`, 'i');
     }
-    logger.info(condition);
+    //logger.info(condition);
     MovieService.getMoviesByCondition({
         condition: condition,
         pageIndex: pageIndex

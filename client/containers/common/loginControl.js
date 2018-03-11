@@ -24,17 +24,26 @@ class LoginControl extends React.Component{
         });
     }
     handleLogoutClick(){
-
+        this.props.loginControlAction.logout();
+    }
+    componentDidMount(){
+        console.log('loginControl render');
+        this.props.loginControlAction.checkLogin();
+    }
+    componentWillUpdate(nextProps){
+        if(nextProps.loginState.loginActionSuccess){
+            nextProps.modalAction.hideModal();
+            if(nextProps.loginState.message){
+                message.success(nextProps.loginState.message);
+            }
+        }else{
+            if(nextProps.loginState.message){
+                message.error(nextProps.loginState.message);
+            }
+        }
     }
     render(){
         let { loginState } = this.props;
-        if(!loginState.loginActionSuccess){
-            if(loginState.message){
-                message.error(loginState.message);
-            }
-        }else{
-            this.props.modalAction.hideModal();
-        }
         return(
             <div className="login-control">
                 {
