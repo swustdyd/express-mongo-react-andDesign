@@ -15,7 +15,7 @@ import Logger from 'redux-logger'
 import AppReducer from './reducers/app'
 import Modal from './containers/common/customModal'
 
-import './common/common.scss'
+import './app.scss'
 
 let store = createStore(
     AppReducer,

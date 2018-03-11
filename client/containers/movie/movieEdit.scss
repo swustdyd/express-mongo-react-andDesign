@@ -1,20 +1,3 @@
-html, body, #app, #app > .layout{
-  width: 100%;
-  height: 100%;
-}
-.ant-layout-header .logo {
-  width: 120px;
-  height: 31px;
-  margin: 16px 28px 16px 0;
-  float: left;
-  text-align: center;
-  line-height: 31px;
-  color: #ffffff;
-  font-size: 31px;
-}
-.ant-modal-title{
-  color: #1890ff;
-}
 .pictures-wall .ant-upload-list-item,
 .pictures-wall .ant-upload{
   width: 200px;
@@ -29,15 +12,8 @@ html, body, #app, #app > .layout{
   font-size: 16px;
 }
 .ant-upload-list-picture-card .ant-upload-list-item-actions .anticon{
-   font-size: 30px;
+  font-size: 30px;
 }
 .ant-upload-list-picture-card .ant-upload-list-item-actions .anticon:not(:first-child){
   margin-left: 20px;
 }
-.poster{
-  margin: 10px;
-}
-.poster img{
-  width: 100%;
-}
-

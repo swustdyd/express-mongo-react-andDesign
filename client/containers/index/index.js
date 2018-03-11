@@ -8,8 +8,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
 
-import './index.scss'
-
 class IndexPage extends React.Component{
     constructor(){
         super();

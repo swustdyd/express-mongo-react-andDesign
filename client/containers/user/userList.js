@@ -3,8 +3,9 @@
  */
 
 import React from 'react'
-import { Table } from 'antd'
+import { Table, message } from 'antd'
 import Moment from 'moment'
+import Common from '../../common/common'
 
 class UserList extends React.Component{
     constructor(){
@@ -16,18 +17,23 @@ class UserList extends React.Component{
     componentDidMount(){
         let _this = this;
         fetch('/user/getUsers')
-            .then(res => res.json())
-            .then(data => {
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
                 if(data.result && data.result.length > 0){
                     data.result.forEach(function (item) {
                         item.key = item._id;
                     });
                 }
-                //console.log(data.result);
                 _this.setState({
                     users: data.result
                 })
-            });
+            }else{
+                message.error(data.message);
+            }
+        }).catch((err) =>{
+            console.log(err)
+        });
     }
     render(){
         let columns = [{

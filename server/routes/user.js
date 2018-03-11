@@ -57,7 +57,7 @@ router.post('/signin', function (request, response) {
                     user.password = '';
                     request.session.user = user;
                     request.app.locals.user = user;
-                    logger.info("用户名：" + request.app.locals.user.name);
+                    //logger.info("用户名：" + request.app.locals.user.name);
                     return response.json({
                         success: true,
                         message: '登录成功'
@@ -83,24 +83,12 @@ router.post('/signin', function (request, response) {
 router.get('/logout', function (request, response) {
     delete request.session.user;
     delete request.app.locals.user;
-    response.redirect('/');
+    response.json({success: true, message: '登出成功'});
 });
 
-//用户列表
-router.get('/list.html', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
-    UserService.getUsersByCondition().then(function (resData) {
-        var users = resData.result || [];
-        response.render('pages/user/list', {
-            title: '用户列表页',
-            users: users
-        });
-    }).catch(function (err) {
-        response.render('pages/error', {error: err});
-    });
-});
 
 //获取用户信息
-router.get('/getUsers', function (request, response) {
+router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
     UserService.getUsersByCondition().then(function (resData) {
         response.json(resData);
     }).catch(function (err) {
@@ -150,19 +138,6 @@ router.post('/updatePwd', function (request, response) {
             success: false,
             message: err.message
         });
-    });
-});
-
-//登录页面
-router.get('/signin.html', function (request, response) {
-    response.render('pages/user/signin', {
-        title: '用户登录页'
-    });
-});
-//注册页面
-router.get('/signup.html', function (request, response) {
-    response.render('pages/user/signup', {
-        title: '用户注册页'
     });
 });
 

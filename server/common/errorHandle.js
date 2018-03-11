@@ -2,19 +2,19 @@
  * Created by Aaron on 2018/1/5.
  */
 //日志打印
-var logger = require('./logger');
+let logger = require('./logger');
 
 module.exports = function (app) {
     // catch 404 and forward to error handler
     app.use(function(req, res, next) {
-        var err = new Error('Not Found');
+        let err = new Error('Not Found');
         err.status = 404;
         next(err);
     });
     // error handler
     app.use(function(err, req, res, next) {
         // set locals, only providing error in development
-        var message = err.message;
+        let message = err.message;
         if(res.app.get('env') !== 'dev'){
             message =  '系统错误，请联系管理员';
         }
@@ -23,11 +23,6 @@ module.exports = function (app) {
         res.locals.message = message;
         // render the error page
         res.status(err.status || 500);
-        //xhr请求，返回json数据
-        if(req.xhr){
-            res.json({message: message, success: false});
-        }else{
-            res.render('pages/error');
-        }
+        res.json({message: message, success: false, erroCode: 500});
     });
 };

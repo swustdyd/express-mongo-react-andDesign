@@ -8,7 +8,7 @@ module.exports = function (app) {
     app.use('/comment', require('./comment'));
 
     app.get('/', function (request, response) {
-        //logger.info(request.sessionID);
+        //logger.info(request.session.user);
         MovieService.getMoviesByCondition()
             .then(function (resData) {
                 response.render('pages/index', {

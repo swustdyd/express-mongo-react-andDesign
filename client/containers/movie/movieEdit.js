@@ -8,6 +8,8 @@ import PicturesWall from '../../components/picturesWall'
 const {TextArea} = Input;
 const FormItem = Form.Item;
 
+import './movieEdit.scss'
+
 class MovieEdit extends React.Component{
     constructor(props){
         super(props);

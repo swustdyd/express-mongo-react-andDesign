@@ -3,7 +3,9 @@
  */
 import { combineReducers } from 'redux'
 import ModalReducer from './customModal'
+import LoginReducer from './loginControl'
 
 export default combineReducers({
     modal: ModalReducer,
+    login: LoginReducer
 });

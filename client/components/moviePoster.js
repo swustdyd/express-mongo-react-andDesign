@@ -4,6 +4,8 @@
 import React from 'react'
 import { Col, Card } from 'antd'
 
+import './moviePoster.scss'
+
 const { Meta } = Card;
 
 class MoviePoster extends React.Component{

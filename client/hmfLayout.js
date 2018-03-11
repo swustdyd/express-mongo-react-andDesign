@@ -5,6 +5,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import {Layout, Menu} from 'antd'
 import Common from './common/common'
+import LoginControl from './containers/common/loginControl'
 
 const { Header, Content, Footer } = Layout;
 
@@ -44,6 +45,7 @@ class CustomLayout extends React.Component{
                         <Menu.Item key="moviePage"><Link to="/moviePage/movieList">电影管理</Link></Menu.Item>
                         <Menu.Item key="userPage"><Link to="/userPage/userList">用户管理</Link></Menu.Item>
                     </Menu>
+                    <LoginControl/>
                 </Header>
                 <Content style={{ padding: '0 50px', minHeight: 680 }}>
                     {this.props.children}

@@ -12,7 +12,7 @@ import momont from 'moment'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
-import ModalAction from '../../actions/common/modal'
+import ModalAction from '../../actions/common/customModal'
 
 const FormItem = Form.Item;
 class MovieList extends React.Component{

@@ -5,7 +5,9 @@ import React from 'react'
 import { Modal } from 'antd'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import ModalAction from '../../actions/common/modal'
+import ModalAction from '../../actions/common/customModal'
+
+import './customModal.scss'
 
 class CustomModal extends React.Component{
     render(){

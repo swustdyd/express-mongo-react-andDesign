@@ -2,33 +2,39 @@
  * Created by Aaron on 2018/1/15.
  */
 
-var role = {
+let role = {
     normal: 0,
     admin: 10,
     superAdmin: 50
 };
+let errorCode = {
+    requestSignin: 1,
+    requestAdmin: 2
+};
 
 module.exports = {
     requestSignin: function (req, res, next) {
-        var user = req.session.user;
+        let user = req.session.user;
         if(!user){
-            if(req.xhr){
-                res.json({message: '请登录', success: false});
-            }else{
-                res.redirect('/user/signin.html');
-            }
+            res.status(500);
+            res.json({
+                message: '请登录',
+                success: false,
+                errorCode: errorCode.requestSignin
+            });
         }else{
             next();
         }
     },
     requestAdmin: function (req, res, next) {
-        var user = req.session.user;
-        if(!user || user.role <= role['admin']){
-            if(req.xhr){
-                res.json({message: '需要管理员权限', success: false});
-            }else{
-                res.render('pages/error',{message: '需要管理员权限'});
-            }
+        let user = req.session.user;
+        if(!user || user.role < role['admin']){
+            res.status(500);
+            res.json({
+                message: '需要管理员权限',
+                success: false,
+                errorCode: errorCode.requestAdmin
+            });
         }else{
             next();
         }
