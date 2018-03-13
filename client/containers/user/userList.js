@@ -11,12 +11,15 @@ class UserList extends React.Component{
     constructor(){
         super();
         this.state = {
+            total: 0,
+            pageIndex: 0,
+            pageSize: 0,
             users: []
         }
     }
     componentDidMount(){
         let _this = this;
-        fetch('/user/getUsers')
+        fetch('/user/getUsers', {credentials: 'include'})
         .then(res => res.json())
         .then(data => {
             if(data.success){
@@ -26,6 +29,9 @@ class UserList extends React.Component{
                     });
                 }
                 _this.setState({
+                    total: data.total,
+                    pageIndex: data.pageIndex,
+                    pageSize: data.pageSize,
                     users: data.result
                 })
             }else{
@@ -36,6 +42,7 @@ class UserList extends React.Component{
         });
     }
     render(){
+        let {total, pageSize, pageIndex} = this.state;
         let columns = [{
             title: '用户名',
             dataIndex: 'name',
@@ -52,9 +59,21 @@ class UserList extends React.Component{
             key: 'updateAt',
             render: meta => Moment(meta.updateAt).format('YYYY-MM-DD HH:mm:ss')
         }];
+        let pagination = {
+            total: total,
+            pageSize: pageSize,
+            current: pageIndex + 1,
+            onChange: (pageIndex) => {
+                _this.searchAndLoadMovies(pageIndex - 1, condition)
+            }
+        };
         return(
             <div>
-                <Table columns={columns} dataSource={this.state.users}/>
+                <Table
+                    columns={columns}
+                    dataSource={this.state.users}
+                    pagination={pagination}
+                />
             </div>
         );
     }

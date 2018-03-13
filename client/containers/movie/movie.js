@@ -5,46 +5,28 @@ import '../../common/common'
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
 import LRLayout from '../../lrLayout'
-import { Layout, Menu } from 'antd'
+import HashRouterMenu from '../../components/hashRouterMenu'
 import MovieList from './movieList'
-import MovieEdit from './movieEdit'
 import MovieCount from './movieCount'
-import Common from '../../common/common'
+import {Menu } from 'antd'
 
 class MoviePage extends React.Component{
     constructor(props){
         super(props);
-        this.state = {
-            currentKey: 'movieList'
-        };
-        this.handleMenuClick = this.handleMenuClick.bind(this);
-    }
-    componentDidMount(){
-        //根据当前路径，初始化二级导航的当前项
-        let paths = Common.getHashPath(window.location.href);
-        let currentKey = paths[1];
-        this.setState({
-            currentKey: currentKey
-        });
-    }
-    handleMenuClick(e){
-        this.setState({
-            currentKey: e.key
-        })
     }
     render() {
         return (
             <LRLayout
                 left={
-                    <Menu
+                    <HashRouterMenu
                         mode="inline"
-                        onClick={this.handleMenuClick}
-                        selectedKeys={[this.state.currentKey]}
+                        defaultKeys={['movieList']}
                         style={{ height: '100%', borderRight: 0 }}
+                        level={2}
                     >
                         <Menu.Item key="movieList"><Link to="/moviePage/movieList" >电影列表</Link></Menu.Item>
                         <Menu.Item key="movieCount"><Link to="/moviePage/movieCount" >统计</Link></Menu.Item>
-                    </Menu>
+                    </HashRouterMenu>
                 }
                 right={
                     <div>
