@@ -1,6 +1,26 @@
 .poster{
-  margin: 10px;
+  border: rgba(0,0,0,0) solid 5px;
+}
+.poster *{
+  box-sizing: border-box;
+}
+.poster .ant-card-cover a{
+  height: 200px;
+  padding: 5px;
+  text-align: center;
+}
+.poster .ant-card-body{
+  padding: 0;
+}
+.poster .ant-card-meta-title{
+  border-top: 1px solid #dddddd;
+  padding: 0;
+  margin: 0 5px;
+  height: 39px;
+  line-height: 39px;
+  text-align: center;
 }
 .poster img{
-  width: 100%;
+  max-height: 100%;
+  max-width: 100%;
 }

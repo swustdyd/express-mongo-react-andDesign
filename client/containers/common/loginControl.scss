@@ -10,3 +10,9 @@
 .login-control .login-form-button {
   width: 100%;
 }
+
+.login-form .ant-form-item:last-child,
+.modifyPwd-form .ant-form-item:last-child,
+.userRegister-form .ant-form-item:last-child{
+  margin-bottom: 0;
+}

@@ -17,7 +17,7 @@ class IndexPage extends React.Component{
     }
     componentDidMount(){
         let _this = this;
-        _this.props.movieListAction.searchMovies({}, 0, (err, data) => {
+        _this.props.movieListAction.searchMovies({}, 0, 10, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{

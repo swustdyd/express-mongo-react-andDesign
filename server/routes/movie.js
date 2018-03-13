@@ -2,14 +2,12 @@
  * Created by Aaron on 2018/1/6.
  */
 const express = require('express'),
-    router = express.Router();
-const Movie = require('../models/movie');
+       router = express.Router();
 const _ = require('underscore');
 const logger = require('../common/logger');
 const MovieService = require('../service/movie');
-const CommentService = require('../service/comment');
-const Promise = require('promise');
 const PublicFunc = require('../common/publicFunc');
+const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 
 /**
  * 获取电影列表
@@ -17,8 +15,12 @@ const PublicFunc = require('../common/publicFunc');
 router.get('/getMovies', function (req, res) {
     let condition = req.query.condition || '{}';
     let pageIndex = 0;
-    if(/^[0-9]*$/.test(req.query.pageIndex)){
+    if(/^[0-9]+$/.test(req.query.pageIndex)){
         pageIndex = parseInt(req.query.pageIndex);
+    }
+    let pageSize = DefaultPageSize;
+    if(/^[1-9][0-9]*$/.test(req.query.pageSize)){
+        pageSize = Math.min(parseInt(req.query.pageSize), DefaultPageSize);
     }
     condition = JSON.parse(condition);
     if(condition.title){
@@ -27,7 +29,8 @@ router.get('/getMovies', function (req, res) {
     //logger.info(condition);
     MovieService.getMoviesByCondition({
         condition: condition,
-        pageIndex: pageIndex
+        pageIndex: pageIndex,
+        pageSize: pageSize
     })
     .then(function (resData) {
         res.json(resData);

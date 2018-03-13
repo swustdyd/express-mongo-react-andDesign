@@ -23,6 +23,6 @@ module.exports = function (app) {
         res.locals.message = message;
         // render the error page
         res.status(err.status || 500);
-        res.json({message: message, success: false, erroCode: 500});
+        res.json({message: message, success: false, erroCode: err.status || 500});
     });
 };

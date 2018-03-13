@@ -4,8 +4,6 @@ import LoginControlAction from '../../actions/common/loginControl'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import './login.scss'
-
 const FormItem = Form.Item;
 
 class Login extends React.Component{
@@ -51,7 +49,7 @@ class Login extends React.Component{
                     )}
                 </FormItem>
                 <FormItem >
-                    <Button type="primary" htmlType="submit" >登录</Button>
+                    <Button style={{width: '100%'}} type="primary" htmlType="submit" >登录</Button>
                 </FormItem>
             </Form>
         )

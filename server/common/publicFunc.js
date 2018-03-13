@@ -43,7 +43,7 @@ const bcryptString = (string) => {
 const comparePassword = (_password, originPassword) => {
     return new Promise(function (resolve, reject) {
         bcrypt.compare(_password, originPassword, function (err, isMatch) {
-            //reject(new Error('就是要出错'));
+            //logger.info(`${_password},${originPassword}`);
             if(err){
                 reject(err);
             }else{

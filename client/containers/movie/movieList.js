@@ -18,15 +18,6 @@ const FormItem = Form.Item;
 class MovieList extends React.Component{
     constructor(){
         super();
-        /*this.state = {
-            total: 0,
-            pageIndex: 0,
-            pageSize: 0,
-            movies: [],
-            modalTitle: '',
-            modalVisible: false,
-            modalContent: ''
-        };*/
     }
     handleDeleteClick(id){
         let _this = this;
@@ -91,7 +82,7 @@ class MovieList extends React.Component{
     }
     searchAndLoadMovies(pageIndex, condition){
         let _this = this;
-        _this.props.movieListAction.searchMovies(condition, pageIndex, (err, data) => {
+        _this.props.movieListAction.searchMovies(condition, pageIndex, 5, (err, data) => {
             if(err){
                 message.error(err.message)
             }else {

@@ -26,7 +26,9 @@ const loginControlAction = {
             .then(res => res.json())
             .then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.logoutSuccess());
+                    dispatch(loginControlAction.logoutSuccess(data.message));
+                }else {
+                    dispatch(loginControlAction.logoutFail(data.message))
                 }
             });
     },
@@ -52,8 +54,75 @@ const loginControlAction = {
             message: message
         }
     }),
-    logoutSuccess: () =>({
-        type: 'LOGOUT_SUCCESS'
+    logoutSuccess: (message) =>({
+        type: 'LOGOUT_SUCCESS',
+        payload: {
+            message: message
+        }
+    }),
+    logoutFail: (message) =>({
+        type: 'LOGOUT_FAIL',
+        payload: {
+            message: message
+        }
+    }),
+    modifyPwd: (originPwd, newPwd) => (dispatch) => {
+        fetch('/user/updatePwd',{
+            method: 'post',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({originPwd: originPwd, newPwd: newPwd})
+        }).then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    dispatch(loginControlAction.modifyPwdSuccess(data.message));
+                }else {
+                    dispatch(loginControlAction.modifyPwdFail(data.message))
+                }
+            })
+    },
+    modifyPwdSuccess: (message) => ({
+        type: 'MODIFY_PWD_SUCCESS',
+        payload:{
+            message: message
+        }
+    }),
+    modifyPwdFail: (message) => ({
+        type: 'MODIFY_PWD_FAIL',
+        payload:{
+            message: message
+        }
+    }),
+    userRegister: (name, pwd, role) => (dispatch) => {
+        fetch('/user/signup',{
+            method: 'post',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({user: {name: name, password: pwd, role: role}})
+        }).then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    dispatch(loginControlAction.userRegisterSuccess(data.message));
+                }else {
+                    dispatch(loginControlAction.userRegisterFail(data.message))
+                }
+            })
+    },
+    userRegisterSuccess: (message) => ({
+        type: 'USER_REGISTER_SUCCESS',
+        payload:{
+            message: message
+        }
+    }),
+    userRegisterFail: (message) => ({
+        type: 'USER_REGISTER_FAIL',
+        payload:{
+            message: message
+        }
     }),
 };
 

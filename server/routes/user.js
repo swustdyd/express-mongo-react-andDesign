@@ -15,17 +15,10 @@ var PubFunction = require('../common/publicFunc');
 router.post('/signup', function (request, response) {
     //request.param('user'),可拿到所有的参数，若在body和query都有user这个参数，routes>query>body
     var _user = request.body.user;
-    UserService.saveOrUpdateUser(_user).then(function (result) {
-        logger.info(result);
-        var message;
-        if(result.success){
-            message = '注册成功';
-        }else{
-            message = result.message || '注册失败';
-        }
+    UserService.saveOrUpdateUser(_user).then(function (resData) {
         return response.json({
             success: true,
-            message: message
+            message: resData.message
         });
     }).catch(function (err) {
         logger.error(err);
@@ -101,15 +94,15 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, functio
 });
 
 //修改密码
-router.post('/updatePwd', function (request, response) {
+router.post('/updatePwd', Authority.requestSignin, function (request, response) {
     var originPwd = request.param('originPwd');
     var newPwd = request.param('newPwd');
     var userId = request.session.user._id;
-    UserService.getUserById(userId).then(function (user) {
-        if(!user){
+    UserService.getUserById(userId).then(function (resData) {
+        if(!resData.result){
             return Promise.reject({message: '该用户不存在'});
         }else{
-            return PubFunction.comparePassword(originPwd, user.password);
+            return PubFunction.comparePassword(originPwd, resData.result.password);
         }
     }).then(function (isMatch) {
         if(isMatch){

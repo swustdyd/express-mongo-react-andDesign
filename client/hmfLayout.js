@@ -31,7 +31,7 @@ class CustomLayout extends React.Component{
                     </HashRouterMenu>
                     <LoginControl/>
                 </Header>
-                <Content style={{ padding: '0 50px', minHeight: 680 }}>
+                <Content style={{ padding: '0 50px'}}>
                     {this.props.children}
                 </Content>
                 <Footer ref="footer" style={{ textAlign: 'center'}}>

@@ -67,17 +67,8 @@ let devConfig = {
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             filename: 'vendor.bundle.js'
-        }),/*,
-        new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery'
-        })*/
-    ],
-    resolve: {
-        /*alias: {
-            jquery: 'jquery/dist/jquery.min.js'
-        }*/
-    }
+        })
+    ]
 };
 
 module.exports = devConfig;
