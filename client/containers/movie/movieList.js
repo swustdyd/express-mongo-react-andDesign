@@ -34,7 +34,7 @@ class MovieList extends React.Component{
             }
         });
     }
-    handleEditClick(id, title){
+    handleEditClick(id){
         let condition = {
             _id: id
         };
@@ -45,7 +45,7 @@ class MovieList extends React.Component{
             }else{
                 if(data.success){
                     _this.props.modalAction.showModal({
-                        title: title,
+                        title: `编辑电影：${data.result[0].title}`,
                         maskClosable: true,
                         modalContent: <MovieEdit
                             onSubmitSuccess={() => {
@@ -82,7 +82,7 @@ class MovieList extends React.Component{
     }
     searchAndLoadMovies(pageIndex, condition){
         let _this = this;
-        _this.props.movieListAction.searchMovies(condition, pageIndex, 5, (err, data) => {
+        _this.props.movieListAction.searchMovies(condition, pageIndex, 10, (err, data) => {
             if(err){
                 message.error(err.message)
             }else {
@@ -150,8 +150,8 @@ class MovieList extends React.Component{
                 title: '编辑',
                 dataIndex: '_id',
                 key: 'edit',
-                render: (text, record) =>
-                    <Button type="primary" size="small" onClick={this.handleEditClick.bind(this, text, record.title)}>
+                render: (id) =>
+                    <Button type="primary" size="small" onClick={this.handleEditClick.bind(this, id)}>
                         编辑
                     </Button>
             },

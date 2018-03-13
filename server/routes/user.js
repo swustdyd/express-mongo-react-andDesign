@@ -9,6 +9,7 @@ var Authority = require('../common/authority');
 var UserService = require('../service/user');
 var logger = require('../common/logger');
 var PubFunction = require('../common/publicFunc');
+const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 
 
 //用户注册
@@ -83,7 +84,21 @@ router.get('/logout', function (request, response) {
 
 //获取用户信息
 router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
-    UserService.getUsersByCondition().then(function (resData) {
+    let condition = request.query.condition || '{}';
+    let pageIndex = 0;
+    if(/^[0-9]+$/.test(request.query.pageIndex)){
+        pageIndex = parseInt(request.query.pageIndex);
+    }
+    let pageSize = DefaultPageSize;
+    if(/^[1-9][0-9]*$/.test(request.query.pageSize)){
+        pageSize = Math.min(parseInt(request.query.pageSize), DefaultPageSize);
+    }
+    condition = JSON.parse(condition);
+    UserService.getUsersByCondition({
+        condition: condition,
+        pageIndex: pageIndex,
+        pageSize: pageSize
+    }).then(function (resData) {
         response.json(resData);
     }).catch(function (err) {
         response.json({
@@ -98,7 +113,9 @@ router.post('/updatePwd', Authority.requestSignin, function (request, response) 
     var originPwd = request.param('originPwd');
     var newPwd = request.param('newPwd');
     var userId = request.session.user._id;
+    logger.info(userId);
     UserService.getUserById(userId).then(function (resData) {
+        logger.info(resData);
         if(!resData.result){
             return Promise.reject({message: '该用户不存在'});
         }else{
@@ -140,6 +157,20 @@ router.get('/checkLogin', function (request, response) {
         response.json({success: true, result: {name: request.session.user.name}})
     }else {
         response.json({success: false})
+    }
+});
+
+router.get('/delete', Authority.requestSignin, Authority.requestSuperAdmin, function (request, response) {
+    let id = request.param('id');
+    if(request.session.user._id === id){
+        response.json({success: false, message: '当前用户不能删除'});
+    }else{
+        UserService.deleteUserById(id).then( resData => {
+            response.json(resData)
+        }).catch(err => {
+            logger.error(err);
+            response.json({success: false, message: err.message});
+        });
     }
 });
 

@@ -14,7 +14,8 @@ const loginControlAction = {
         .then(res => res.json())
         .then((data) => {
             if(data.success){
-                dispatch(loginControlAction.loginSuccess(name, data.message))
+                //dispatch(loginControlAction.loginSuccess(name, data.message))
+                window.location.reload();
             }else {
                 //console.log(data);
                 dispatch(loginControlAction.loginFail(data.message))
@@ -26,7 +27,8 @@ const loginControlAction = {
             .then(res => res.json())
             .then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.logoutSuccess(data.message));
+                    //dispatch(loginControlAction.logoutSuccess(data.message));
+                    window.location.reload();
                 }else {
                     dispatch(loginControlAction.logoutFail(data.message))
                 }
@@ -95,14 +97,14 @@ const loginControlAction = {
             message: message
         }
     }),
-    userRegister: (name, pwd, role) => (dispatch) => {
+    userRegister: (name, pwd) => (dispatch) => {
         fetch('/user/signup',{
             method: 'post',
             headers: {
                 'Content-type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({user: {name: name, password: pwd, role: role}})
+            body: JSON.stringify({user: {name: name, password: pwd}})
         }).then(res => res.json())
             .then(data => {
                 if(data.success){

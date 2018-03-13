@@ -4,7 +4,13 @@
 //日志打印
 let logger = require('./logger');
 
-module.exports = function (app) {
+module.exports.errorCode = {
+    requestSignin: 1,
+    requestAdmin: 2,
+    requestSuperAdmin: 3
+};
+
+module.exports.errorHandle = function (app) {
     // catch 404 and forward to error handler
     app.use(function(req, res, next) {
         let err = new Error('Not Found');

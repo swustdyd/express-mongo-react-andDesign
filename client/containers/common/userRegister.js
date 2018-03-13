@@ -7,16 +7,16 @@ import LoginControlAction from '../../actions/common/loginControl'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-const FormItem = Form.Item;
-const Option = Select.Option;
+let FormItem = Form.Item;
+let Option = Select.Option;
 
 class UserRegister extends React.Component{
-    handleLoginClick(e){
+    handleRegisterClick(e){
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
                 let userInput = this.props.form.getFieldsValue();
-                this.props.loginControlAction.userRegister(userInput.name, userInput.password, userInput.role);
+                this.props.loginControlAction.userRegister(userInput.name, userInput.password);
             }
         });
     }
@@ -39,7 +39,7 @@ class UserRegister extends React.Component{
     render(){
         let {getFieldDecorator} = this.props.form;
         return (
-            <Form onSubmit={this.handleLoginClick.bind(this)} className="userRegister-form">
+            <Form onSubmit={this.handleRegisterClick.bind(this)} className="userRegister-form">
                 <FormItem>
                     {getFieldDecorator(`name`, {
                         rules:[
@@ -56,15 +56,15 @@ class UserRegister extends React.Component{
                         <Input prefix={<Icon type="user" />} placeholder="用户名" />
                     )}
                 </FormItem>
-                <FormItem>
+                {/*<FormItem>
                     {getFieldDecorator(`role`)(
                         <Select allowClear placeholder="请选择一个角色">
                             <Option value="0">普通用户</Option>
-                            <Option value="10">管理员</Option>
-                            <Option value="50" >超级管理员</Option>
+                            <Option value="10" disabled>管理员</Option>
+                            <Option value="50" disabled>超级管理员</Option>
                         </Select>
                     )}
-                </FormItem>
+                </FormItem>*/}
                 <FormItem>
                     {getFieldDecorator(`password`,{
                         rules:[

@@ -3,7 +3,7 @@ var morgan = require('morgan');
 //文件的创建
 var fs = require('fs');
 //自定义error
-var errorHandle = require('./server/common/errorHandle');
+var errorHandle = require('./server/common/errorHandle').errorHandle;
 var express = require('express');
 var path = require('path');
 var mongoose = require('mongoose');

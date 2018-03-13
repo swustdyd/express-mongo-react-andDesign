@@ -7,10 +7,7 @@ let role = {
     admin: 10,
     superAdmin: 50
 };
-let errorCode = {
-    requestSignin: 1,
-    requestAdmin: 2
-};
+let errorCode = require('./errorHandle').errorCode;
 
 module.exports = {
     requestSignin: function (req, res, next) {
@@ -32,6 +29,19 @@ module.exports = {
             res.status(500);
             res.json({
                 message: '需要管理员权限',
+                success: false,
+                errorCode: errorCode.requestAdmin
+            });
+        }else{
+            next();
+        }
+    },
+    requestSuperAdmin: function (req, res, next) {
+        let user = req.session.user;
+        if(!user || user.role < role['superAdmin']){
+            res.status(500);
+            res.json({
+                message: '需要超级管理员权限',
                 success: false,
                 errorCode: errorCode.requestAdmin
             });

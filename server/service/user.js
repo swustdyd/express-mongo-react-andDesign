@@ -23,6 +23,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
+                logger.info(user)
                 resolve({success: true, result: user});
             })
         })
@@ -119,7 +120,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                resolve({success: true});
+                resolve({success: true, message: '删除成功'});
             })
         });
     }

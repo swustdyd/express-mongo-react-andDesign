@@ -4,8 +4,10 @@
 import { combineReducers } from 'redux'
 import MovieReducer from './movie/movie'
 import CommonReducer from './common/common'
+import UserReducer from './user/user'
 
 export default combineReducers({
     movie: MovieReducer,
-    common: CommonReducer
+    common: CommonReducer,
+    user: UserReducer
 });
