@@ -12,26 +12,36 @@ var PubFunction = require('../common/publicFunc');
 const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 
 
-//用户注册
+/**
+ * 用户注册
+ */
 router.post('/signup', function (request, response) {
     //request.param('user'),可拿到所有的参数，若在body和query都有user这个参数，routes>query>body
     var _user = request.body.user;
-    UserService.saveOrUpdateUser(_user).then(function (resData) {
-        return response.json({
-            success: true,
-            message: resData.message
-        });
+    UserService.getUsersByCondition({condition: {name: _user.name}})
+    .then(function (resData) {
+        if(resData.result && resData.result.length > 0){
+            return Promise.reject({success: false, message: '该用户名已存在'})
+        }else {
+            return UserService.saveOrUpdateUser(_user).then(function (resData) {
+                return response.json({
+                    success: true,
+                    message: '注册成功'
+                });
+            })
+        }
     }).catch(function (err) {
         logger.error(err);
         return response.json({
             success: false,
             message: err.message
         });
-        //throw err;
     });
 });
 
-//用户登录
+/**
+ * 用户登录
+ */
 router.post('/signin', function (request, response) {
     //logger.info(request.sessionID);
     let _user = request.body.user,
@@ -74,7 +84,9 @@ router.post('/signin', function (request, response) {
     });
 });
 
-//用户登出
+/**
+ * 用户登出
+ */
 router.get('/logout', function (request, response) {
     delete request.session.user;
     delete request.app.locals.user;
@@ -82,7 +94,9 @@ router.get('/logout', function (request, response) {
 });
 
 
-//获取用户信息
+/**
+ * 获取用户信息
+ */
 router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
     let condition = request.query.condition || '{}';
     let pageIndex = 0;
@@ -108,7 +122,9 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, functio
     });
 });
 
-//修改密码
+/**
+ * 修改密码
+ */
 router.post('/updatePwd', Authority.requestSignin, function (request, response) {
     var originPwd = request.param('originPwd');
     var newPwd = request.param('newPwd');
@@ -127,15 +143,11 @@ router.post('/updatePwd', Authority.requestSignin, function (request, response) 
                 _id: userId,
                 password: newPwd
             };
-            return UserService.saveOrUpdateUser(user).then(function (data) {
-                if(!data.success){
-                    return Promise.reject(data.message);
-                }else{
-                    response.json({
-                        message: '修改密码成功',
-                        success: data.success
-                    });
-                }
+            return UserService.saveOrUpdateUser(user).then(function (resData) {
+                response.json({
+                    message: '修改密码成功',
+                    success: true
+                });
             });
         }else{
             return Promise.reject({
@@ -152,6 +164,9 @@ router.post('/updatePwd', Authority.requestSignin, function (request, response) 
     });
 });
 
+/**
+ * 检查是否登录
+ */
 router.get('/checkLogin', function (request, response) {
     if(request.session.user){
         response.json({success: true, result: {name: request.session.user.name}})
@@ -160,6 +175,9 @@ router.get('/checkLogin', function (request, response) {
     }
 });
 
+/**
+ * 删除用户
+ */
 router.get('/delete', Authority.requestSignin, Authority.requestSuperAdmin, function (request, response) {
     let id = request.param('id');
     if(request.session.user._id === id){
@@ -172,6 +190,52 @@ router.get('/delete', Authority.requestSignin, Authority.requestSuperAdmin, func
             response.json({success: false, message: err.message});
         });
     }
+});
+
+/**
+ * 修改用户
+ */
+router.post('/edit', Authority.requestSignin, function (request, response) {
+    let user = request.body.user;
+    let currentUser = request.session.user;
+    UserService.getUsersByCondition({
+        condition: {
+            _id: {$ne: user._id},
+            name: user.name
+        }
+    }).then(function (resData) {
+        if(resData.result && resData.result.length > 0){
+            return Promise.reject({ message: '用户名已存在'});
+        }else {
+            return UserService.getUsersByCondition({
+                condition: {
+                    _id: user._id
+                }
+            }).then(function (resData) {
+                if(resData.result && resData.result.length > 0){
+                    let originUser = resData.result[0];
+                    if(currentUser.role < originUser.role){
+                        return Promise.reject({ message: `您的角色权限低于${user.name}，不能编辑`});
+                    }else if(currentUser.role < user.role){
+                        return Promise.reject({ message: `您给${user.name}设置的角色权限不能高于您的角色权限`});
+                    }else {
+                        return user;
+                    }
+                }else {
+                    return Promise.reject({ success: false, message: '用户不存在'});
+                }
+            })
+        }
+    })
+    .then(function (user) {
+        return UserService.saveOrUpdateUser(user).then(function () {
+            response.json({ success: true, message: '保存成功'});
+        });
+    })
+    .catch(function (err) {
+        logger.error(err);
+        response.json({ success: false, message: err.message});
+    });
 });
 
 module.exports = router;

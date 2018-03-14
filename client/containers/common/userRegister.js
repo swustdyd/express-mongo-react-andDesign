@@ -48,8 +48,8 @@ class UserRegister extends React.Component{
                                 message: '请输入用户名'
                             },
                             {
-                                pattern: /^\w{3,10}$/,
-                                message: '用户名只能是3-10位的字母、数字或者下划线'
+                                pattern: /^\w{3,20}$/,
+                                message: '用户名只能是3-20位的字母、数字或者下划线'
                             }
                         ]
                     })(

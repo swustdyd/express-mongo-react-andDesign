@@ -5,7 +5,7 @@
 import React from 'react'
 import {
     Table, Button, message, Popconfirm,
-    Divider, Col, Row, Form, Input, Modal
+    Divider, Col, Row, Form, Input, DatePicker
 } from 'antd'
 import MovieEdit from './movieEdit'
 import momont from 'moment'
@@ -13,8 +13,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
 import ModalAction from '../../actions/common/customModal'
+import YearRangePicker from '../../components/yearRangePicker'
 
 const FormItem = Form.Item;
+const { RangePicker } = DatePicker;
+
 class MovieList extends React.Component{
     constructor(){
         super();
@@ -64,18 +67,25 @@ class MovieList extends React.Component{
     }
     handleSearchClick(e){
         e.preventDefault();
-        let { searchTitle, searchYear, searchLanguage } = this.props.form.getFieldsValue();
-        let condition = {};
-        if(searchTitle){
-            condition.title = searchTitle;
-        }
-        if(searchYear){
-            condition.year = searchYear;
-        }
-        if(searchLanguage){
-            condition.language = searchLanguage;
-        }
-        this.searchAndLoadMovies(0, condition);
+        this.props.form.validateFields((err, fieldsValue) => {
+            if(err){
+                return;
+            }
+            const rangeTimeValue = fieldsValue['searchYear'];
+            console.log(rangeTimeValue);
+            let { searchTitle, searchYear, searchLanguage } = this.props.form.getFieldsValue();
+            let condition = {};
+            if(searchTitle){
+                condition.title = searchTitle;
+            }
+            if(searchYear){
+                condition.year = searchYear;
+            }
+            if(searchLanguage){
+                condition.language = searchLanguage;
+            }
+            this.searchAndLoadMovies(0, condition);
+        });
     }
     componentDidMount(){
         this.searchAndLoadMovies();
@@ -193,54 +203,58 @@ class MovieList extends React.Component{
             }
         };
         const { getFieldDecorator } = _this.props.form;
+        const colLayout = {
+            xs: 24,
+            sm: 24,
+            md: 12,
+            lg: 8,
+            xl: 8
+        };
+        const formItemLayout = {
+            labelCol:{
+                span: 4
+            },
+            wrapperCol: {
+                span: 20
+            }
+        };
         return(
-            <div>
-                <Form onSubmit={this.handleSearchClick.bind(this)}>
-                    <Row gutter={24}>
-                        <Col span={8}>
-                            <FormItem label="电影名">
-                                {getFieldDecorator(`searchTitle`)(
-                                    <Input placeholder="电影名称" />
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={8}>
-                            <FormItem label="年代">
-                                {getFieldDecorator(`searchYear`,{
-                                    rules: [{
-                                        message: "年代必须为0-4位的数字",
-                                        pattern: /^[0-9]{4}$/
-                                    }]
-                                })(
-                                    <Input span={6}/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={8}>
-                            <FormItem label="语言">
-                                {getFieldDecorator(`searchLanguage`)(
-                                    <Input span={6}/>
-                                )}
-                            </FormItem>
-                        </Col>
-                    </Row>
-                    <Row span={24}>
-                        <Col span={24}>
-                            <Button type="primary" htmlType="submit" icon="search">搜索</Button>
-                            &emsp;
-                            <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClick.bind(this)}>新增电影</Button>
-                        </Col>
-                    </Row>
-                    <Divider />
-                    <Row span={24}>
-                        <Table
-                            columns={columns}
-                            dataSource={movies}
-                            pagination={pagination}
-                        />
-                    </Row>
-                </Form>
-            </div>
+            <Form onSubmit={this.handleSearchClick.bind(this)}>
+                <Row gutter={12}>
+                    <Col xl={6}>
+                        <FormItem {...formItemLayout} label="电影名">
+                            {getFieldDecorator(`searchTitle`)(
+                                <Input  />
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xl={10}>
+                        <FormItem labelCol={{span: 4}} wrapperCol={{span: 20}} label="年代">
+                            {getFieldDecorator(`searchYear`)(
+                                <YearRangePicker />
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xl={6}>
+                        <FormItem {...formItemLayout} label="语言">
+                            {getFieldDecorator(`searchLanguage`)(
+                                <Input />
+                            )}
+                        </FormItem>
+                    </Col>
+                </Row>
+                <Row>
+                    <Button type="primary" htmlType="submit" icon="search">搜索</Button>
+                    &emsp;
+                    <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClick.bind(this)}>新增电影</Button>
+                </Row>
+                <Divider />
+                <Table
+                    columns={columns}
+                    dataSource={movies}
+                    pagination={pagination}
+                />
+            </Form>
         );
     }
 }

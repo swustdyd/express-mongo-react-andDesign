@@ -85,15 +85,8 @@ module.exports = {
                 });
             }else{
                 inputUser = new User(inputUser);
-                return service.getUsersByCondition({condition: {name: inputUser.name}})
-                   .then(function (resData) {
-                       if(resData.result && resData.result.length > 0){
-                           return Promise.reject({success: false, message: '该用户名已存在'})
-                       }else {
-                           inputUser.meta.createAt = inputUser.meta.updateAt = Date.now();
-                           return Promise.resolve(inputUser)
-                       }
-                   })
+                inputUser.meta.createAt = inputUser.meta.updateAt = Date.now();
+                return inputUser;
             }
         }).then(function (inputUser) {
             logger.info(inputUser);
@@ -105,7 +98,7 @@ module.exports = {
                         logger.error('保存用户时发生错误');
                         reject(err);
                     }
-                    resolve({success: true, result: user, message: '注册成功'});
+                    resolve({success: true, result: user});
                 });
             });
         });

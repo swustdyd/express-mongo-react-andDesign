@@ -2,7 +2,7 @@
  * Created by Aaron on 2018/3/13.
  */
 import React from 'react'
-import {Form, Button, Input, Icon, Select, Spin} from 'antd'
+import {Form, Button, Input, Icon, Select, Spin, message} from 'antd'
 
 let FormItem = Form.Item;
 let Option = Select.Option;
@@ -18,9 +18,37 @@ class UserEdit extends React.Component{
     }
     handleSubmitClick(e){
         e.preventDefault();
-        this.props.form.validateFieldsAndScroll((err, valus) => {
+        let _this = this;
+        _this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
-
+                let userInput = this.props.form.getFieldsValue();
+                userInput._id = _this.state.initData._id;
+                fetch('/user/edit',{
+                    method: 'post',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
+                    credentials: 'include',
+                    body: JSON.stringify({user: userInput})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success){
+                        message.success(data.message);
+                        if(_this.props.onSubmitSuccess){
+                            _this.props.onSubmitSuccess();
+                        }
+                    }else {
+                        message.error(data.message);
+                        if(_this.props.onSubmitFail){
+                            _this.props.onSubmitFail();
+                        }
+                    }
+                }).catch(err => {
+                    message.error(err.message);
+                });
+                console.log(userInput);
             }
         });
     }
@@ -60,8 +88,8 @@ class UserEdit extends React.Component{
                                     message: '请输入用户名'
                                 },
                                 {
-                                    pattern: /^\w{3,10}$/,
-                                    message: '用户名只能是3-10位的字母、数字或者下划线'
+                                    pattern: /^\w{3,20}$/,
+                                    message: '用户名只能是3-20位的字母、数字或者下划线'
                                 }
                             ],
                             initialValue: initData.name
@@ -71,11 +99,14 @@ class UserEdit extends React.Component{
                     </FormItem>
                     <FormItem {...formItemLayout} label="角色">
                         {getFieldDecorator(`role`,{
-                            initialValue: initData.role
+                            rules: [{
+                                required: true,
+                                message: '请一个选择角色'
+                            }],
+                            initialValue: `${initData.role}`
                         })(
                             <Select
                                 allowClear
-                                placeholder="请选择一个角色"
                             >
                                 <Option value="0">普通用户</Option>
                                 <Option value="10">管理员</Option>
