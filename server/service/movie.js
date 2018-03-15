@@ -17,6 +17,9 @@ module.exports = {
         let options = _.extend({}, queryDefaultOptions, customOptions);
         return new Promise(function (resolve, reject) {
             Movie.count(options.condition, function (err, count) {
+                if(err){
+                    reject(err);
+                }
                 Movie.find(options.condition, function (err, movies) {
                     if(err){
                         reject(err);

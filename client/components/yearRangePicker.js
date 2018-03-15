@@ -3,65 +3,93 @@
  */
 
 import React from 'react'
-import { DatePicker, message} from 'antd';
+import { Select, message} from 'antd';
+
+const Option = Select.Option;
 
 class YearRangePicker extends React.Component {
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
-            startValue: null,
-            endValue: null
-        };
-
-    }
-
-    disabledStartDate(startValue){
-        const endValue = this.state.endValue;
-        if (!startValue || !endValue) {
-            return false;
+            startOfFirst: this.props.start || 2000,
+            endOfFirst: this.props.end || 2050,
+            startOfSecond: this.props.start || 2000,
+            endOfSecond: this.props.end || 2050,
+            valueOfFirst: undefined,
+            valueOfSecond: undefined,
         }
-        return startValue.valueOf() > endValue.valueOf();
     }
 
-    disabledEndDate(endValue){
-        const startValue = this.state.startValue;
-        if (!endValue || !startValue) {
-            return false;
+    handleFirstChange(value){
+        let nextState = Object.assign({}, this.state);
+        if(!value){
+            nextState.startOfSecond = this.state.startOfFirst;
         }
-        return endValue.valueOf() <= startValue.valueOf();
+        if(value >= this.state.valueOfSecond){
+            nextState.valueOfSecond = undefined;
+            nextState.startOfSecond = value + 1;
+        }
+        nextState.valueOfFirst = value;
+        nextState.startOfSecond = value ?  value + 1 : this.state.startOfFirst;
+        //this.props.onChange({start: nextState.valueOfFirst, end: nextState.valueOfSecond});
+        this.onChange({start: nextState.valueOfFirst, end: nextState.valueOfSecond});
+        this.setState(nextState);
     }
 
-    handleStartPanelChange(value){
-        this.setState({ startValue: value });
+    handleSecondChange(value){
+        //this.props.onChange({start: this.state.valueOfFirst, end: value});
+        this.onChange({start: this.state.valueOfFirst, end: value});
+        this.setState({
+            valueOfSecond: value
+        });
     }
 
-    handleEndPanelChange(value){
-        this.setState({ endValue: value });
+    onChange(value){
+        const onChange = this.props.onChange;
+        if (onChange) {
+            onChange(value);
+        }
+    }
+
+    getOptions(start, end){
+        let options = [];
+        for(let i = start; i <= end; i++){
+            options.push(<Option key={i} value={i}>{i}</Option>)
+        }
+        return options;
+    }
+
+    handleFilterOption(input, option){
+        return new String(option.props.children).toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
 
     render() {
-        const { startValue, endValue} = this.state;
+        const {startOfFirst, endOfFirst, startOfSecond, endOfSecond, valueOfFirst, valueOfSecond} = this.state;
         return (
             <div>
-                <DatePicker
-                    disabledDate={this.disabledStartDate.bind(this)}
-                    showTime
-                    format="YYYY"
-                    value={startValue}
-                    placeholder="Start"
-                    onPanelChange={this.handleStartPanelChange.bind(this)}
-                    mode="year"
-                />
+                <Select
+                    value={valueOfFirst}
+                    allowClear
+                    showSearch
+                    style={{ width: 120 }}
+                    placeholder="开始时间"
+                    onChange={this.handleFirstChange.bind(this)}
+                    filterOption={this.handleFilterOption.bind(this)}
+                >
+                    {this.getOptions(startOfFirst, endOfFirst)}
+                </Select>
                 &nbsp;-&nbsp;
-                <DatePicker
-                    disabledDate={this.disabledEndDate.bind(this)}
-                    showTime
-                    format="YYYY"
-                    value={endValue}
-                    placeholder="End"
-                    onPanelChange={this.handleEndPanelChange.bind(this)}
-                    mode="year"
-                />
+                <Select
+                    value={valueOfSecond}
+                    allowClear
+                    showSearch
+                    style={{ width: 120 }}
+                    placeholder="结束时间"
+                    onChange={this.handleSecondChange.bind(this)}
+                    filterOption={this.handleFilterOption.bind(this)}
+                >
+                    {this.getOptions(startOfSecond, endOfSecond)}
+                </Select>
             </div>
         );
     }

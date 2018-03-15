@@ -1,4 +1,7 @@
 extends ../layout
+block style
+  if env === 'production'
+    link(type="text/css", href='/dist/index/index.css', rel="stylesheet")
 block script
-  script(src='/vendor.bundle.js')
-  script(src='/index/bundle.js')
+  script(src='/dist/vendor/bundle.js')
+  script(src='/dist/index/bundle.js')

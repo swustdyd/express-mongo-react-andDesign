@@ -1,23 +1,25 @@
 //格式化输出信息
-var morgan = require('morgan');
+const morgan = require('morgan');
 //文件的创建
-var fs = require('fs');
+const fs = require('fs');
 //自定义error
-var errorHandle = require('./server/common/errorHandle').errorHandle;
-var express = require('express');
-var path = require('path');
-var mongoose = require('mongoose');
+const errorHandle = require('./server/common/errorHandle').errorHandle;
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
 //body-parser 可将user[name]这种参数转化为user对象
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 //使用connect-mongo,cookie-parser,express-session做session持久化
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var isDev = process.env.NODE_ENV !== 'production';
-var BaseConfig = require('./baseConfig');
-var app = express();
-var port = process.env.PORT || BaseConfig.port;
-port = parseInt(port, 10);
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const isDev = process.env.NODE_ENV !== 'production';
+const BaseConfig = require('./baseConfig');
+const app = express();
+let devPort = process.env.PORT || BaseConfig.devPort;
+let proPort = process.env.PORT || BaseConfig.proPort;
+devPort = parseInt(devPort, 10);
+proPort = parseInt(proPort, 10);
 
 mongoose.connect(BaseConfig.dbConnectString);
 
@@ -73,17 +75,15 @@ require('./server/routes')(app);
 
 if (isDev) {
     // static assets served by webpack-dev-middleware & webpack-hot-middleware for development
-    var webpack = require('webpack'),
+    let webpack = require('webpack'),
         webpackDevMiddleware = require('webpack-dev-middleware'),
         webpackHotMiddleware = require('webpack-hot-middleware'),
         webpackDevConfig = require('./webpack.config.js');
 
-    var compiler = webpack(webpackDevConfig);
+    let compiler = webpack(webpackDevConfig);
 
     // attach to the compiler & the server
     app.use(webpackDevMiddleware(compiler, {
-
-
         // public path should be the same with webpack config
         publicPath: webpackDevConfig.output.publicPath,
         noInfo: true,
@@ -93,24 +93,24 @@ if (isDev) {
     }));
     app.use(webpackHotMiddleware(compiler));
     // add "reload" to express, see: https://www.npmjs.com/package/reload
-    var reload = require('reload');
-    var http = require('http');
+    let reload = require('reload');
+    let http = require('http');
 
-    var server = http.createServer(app);
+    let server = http.createServer(app);
     reload(server, app);
 
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
     errorHandle(app);
-    server.listen(port, function(){
-        console.log('App (dev) is now running on port 3000!');
+    server.listen(devPort, function(){
+        console.log('App (dev) is now running on devPort '+devPort+'!');
     });
 } else {
     // static assets served by express.static() for production
-    app.use(express.static(path.join(__dirname, BaseConfig.webpackPath)));
+    //app.use(express.static(path.join(__dirname, BaseConfig.webpackPath)));
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
     errorHandle(app);
-    app.listen(port, function () {
-        console.log('App (production) is now running on port 3000!');
+    app.listen(proPort, function () {
+        console.log('App (production) is now running on proPort '+proPort+'!');
     });
 }
 

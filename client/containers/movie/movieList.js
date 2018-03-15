@@ -21,7 +21,24 @@ const { RangePicker } = DatePicker;
 class MovieList extends React.Component{
     constructor(){
         super();
+        this.state = {
+            yearRange: {}
+        }
     }
+
+    getSearchCondition(){
+        let condition = {};
+        let { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();
+        condition.searchYear = searchYear;
+        if(searchTitle){
+            condition.title = searchTitle;
+        }
+        if(searchLanguage){
+            condition.language = searchLanguage;
+        }
+        return condition;
+    }
+
     handleDeleteClick(id){
         let _this = this;
         _this.props.movieListAction.deleteMovie(id, (err, data) => {
@@ -49,7 +66,7 @@ class MovieList extends React.Component{
                 if(data.success){
                     _this.props.modalAction.showModal({
                         title: `编辑电影：${data.result[0].title}`,
-                        maskClosable: true,
+                        maskClosable: false,
                         modalContent: <MovieEdit
                             onSubmitSuccess={() => {
                                 _this.props.modalAction.hideModal();
@@ -67,25 +84,7 @@ class MovieList extends React.Component{
     }
     handleSearchClick(e){
         e.preventDefault();
-        this.props.form.validateFields((err, fieldsValue) => {
-            if(err){
-                return;
-            }
-            const rangeTimeValue = fieldsValue['searchYear'];
-            console.log(rangeTimeValue);
-            let { searchTitle, searchYear, searchLanguage } = this.props.form.getFieldsValue();
-            let condition = {};
-            if(searchTitle){
-                condition.title = searchTitle;
-            }
-            if(searchYear){
-                condition.year = searchYear;
-            }
-            if(searchLanguage){
-                condition.language = searchLanguage;
-            }
-            this.searchAndLoadMovies(0, condition);
-        });
+        this.searchAndLoadMovies(0, this.getSearchCondition());
     }
     componentDidMount(){
         this.searchAndLoadMovies();
@@ -188,18 +187,7 @@ class MovieList extends React.Component{
             pageSize: pageSize,
             current: pageIndex + 1,
             onChange: (pageIndex) => {
-                let { searchTitle, searchYear, searchLanguage } = _this.props.form.getFieldsValue();
-                let condition = {};
-                if(searchTitle){
-                    condition.title = searchTitle;
-                }
-                if(searchYear){
-                    condition.year = searchYear;
-                }
-                if(searchLanguage){
-                    condition.language = searchLanguage;
-                }
-                _this.searchAndLoadMovies(pageIndex - 1, condition)
+                _this.searchAndLoadMovies(pageIndex - 1, _this.getSearchCondition())
             }
         };
         const { getFieldDecorator } = _this.props.form;
@@ -224,11 +212,11 @@ class MovieList extends React.Component{
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="电影名">
                             {getFieldDecorator(`searchTitle`)(
-                                <Input  />
+                                <Input />
                             )}
                         </FormItem>
                     </Col>
-                    <Col xl={10}>
+                    <Col xl={8}>
                         <FormItem labelCol={{span: 4}} wrapperCol={{span: 20}} label="年代">
                             {getFieldDecorator(`searchYear`)(
                                 <YearRangePicker />

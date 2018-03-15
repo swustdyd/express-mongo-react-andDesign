@@ -23,20 +23,35 @@ router.get('/getMovies', function (req, res) {
         pageSize = Math.min(parseInt(req.query.pageSize), DefaultPageSize);
     }
     condition = JSON.parse(condition);
+
+    let newCondition = {};
     if(condition.title){
-        condition.title = new RegExp(`^${condition.title}.*$`, 'i');
+        newCondition.title = new RegExp(`^${condition.title}.*$`, 'i');
+    }
+    if(condition._id){
+        newCondition._id = condition._id;
+    }
+    if(condition.searchYear && (condition.searchYear.start || condition.searchYear.end)){
+        newCondition.year = {};
+        if(condition.searchYear.start){
+            newCondition.year.$gte = condition.searchYear.start
+        }
+        if(condition.searchYear.end){
+            newCondition.year.$lte = condition.searchYear.end;
+        }
+
     }
     //logger.info(condition);
     MovieService.getMoviesByCondition({
-        condition: condition,
+        condition: newCondition,
         pageIndex: pageIndex,
         pageSize: pageSize
     })
     .then(function (resData) {
         res.json(resData);
     }).catch(function (err) {
-        //logger.error(err);
-        throw err;
+        logger.error(err);
+        res.json({success: false, message: err.message});
     });
 });
 

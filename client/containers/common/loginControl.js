@@ -26,7 +26,7 @@ class LoginControl extends React.Component{
         this.props.loginControlAction.logout();
     }
     componentDidMount(){
-        console.log('loginControl render');
+        //console.log('loginControl render');
         this.props.loginControlAction.checkLogin();
     }
     handleModifyPwdClick(){
@@ -40,7 +40,7 @@ class LoginControl extends React.Component{
     handleRegisterClick(){
         this.props.modalAction.showModal({
             title: '注册',
-            maskClosable: true,
+            maskClosable: false,
             modalContent: <UserRegister />,
             width: 500
         });

@@ -2,12 +2,11 @@ let webpack = require('webpack');
 let ExtractTextPlugin = require('extract-text-webpack-plugin');
 let path = require('path');
 let baseConfig = require('./baseConfig');
-let port = process.env.PORT || baseConfig.port;
+let devPort = process.env.PORT || baseConfig.devPort;
 //设置为http模式可以使其在开发过程中，使用?sourceMap时，style-loader会把css做成以下样式
 //<link rel="stylesheet" href="blob:http://localhost:3000/a9fe9187-7594-4b1f-b0f6-6ce46bf6cc4e">
-let publicPath = 'http://localhost:' + port + '/';
+let publicPath = 'http://localhost:' + devPort + '/' + baseConfig.publicPath;
 let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
-//console.log(vueLoaderConfig);
 let devConfig = {
     entry: {
         index: ['./client/app', hotMiddlewareScript],
@@ -66,7 +65,7 @@ let devConfig = {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
-            filename: 'vendor.bundle.js'
+            filename: './[name]/bundle.js'
         })
     ]
 };
