@@ -15,21 +15,6 @@ import IndexPage from './containers/index/index'
 import { asyncComponent } from './components/asyncComponent'
 const MoviePage = asyncComponent(() => import (/* webpackChunkName: "movie" */ "./containers/movie/movie"))
 const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ "./containers/user/user"))
-/*const MoviePage = (cb) => {
-    require.ensure([], require => {
-        cb(require('./containers/movie/movie'))
-    },
-    'movie')
-};
-const UserPage = (cb) => {
-    require.ensure([], require => {
-        cb(require('./containers/user/user').default)
-    },
-    'user')
-};*/
-
-/*import MoviePage from './containers/movie/movie'
-import UserPage from './containers/user/user'*/
 
 import './app.scss'
 

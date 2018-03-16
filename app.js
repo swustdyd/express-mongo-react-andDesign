@@ -1,5 +1,6 @@
 //格式化输出信息
 const morgan = require('morgan');
+const compression = require('compression')
 //文件的创建
 const fs = require('fs');
 //自定义error
@@ -32,6 +33,8 @@ app.locals.env = process.env.NODE_ENV || 'dev';
 app.locals.reload = true;
 app.locals.moment = require('moment');
 
+//开启gzip
+app.use(compression());
 app.use(bodyParser());
 app.use(cookieParser());
 app.use(session({
