@@ -3,13 +3,17 @@
  */
 
 import React from 'react'
-import { Table, message, Button, Popconfirm, Form } from 'antd'
+import { Table, message, Button,
+    Popconfirm, Form, Select,
+    Col, Input, Row, Divider
+} from 'antd'
 import Moment from 'moment'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import UserListAction from '../../actions/user/userList'
 import ModalAction from '../../actions/common/customModal'
 import UserEdit from './userEdit'
+import Common from '../../common/common'
 
 let FormItem = Form.Item;
 
@@ -20,8 +24,15 @@ class UserList extends React.Component{
     componentDidMount(){
         this.searchAndLoadUsers();
     }
-
-    searchAndLoadUsers(condition, pageIndex){
+    getSearchCondition(){
+        let userInput = this.props.form.getFieldsValue();
+        return userInput;
+    }
+    handleSearchClick(e){
+        e.preventDefault();
+        this.searchAndLoadUsers(0, this.getSearchCondition())
+    }
+    searchAndLoadUsers(pageIndex, condition){
         let _this = this;
         _this.props.userListAction.searchUsers(condition, pageIndex, 5, (err, data) => {
             if(err){
@@ -38,7 +49,6 @@ class UserList extends React.Component{
             }
         });
     }
-
     handleEditClick(id){
         let condition = {
             _id: id
@@ -83,6 +93,7 @@ class UserList extends React.Component{
     }
     render(){
         let {total, pageSize, pageIndex, users} = this.props.userListState;
+        let { getFieldDecorator } = this.props.form;
         let columns = [
             {
                 title: '用户名',
@@ -145,11 +156,39 @@ class UserList extends React.Component{
             pageSize: pageSize,
             current: pageIndex + 1,
             onChange: (pageIndex) => {
-                _this.searchAndLoadUsers(pageIndex - 1)
+                _this.searchAndLoadUsers(pageIndex - 1, _this.getSearchCondition())
+            }
+        };
+        const formItemLayout = {
+            labelCol:{
+                span: 4
+            },
+            wrapperCol: {
+                span: 20
             }
         };
         return(
-            <Form>
+            <Form onSubmit={this.handleSearchClick.bind(this)}>
+                <Row gutter={12}>
+                    <Col xl={6}>
+                        <FormItem {...formItemLayout} label="用户名">
+                            {getFieldDecorator(`searchName`)(
+                                <Input />
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xl={6}>
+                        <FormItem {...formItemLayout} label="角色">
+                            {getFieldDecorator(`searchRole`)(
+                                <Select allowClear>{Common.createUserRoleOptions()}</Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                </Row>
+                <Row>
+                    <Button type="primary" htmlType="submit" icon="search">搜索</Button>
+                </Row>
+                <Divider />
                 <Table
                     columns={columns}
                     dataSource={users}

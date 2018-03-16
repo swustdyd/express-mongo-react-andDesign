@@ -5,7 +5,7 @@ let baseConfig = require('./baseConfig');
 let devPort = process.env.PORT || baseConfig.devPort;
 //设置为http模式可以使其在开发过程中，使用?sourceMap时，style-loader会把css做成以下样式
 //<link rel="stylesheet" href="blob:http://localhost:3000/a9fe9187-7594-4b1f-b0f6-6ce46bf6cc4e">
-let publicPath = 'http://localhost:' + devPort + '/' + baseConfig.publicPath;
+let publicPath = 'http://localhost:' + devPort + `/${baseConfig.publicPath}/`;
 let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
 let devConfig = {
     entry: {
@@ -13,9 +13,10 @@ let devConfig = {
         vendor: ['react','react-dom','react-router-dom']
     },
     output: {
-        filename: './[name]/bundle.js',
+        filename: './js/[name].bundle.js',
         path: path.resolve(__dirname, baseConfig.webpackPath),
         publicPath: publicPath,
+        chunkFilename: 'js/[name].bundle.js',
         libraryTarget : 'var'
     },
     devtool: 'eval-source-map',
@@ -60,12 +61,12 @@ let devConfig = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
         new ExtractTextPlugin({
-            filename: './[name]/index.css',
+            filename: './stylesheet/[name].css',
             allChunks: true
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
-            filename: './[name]/bundle.js'
+            filename: './js/[name].bundle.js'
         })
     ]
 };

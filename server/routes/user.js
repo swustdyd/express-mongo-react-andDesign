@@ -108,8 +108,15 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, functio
         pageSize = Math.min(parseInt(request.query.pageSize), DefaultPageSize);
     }
     condition = JSON.parse(condition);
+    let newCondition = {};
+    if(condition.searchName){
+        newCondition.name = new RegExp(`^${condition.searchName}.*$`, 'i')
+    }
+    if(condition.searchRole){
+        newCondition.role = condition.searchRole;
+    }
     UserService.getUsersByCondition({
-        condition: condition,
+        condition: newCondition,
         pageIndex: pageIndex,
         pageSize: pageSize
     }).then(function (resData) {

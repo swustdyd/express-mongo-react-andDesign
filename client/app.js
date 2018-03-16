@@ -5,15 +5,31 @@ import React from 'react'
 import { HashRouter, Route } from 'react-router-dom'
 import ReactDom from 'react-dom'
 import HMFLayout from './hmfLayout'
-import IndexPage from './containers/index/index'
-import MoviePage from './containers/movie/movie'
-import UserPage from './containers/user/user'
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import Thunk from 'redux-thunk'
 import Logger from 'redux-logger'
 import AppReducer from './reducers/app'
 import Modal from './containers/common/customModal'
+import IndexPage from './containers/index/index'
+import { asyncComponent } from './components/asyncComponent'
+const MoviePage = asyncComponent(() => import (/* webpackChunkName: "movie" */ "./containers/movie/movie"))
+const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ "./containers/user/user"))
+/*const MoviePage = (cb) => {
+    require.ensure([], require => {
+        cb(require('./containers/movie/movie'))
+    },
+    'movie')
+};
+const UserPage = (cb) => {
+    require.ensure([], require => {
+        cb(require('./containers/user/user').default)
+    },
+    'user')
+};*/
+
+/*import MoviePage from './containers/movie/movie'
+import UserPage from './containers/user/user'*/
 
 import './app.scss'
 

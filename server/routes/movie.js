@@ -41,6 +41,9 @@ router.get('/getMovies', function (req, res) {
         }
 
     }
+    if(condition.language){
+        newCondition.language = condition.language;
+    }
     //logger.info(condition);
     MovieService.getMoviesByCondition({
         condition: newCondition,

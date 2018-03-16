@@ -3,6 +3,7 @@
  */
 import React from 'react'
 import {Form, Button, Input, Icon, Select, Spin, message} from 'antd'
+import Common from '../../common/common'
 
 let FormItem = Form.Item;
 let Option = Select.Option;
@@ -103,14 +104,15 @@ class UserEdit extends React.Component{
                                 required: true,
                                 message: '请一个选择角色'
                             }],
-                            initialValue: `${initData.role}`
+                            initialValue: initData.role
                         })(
                             <Select
                                 allowClear
                             >
-                                <Option value="0">普通用户</Option>
+                                {/*<Option value="0">普通用户</Option>
                                 <Option value="10">管理员</Option>
-                                <Option value="50">超级管理员</Option>
+                                <Option value="50">超级管理员</Option>*/}
+                                {Common.createUserRoleOptions()}
                             </Select>
                         )}
                     </FormItem>

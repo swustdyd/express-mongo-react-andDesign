@@ -4,7 +4,7 @@
 
 import React from 'react'
 import {
-    Table, Button, message, Popconfirm,
+    Table, Button, message, Popconfirm, Select,
     Divider, Col, Row, Form, Input, DatePicker
 } from 'antd'
 import MovieEdit from './movieEdit'
@@ -14,6 +14,7 @@ import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
 import ModalAction from '../../actions/common/customModal'
 import YearRangePicker from '../../components/yearRangePicker'
+import Common from '../../common/common'
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -25,7 +26,6 @@ class MovieList extends React.Component{
             yearRange: {}
         }
     }
-
     getSearchCondition(){
         let condition = {};
         let { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();
@@ -36,9 +36,9 @@ class MovieList extends React.Component{
         if(searchLanguage){
             condition.language = searchLanguage;
         }
+        console.log(condition);
         return condition;
     }
-
     handleDeleteClick(id){
         let _this = this;
         _this.props.movieListAction.deleteMovie(id, (err, data) => {
@@ -226,7 +226,9 @@ class MovieList extends React.Component{
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="语言">
                             {getFieldDecorator(`searchLanguage`)(
-                                <Input />
+                                <Select allowClear>
+                                    {Common.createLanguageOptions()}
+                                </Select>
                             )}
                         </FormItem>
                     </Col>

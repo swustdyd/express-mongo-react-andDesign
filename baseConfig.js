@@ -9,5 +9,5 @@ module.exports = {
     proPort: 3001,
     staticPath: 'public',
     webpackPath: './public/dist',
-    publicPath: 'dist'
+    publicPath: 'dist/'
 };

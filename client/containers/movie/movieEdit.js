@@ -3,8 +3,9 @@
  */
 
 import React from 'react'
-import { Form, Input, Tooltip, Icon, Button, message, Spin} from 'antd'
+import { Form, Input, Tooltip, Icon, Button, message, Spin, Select} from 'antd'
 import PicturesWall from '../../components/picturesWall'
+import Common from '../../common/common'
 const {TextArea} = Input;
 const FormItem = Form.Item;
 
@@ -181,9 +182,11 @@ class MovieEdit extends React.Component{
                                 required: true,
                                 message: '请输入语种'
                             }],
-                            initialValue: initData.language
+                            initialValue: `${initData.language}`
                         })(
-                            <Input />
+                            <Select allowClear>
+                                {Common.createLanguageOptions()}
+                            </Select>
                         )}
                     </FormItem>
                     <FormItem

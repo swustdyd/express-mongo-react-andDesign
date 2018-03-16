@@ -9,9 +9,10 @@ const productionConfig = [{
         vendor: ['react','react-dom','react-router-dom']
     },
     output: {
-        filename: './[name]/bundle.js',
+        filename: './js/[name].bundle.js',
         path: path.resolve(__dirname, baseConfig.webpackPath),
-        publicPath: '/'
+        publicPath: baseConfig.publicPath,
+        chunkFilename: 'js/[name].bundle.js',
     },
     module: {
         rules: [{
@@ -45,7 +46,7 @@ const productionConfig = [{
     plugins: [
         new CleanWebpackPlugin([baseConfig.webpackPath]),
         new ExtractTextPlugin({
-            filename: './[name]/index.css',
+            filename: './stylesheet/[name].css',
             allChunks: true
         }),
         new webpack.optimize.UglifyJsPlugin({
