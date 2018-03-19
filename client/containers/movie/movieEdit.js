@@ -182,7 +182,7 @@ class MovieEdit extends React.Component{
                                 required: true,
                                 message: '请输入语种'
                             }],
-                            initialValue: `${initData.language}`
+                            initialValue: `${initData.language || ''}`
                         })(
                             <Select allowClear>
                                 {Common.createLanguageOptions()}

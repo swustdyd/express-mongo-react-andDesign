@@ -8,21 +8,38 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
 
+import './index.scss'
+
 class IndexPage extends React.Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
-            movies: []
+            currentPoster: 0,
+            controllerHeight: 50,
+            minHeight: 600,
+            padding: {
+                x: 100,
+                y: 113
+            },
+            centerStyle: {
+                width: 350,
+                height: 350
+            },
+            resData: {}
         }
     }
-    componentDidMount(){
+
+    getAndLoadMovies(pageIndex){
         let _this = this;
-        _this.props.movieListAction.searchMovies({}, 0, 10, (err, data) => {
+        _this.props.movieListAction.searchMovies({}, pageIndex, 10, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
                 if(data.success){
-                    _this.setState({ movies: data.result});
+                    _this.setState({
+                        resData: data,
+                        currentPoster: data.result.length ? data.result[0]._id : 0
+                    });
                 }else{
                     message.error(data.message);
                 }
@@ -30,15 +47,50 @@ class IndexPage extends React.Component{
         });
     }
 
-    getMoviePosters(movies){
+    componentDidMount(){
+        this.getAndLoadMovies();
+    }
+
+    handlePosterClick(id){
+        if(id === this.state.currentPoster){
+            return true;
+        }else{
+            this.setState({
+                currentPoster: id
+            });
+            return false;
+        }
+    }
+
+    createMoviePosters(movies){
         let moviePosters = [];
+        let height = Math.max(window.innerHeight, this.state.minHeight) - this.state.padding.y - this.state.controllerHeight;
+        let width = Math.max(window.innerWidth, 500) - this.state.padding.x;
         if(movies && movies.length > 0){
-            movies.forEach(function (item, index) {
+            movies.forEach((item, index) => {
+                let randomDeg = Math.ceil(Math.random() * 30);
+                let randomSymbol = Math.random() > 0.5 ? '' : '-';
+                let style = {
+                    transform: `rotate(${randomSymbol}${randomDeg}deg)`,
+                    position: 'absolute',
+                };
+                let className = '';
+                if(item._id === this.state.currentPoster){
+                    style.top = (height - this.state.centerStyle.height) / 2;
+                    style.left = (width - this.state.centerStyle.width) / 2;
+                    style.transform = undefined;
+                    className = 'center'
+                }else{
+                    style.top = Math.ceil(Math.random() * height);
+                    style.left = Math.ceil(Math.random() * width);
+                }
                 moviePosters.push(<MoviePoster
+                    style={style}
+                    className={className}
+                    handlePosterClick={this.handlePosterClick.bind(this)}
+                    movieData={item}
                     key={index}
                     href={`/movie/detail.html/${item._id}`}
-                    poster={item.poster.src}
-                    name={item.title}
                 />)
             })
         }else {
@@ -47,10 +99,65 @@ class IndexPage extends React.Component{
         return moviePosters;
     }
 
+    createControlPosters(movies){
+        let controllers = [];
+        if(movies && movies.length > 0){
+            movies.forEach((item, index) => {
+                let className;
+                if(this.state.currentPoster == item._id){
+                    className = 'poster-controller active';
+                }else {
+                    className = 'poster-controller';
+                }
+                controllers.push(
+                    <span
+                        title={item.title}
+                        key={index}
+                        className={className}
+                        onClick={this.handlePosterClick.bind(this, item._id)}
+                    />)
+            })
+
+        }
+        return controllers;
+    }
+
     render(){
+        let minHeight = Math.max(window.innerHeight, this.state.minHeight) - this.state.padding.y - this.state.controllerHeight;
+        let { result } = this.state.resData;
+        let lastPageProps = {};
+        if(this.state.resData.pageIndex <= 0){
+            lastPageProps.disabled = true;
+        }
+        let nextPageProps = {};
+        //console.log(this.state.resData.pageIndex, Math.floor( this.state.resData.total / this.state.resData.pageSize));
+        if(this.state.resData.pageIndex === Math.floor( this.state.resData.total / this.state.resData.pageSize)){
+            nextPageProps.disabled = true;
+        }
         return (
             <div>
-                {this.getMoviePosters(this.state.movies)}
+                <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>
+                    {this.createMoviePosters(result)}
+                </div>
+                <div style={{
+                    height: this.state.controllerHeight,
+                    lineHeight: `${this.state.controllerHeight}px`}}
+                     className="controller"
+                >
+                    <a className="page-icon"
+                       onClick={this.getAndLoadMovies.bind(this, this.state.resData.pageIndex - 1)}
+                       {...lastPageProps}
+                    >
+                        last page
+                    </a>
+                        {this.createControlPosters(result)}
+                    <a className="page-icon"
+                       onClick={this.getAndLoadMovies.bind(this, this.state.resData.pageIndex + 1)}
+                       {...nextPageProps}
+                    >
+                        next page
+                    </a>
+                </div>
             </div>
         );
     }

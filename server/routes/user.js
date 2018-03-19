@@ -115,6 +115,9 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, functio
     if(condition.searchRole){
         newCondition.role = condition.searchRole;
     }
+    if(condition._id){
+        newCondition._id = condition._id;
+    }
     UserService.getUsersByCondition({
         condition: newCondition,
         pageIndex: pageIndex,

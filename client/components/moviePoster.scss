@@ -1,26 +1,96 @@
 .poster{
-  border: rgba(0,0,0,0) solid 5px;
+  height: 250px;
+  width: 250px;
+  perspective: 1000px;
+  transition: all 0.6s;
 }
+.poster:hover{
+  cursor: pointer;
+}
+.poster .ant-spin-nested-loading,
+.poster .ant-spin-nested-loading .ant-spin-container{
+  height: 100%;
+}
+.poster .back,
+.poster .front{
+  height: 100%;
+}
+.poster .back{
+  overflow-y: auto;
+  background-color: #ffffff;
+  padding: 10px;
+}
+.poster .back::-webkit-scrollbar{
+  width: 8px;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+
+.poster .back::-webkit-scrollbar-thumb{
+  background-color: #aaa;
+  border-radius: 5px;
+}
+
+.poster .back h3{
+  font-weight: bold;
+  text-align: center;
+}
+.poster .back p{
+  text-indent: 2em;
+}
+
 .poster *{
   box-sizing: border-box;
 }
 .poster .ant-card-cover a{
   height: 200px;
-  padding: 5px;
+  padding: 10px;
   text-align: center;
 }
 .poster .ant-card-body{
   padding: 0;
 }
 .poster .ant-card-meta-title{
-  border-top: 1px solid #dddddd;
   padding: 0;
   margin: 0 5px;
-  height: 39px;
-  line-height: 39px;
+  height: 49px;
+  line-height: 49px;
   text-align: center;
 }
 .poster img{
   max-height: 100%;
   max-width: 100%;
+}
+
+//动画控制
+.poster .front,
+.poster .back{
+  position: absolute;
+  width: 100%;
+  transition: all 0.6s;
+  transform-style: preserve-3d; /*重要*/
+  backface-visibility: hidden; /*重要*/
+}
+
+.poster .front{
+  z-index: 1; /*重要*/
+}
+
+.poster .show{
+  opacity: 1;
+}
+.poster .hide{
+  opacity: 0;
+}
+
+.poster .back.hide{
+  transform: rotateY(-180deg);
+}
+
+.poster .front.hide{
+  transform: rotateY(180deg);
+}
+
+.poster .back.show{
+  transform: rotateY(0deg);
 }

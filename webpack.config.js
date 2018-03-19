@@ -6,7 +6,7 @@ let baseConfig = require('./baseConfig');
 let devPort = process.env.PORT || baseConfig.devPort;
 //设置为http模式可以使其在开发过程中，使用?sourceMap时，style-loader会把css做成以下样式
 //<link rel="stylesheet" href="blob:http://localhost:3000/a9fe9187-7594-4b1f-b0f6-6ce46bf6cc4e">
-let publicPath = 'http://localhost:' + devPort + `/${baseConfig.publicPath}/`;
+let publicPath = 'http://localhost:' + devPort + '/';
 let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
 let devConfig = {
     entry: {
@@ -69,7 +69,7 @@ let devConfig = {
             name: 'vendor',
             minChunks: Infinity,
             filename: './js/[name].bundle.js'
-        }),
+        })/*,
         new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
             // In `server` mode analyzer will start HTTP server to show bundle report.
@@ -96,7 +96,7 @@ let devConfig = {
             statsOptions: null,
             // Log level. Can be 'info', 'warn', 'error' or 'silent'.
             logLevel: 'info'
-        })
+        })*/
     ]
 };
 

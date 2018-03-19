@@ -1,0 +1,38 @@
+.controller{
+  text-align: center;
+}
+.poster-controller{
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #aaa;
+}
+.poster-controller.active{
+  background-color: #1890ff;
+}
+.poster-controller:not(:first-child){
+  margin-left: 10px;
+}
+.poster-controller:hover{
+  cursor: pointer;
+}
+.poster{
+  top: 0;
+  left: 0
+}
+.poster.center{
+  z-index: 1;
+  width: 350px;
+  height: 350px;
+}
+.poster.center .front,
+.poster.center .back{
+  box-shadow: 0 0 15px #000;
+}
+.poster.center .ant-card-cover a{
+  height: 300px;
+}
+.page-icon:not(:first-child){
+  margin-left: 10px;
+}
