@@ -40,7 +40,8 @@ class PicturesWall extends React.Component {
             }
             this.props.onChangeCallBack(newFileList)
         }else if(file.response && file.response.success === false){
-            message.error(file.response.message);fileList.forEach((item, index) => {
+            message.error(file.response.message);
+            fileList.forEach((item, index) => {
                 if(item.uid === file.uid){
                     fileList.splice(index, 1);
                     return false;

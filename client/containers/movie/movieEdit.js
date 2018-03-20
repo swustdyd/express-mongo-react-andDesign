@@ -3,9 +3,11 @@
  */
 
 import React from 'react'
-import { Form, Input, Tooltip, Icon, Button, message, Spin, Select} from 'antd'
+import { Form, Input, Tooltip, Icon, Button, message, Spin, Select, Modal} from 'antd'
 import PicturesWall from '../../components/picturesWall'
 import Common from '../../common/common'
+import PictureCut from '../../components/pictureCut'
+
 const {TextArea} = Input;
 const FormItem = Form.Item;
 
@@ -19,7 +21,8 @@ class MovieEdit extends React.Component{
         this.state = {
             submiting: false,
             initData: initData || {},
-            fileList: fileList
+            fileList: fileList,
+            modalVisible: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -75,6 +78,25 @@ class MovieEdit extends React.Component{
         this.setState({
             fileList: fileList
         });
+    }
+    handlePictureCutClick(){
+        let file = this.state.fileList[0];
+        if(file){
+            /*this.props.modalAction.showModal({
+                title: `裁剪图片${file.displayName}`,
+                maskClosable: false,
+                modalContent: <PictureCut/>,
+                width: 800
+            });*/
+            this.setState({
+                modalVisible: true
+            })
+        }
+    }
+    handleModalCancelClick(){
+        this.setState({
+            modalVisible: false
+        })
     }
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -215,14 +237,38 @@ class MovieEdit extends React.Component{
                         )}
                     >
                         {getFieldDecorator('posterFile')(
-                            <PicturesWall
-                                name="poster"
-                                action="/movie/uploadPoster"
-                                listType="picture-card"
-                                maxLength={1}
-                                fileList={fileListTemps}
-                                onChangeCallBack={this.handleFileUploadChange.bind(this)}
-                            />
+                            <div>
+                                <PicturesWall
+                                    name="poster"
+                                    action="/movie/uploadPoster"
+                                    listType="picture-card"
+                                    maxLength={1}
+                                    fileList={fileListTemps}
+                                    onChangeCallBack={this.handleFileUploadChange.bind(this)}
+                                />
+                                {
+                                    fileList && fileList.length > 0 ?
+                                        <Button
+                                            type="primary"
+                                            size="small"
+                                            onClick={this.handlePictureCutClick.bind(this)}
+                                        >
+                                            裁剪图片
+                                        </Button> : ''
+                                }
+                                <Modal
+                                    title={`裁剪图片：${fileList && fileList.length > 0 ? fileList[0].displayName : ''}`}
+                                    width={800}
+                                    maskClosable={false}
+                                    destroyOnClose={true}
+                                    visible={this.state.modalVisible}
+                                    onCancel={this.handleModalCancelClick.bind(this)}
+                                    footer={null}
+                                    styel={{top: 20}}
+                                >
+                                    <PictureCut fileData={fileList[0]}/>
+                                </Modal>
+                            </div>
                         )}
                     </FormItem>
                     <FormItem {...tailFormItemLayout}>
@@ -233,4 +279,5 @@ class MovieEdit extends React.Component{
         );
     }
 }
+
 export default Form.create()(MovieEdit);

@@ -7,7 +7,6 @@ import { message } from 'antd'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
-
 import './index.scss'
 
 class IndexPage extends React.Component{
@@ -25,13 +24,14 @@ class IndexPage extends React.Component{
                 width: 350,
                 height: 350
             },
-            resData: {}
+            resData: {},
+            styleObj: [],
         }
     }
 
     getAndLoadMovies(pageIndex){
         let _this = this;
-        _this.props.movieListAction.searchMovies({}, pageIndex, 10, (err, data) => {
+        _this.props.movieListAction.searchMovies({}, pageIndex, 5, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -40,11 +40,44 @@ class IndexPage extends React.Component{
                         resData: data,
                         currentPoster: data.result.length ? data.result[0]._id : 0
                     });
+                    setTimeout(()=>{
+                        this.rePosition(data.result.length ? data.result[0]._id : 0)
+                    }, 100)
                 }else{
                     message.error(data.message);
                 }
             }
         });
+    }
+
+    rePosition(id){
+        let styleObj = {};
+        let {resData} = this.state;
+        let movies = resData.result;
+        let height = Math.max(window.innerHeight, this.state.minHeight) - this.state.padding.y - this.state.controllerHeight;
+        let width = Math.max(window.innerWidth, 500) - this.state.padding.x;
+        if(movies && movies.length > 0){
+            movies.forEach((item) =>{
+                let randomDeg = Math.ceil(Math.random() * 30);
+                let randomSymbol = Math.random() > 0.5 ? '' : '-';
+                let style = {
+                    transform: `rotate(${randomSymbol}${randomDeg}deg)`,
+                    position: 'absolute',
+                };
+                if(item._id === id){
+                    style.top = (height - this.state.centerStyle.height) / 2;
+                    style.left = (width - this.state.centerStyle.width) / 2;
+                    style.transform = undefined;
+                }else{
+                    style.top = Math.ceil(Math.random() * (height - 100));
+                    style.left = Math.ceil(Math.random() * (width - 100));
+                }
+                styleObj[item._id] = style;
+            });
+            this.setState({
+                styleObj: styleObj
+            })
+        }
     }
 
     componentDidMount(){
@@ -58,6 +91,7 @@ class IndexPage extends React.Component{
             this.setState({
                 currentPoster: id
             });
+            this.rePosition(id)
             return false;
         }
     }
@@ -68,24 +102,16 @@ class IndexPage extends React.Component{
         let width = Math.max(window.innerWidth, 500) - this.state.padding.x;
         if(movies && movies.length > 0){
             movies.forEach((item, index) => {
-                let randomDeg = Math.ceil(Math.random() * 30);
-                let randomSymbol = Math.random() > 0.5 ? '' : '-';
-                let style = {
-                    transform: `rotate(${randomSymbol}${randomDeg}deg)`,
-                    position: 'absolute',
-                };
                 let className = '';
+                let style = {};
                 if(item._id === this.state.currentPoster){
                     style.top = (height - this.state.centerStyle.height) / 2;
                     style.left = (width - this.state.centerStyle.width) / 2;
                     style.transform = undefined;
                     className = 'center'
-                }else{
-                    style.top = Math.ceil(Math.random() * height);
-                    style.left = Math.ceil(Math.random() * width);
                 }
                 moviePosters.push(<MoviePoster
-                    style={style}
+                    style={this.state.styleObj[item._id] || style}
                     className={className}
                     handlePosterClick={this.handlePosterClick.bind(this)}
                     movieData={item}
@@ -134,6 +160,7 @@ class IndexPage extends React.Component{
         if(this.state.resData.pageIndex === Math.floor( this.state.resData.total / this.state.resData.pageSize)){
             nextPageProps.disabled = true;
         }
+        console.log(this.state.styleObj[this.state.currentPoster]);
         return (
             <div>
                 <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>
