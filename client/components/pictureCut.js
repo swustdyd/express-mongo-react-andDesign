@@ -2,7 +2,7 @@
  * Created by Aaron on 2018/3/20.
  */
 import React from 'react'
-import { Button, Slider} from 'antd'
+import { Button, Slider, message} from 'antd'
 
 import './pictureCut.scss'
 
@@ -15,6 +15,7 @@ class PictureCut extends React.Component{
             cutWidth: 250,
             cutHeight: 250,
             cutArea: undefined,
+            clearArea: undefined,
             isMouseDown: false,
             scale: 1,
             originPosition: {x: 0, y: 0},
@@ -23,18 +24,17 @@ class PictureCut extends React.Component{
             context: undefined,
             image: undefined
         };
-
         this.handleSliderChange = this.handleSliderChange.bind(this);
         this.handleCanvasMouseDown = this.handleCanvasMouseDown.bind(this);
         this.handleCanvasMouseUp = this.handleCanvasMouseUp.bind(this);
         this.handleCanvasMouseMove = this.handleCanvasMouseMove.bind(this);
         this.handleCanvasMouseOut = this.handleCanvasMouseOut.bind(this);
         this.handleSaveClick = this.handleSaveClick.bind(this);
-        this.handleRestClick = this.handleRestClick.bind(this);
     }
 
     createCanvas(){
         let { fileData } = this.props;
+        let { cutWidth, cutHeight } = this.state;
         let pictureCutCanvas = this.refs.pictureCutCanvas;
         let context = pictureCutCanvas.getContext('2d');
         let magnifierCanvas = this.refs.magnifierCanvas;
@@ -42,12 +42,20 @@ class PictureCut extends React.Component{
         let img = new Image();
         let _this = this;
         img.onload = function () {
+            let clearArea = {
+                x: (pictureCutCanvas.width - cutWidth)/2,
+                y: (pictureCutCanvas.height - cutHeight)/2,
+                width: cutWidth,
+                height: cutHeight
+            };
             _this.setState({
                 context: context,
                 canvas: pictureCutCanvas,
                 magnifierCanvas: magnifierCanvas,
                 magnifierCanvasContext: magnifierCanvasContext,
-                image: img
+                image: img,
+                clearArea: clearArea,
+                cutArea: clearArea
             });
             _this.draw();
         };
@@ -57,23 +65,10 @@ class PictureCut extends React.Component{
     draw() {
         let {
             canvas, context, image, magnifierCanvas, magnifierCanvasContext,
-            cutHeight, cutWidth, scale, originPosition
+            scale, originPosition, clearArea
         } = this.state;
         let drawWidth = image.width * scale;
         let drawHeight = image.height * scale;
-        let clearArea = {
-            x: (canvas.width - cutWidth)/2,
-            y: (canvas.height - cutHeight)/2,
-            width: cutWidth,
-            height: cutHeight
-        };
-        let cutArea = {
-            x: (clearArea.x - originPosition.x) / scale,
-            y: (clearArea.y - originPosition.y) / scale,
-            width: cutWidth / scale,
-            height: cutHeight / scale
-        };
-        console.log(cutArea);
         context.clearRect(0, 0, canvas.width, canvas.height);
         magnifierCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(image, originPosition.x, originPosition.y, drawWidth, drawHeight);
@@ -100,14 +95,47 @@ class PictureCut extends React.Component{
     }
 
     handleCanvasMouseMove(e) {
-        let { isMouseDown, originPosition, lastMosePosition} = this.state;
+        let {
+            isMouseDown, originPosition, lastMosePosition,
+            clearArea, cutWidth, cutHeight, scale, image
+        } = this.state;
         if(isMouseDown){
             let currentMousePosition = this.getCanvasMousePosition(e.clientX, e.clientY);
-            originPosition.x += currentMousePosition.x - lastMosePosition.x;
-            originPosition.y += currentMousePosition.y - lastMosePosition.y;
+            let newOriginPosition = {
+                x: originPosition.x + currentMousePosition.x - lastMosePosition.x,
+                y: originPosition.y + currentMousePosition.y - lastMosePosition.y
+            };
+
+            //边界判断
+            if(newOriginPosition.x > clearArea.x){
+                newOriginPosition.x = clearArea.x;
+            }
+            if(newOriginPosition.y > clearArea.y){
+                newOriginPosition.y = clearArea.y;
+            }
+            if(newOriginPosition.x + image.width * scale < clearArea.x + cutWidth ){
+                newOriginPosition.x = clearArea.x + cutWidth - image.width * scale;
+            }
+
+            if(newOriginPosition.y + image.height * scale < clearArea.y + cutHeight ){
+                newOriginPosition.y = clearArea.y + cutHeight - image.height * scale;
+            }
+
+            let cutAreaX = (clearArea.x - newOriginPosition.x) / scale,
+                cutAreaY = (clearArea.y - newOriginPosition.y) / scale,
+                cutAreaWidth = Math.min(image.width  - cutAreaX, cutWidth / scale),
+                cutAreaHeight = Math.min(image.height - cutAreaY, cutHeight / scale);
+
+            let newCutArea = {
+                x: parseInt(cutAreaX),
+                y: parseInt(cutAreaY),
+                width: parseInt(cutAreaWidth),
+                height: parseInt(cutAreaHeight)
+            };
             this.setState({
-                originPosition: originPosition,
-                lastMosePosition: currentMousePosition
+                originPosition: newOriginPosition,
+                lastMosePosition: currentMousePosition,
+                cutArea: newCutArea
             });
             this.draw();
         }
@@ -128,30 +156,69 @@ class PictureCut extends React.Component{
     }
 
     handleSliderChange(value){
-        let { scale, originPosition} = this.state;
+        let {
+            scale, originPosition, image,
+            clearArea, cutWidth, cutHeight
+        } = this.state;
         let newScale = value / 100.0;
         originPosition.x = originPosition.x * (1 + (newScale - scale));
         originPosition.y = originPosition.y * (1 + (newScale - scale));
+
+        //边界判断
+        if(originPosition.x > clearArea.x){
+            originPosition.x = clearArea.x;
+            newScale = scale;
+        }
+
+        if(originPosition.y > clearArea.y){
+            originPosition.y = clearArea.y;
+            newScale = scale;
+        }
+
+        if(originPosition.x + image.width * scale < clearArea.x + cutWidth ){
+            originPosition.x = clearArea.x + cutWidth - image.width * scale;
+            newScale = scale;
+        }
+
+        if(originPosition.y + image.height * scale < clearArea.y + cutHeight ){
+            originPosition.y = clearArea.y + cutHeight - image.height * scale;
+            newScale = scale;
+        }
+        let cutArea = {
+            x: (clearArea.x - originPosition.x) / scale,
+            y: (clearArea.y - originPosition.y) / scale,
+            width: cutWidth / scale,
+            height: cutHeight / scale
+        };
+
         this.setState({
+            cutArea: cutArea,
             scale: newScale,
             originPosition: originPosition
         });
+
         this.draw();
     }
 
     handleSaveClick(){
-        let {cutArea} = this.state;
-
-    }
-
-    handleRestClick(){
-        this.setState({
-            cutArea: undefined,
-            isMouseDown: false,
-            scale: 1,
-            originPosition: {x: 0, y: 0}
-        });
-        this.draw();
+        let _this = this;
+        let { cutArea } = this.state;
+        let path = this.props.action;
+        let { fileData } = this.props;
+        fetch(path, {
+            method: 'post',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({file: fileData, cutArea: cutArea})
+        }).then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    _this.props.onSave(data.result);
+                }else {
+                    message.error(data.message);
+                }
+            })
     }
 
     componentDidMount(){
@@ -166,7 +233,7 @@ class PictureCut extends React.Component{
                         <Slider
                             vertical
                             onChange={this.handleSliderChange}
-                            defaultValue={this.state.scale * 100}
+                            value={this.state.scale * 100}
                             max={200}
                             min={30}
                             tipFormatter={value=> value / 100.0 }
@@ -189,7 +256,7 @@ class PictureCut extends React.Component{
                     />
                 </div>
                 <div style={{textAlign: 'right'}}>
-                    <Button type="danger" onClick={this.handleRestClick}>重置</Button>
+                    {/*<Button type="danger" onClick={this.handleRestClick}>重置</Button>*/}
                     <Button type="primary" onClick={this.handleSaveClick}>保存</Button>
                 </div>
             </div>

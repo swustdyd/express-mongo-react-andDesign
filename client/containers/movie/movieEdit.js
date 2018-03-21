@@ -21,10 +21,10 @@ class MovieEdit extends React.Component{
         this.state = {
             submiting: false,
             initData: initData || {},
-            fileList: fileList,
-            modalVisible: false
+            fileList: fileList
         };
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleFileUploadChange = this.handleFileUploadChange.bind(this);
     }
     handleSubmit(e) {
         e.preventDefault();
@@ -74,30 +74,13 @@ class MovieEdit extends React.Component{
             }
         });
     }
+
     handleFileUploadChange(fileList){
         this.setState({
             fileList: fileList
         });
     }
-    handlePictureCutClick(){
-        let file = this.state.fileList[0];
-        if(file){
-            /*this.props.modalAction.showModal({
-                title: `裁剪图片${file.displayName}`,
-                maskClosable: false,
-                modalContent: <PictureCut/>,
-                width: 800
-            });*/
-            this.setState({
-                modalVisible: true
-            })
-        }
-    }
-    handleModalCancelClick(){
-        this.setState({
-            modalVisible: false
-        })
-    }
+
     render() {
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
@@ -241,33 +224,10 @@ class MovieEdit extends React.Component{
                                 <PicturesWall
                                     name="poster"
                                     action="/movie/uploadPoster"
-                                    listType="picture-card"
                                     maxLength={1}
                                     fileList={fileListTemps}
-                                    onChangeCallBack={this.handleFileUploadChange.bind(this)}
+                                    onChange={this.handleFileUploadChange}
                                 />
-                                {
-                                    fileList && fileList.length > 0 ?
-                                        <Button
-                                            type="primary"
-                                            size="small"
-                                            onClick={this.handlePictureCutClick.bind(this)}
-                                        >
-                                            裁剪图片
-                                        </Button> : ''
-                                }
-                                <Modal
-                                    title={`裁剪图片：${fileList && fileList.length > 0 ? fileList[0].displayName : ''}`}
-                                    width={800}
-                                    maskClosable={false}
-                                    destroyOnClose={true}
-                                    visible={this.state.modalVisible}
-                                    onCancel={this.handleModalCancelClick.bind(this)}
-                                    footer={null}
-                                    styel={{top: 20}}
-                                >
-                                    <PictureCut fileData={fileList[0]}/>
-                                </Modal>
                             </div>
                         )}
                     </FormItem>

@@ -3,15 +3,21 @@
  */
 import React from 'react'
 import { Upload, Icon, Modal, message } from 'antd';
+import PictureCut from './pictureCut'
+
+import './picturesWall.scss'
 
 class PicturesWall extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            previewVisible: false,
+            modalVisible: false,
+            modalTitle: '',
             previewImage: '',
             fileList: this.props.fileList
         };
+        /*this.handlePicItemMouseEnter = this.handlePicItemMouseEnter.bind(this);
+        this.handlePicItemMouseOut = this.handlePicItemMouseOut.bind(this);*/
     }
 
     handleCancel(){
@@ -38,7 +44,7 @@ class PicturesWall extends React.Component {
                 };
                 newFileList.push(obj);
             }
-            this.props.onChangeCallBack(newFileList)
+            this.props.onChange(newFileList)
         }else if(file.response && file.response.success === false){
             message.error(file.response.message);
             fileList.forEach((item, index) => {
@@ -48,7 +54,9 @@ class PicturesWall extends React.Component {
                 }
             });
         }
-        this.setState({ fileList });
+        this.setState({
+            fileList: fileList
+        });
     }
 
     handleRemove(file){
@@ -58,42 +66,79 @@ class PicturesWall extends React.Component {
                return false;
            }
         });
-        this.props.onChangeCallBack(this.state.fileList);
+        this.props.onChange(this.state.fileList);
         return false;
     }
 
+    handlePicItemMouseEnter(uid){
+        this.setState({
+            activeItem: uid
+        })
+    }
+
+    handlePicItemMouseOut(){
+        this.setState({
+            activeItem: undefined
+        })
+    }
+
+    getPictureList(fileList){
+        let itemList = [];
+        let _this = this;
+        fileList.forEach((item, index) => {
+            itemList.push(
+                <div className="picture-item"
+                     key={item.uid}
+                     onMouseEnter={ () => this.handlePicItemMouseEnter(item.uid)}
+                     onMouseOut={() => this.handlePicItemMouseOut(item.uid)}
+                >
+                    <div className={`picture-item-drop ${_this.state.activeItem === item.uid ? 'active' : ''}`}>
+                        <Icon type="delete"/>
+                        <Icon type="delete"/>
+                        <Icon type="delete"/>
+                    </div>
+                    <img src={item.url} alt={item.name} title={item.name}/>
+                </div>
+            )
+        });
+        return itemList;
+    }
+
     render() {
-        let { previewVisible, previewImage, fileList } = this.state;
+        let { previewVisible, previewImage, fileList, cutImage } = this.state;
         fileList = fileList || [];
-        const uploadButton = (
-            <div>
-                <Icon type="plus" />
-                <div className="ant-upload-text">上传</div>
-            </div>
-        );
         const maxLength = this.props.maxLength || 3;
         return (
             <div className="pictures-wall">
-                <Upload
-                    name={this.props.name}
-                    action={this.props.action}
-                    listType={this.props.listType}
-                    fileList={fileList}
-                    onPreview={this.handlePreview.bind(this)}
-                    onChange={this.handleChange.bind(this)}
-                    onRemove={this.handleRemove.bind(this)}
-                    accept=".jpg,.png"
-                >
-                    {fileList.length >= maxLength ? null : uploadButton}
-                </Upload>
+                { fileList.length >= maxLength ?
+                    this.getPictureList(fileList) :
+                    <Upload
+                        name={this.props.name}
+                        action={this.props.action}
+                        fileList={fileList}
+                        onPreview={this.handlePreview.bind(this)}
+                        onChange={this.handleChange.bind(this)}
+                        onRemove={this.handleRemove.bind(this)}
+                        accept=".jpg,.png"
+                    >
+                        <div className="btn-upload">
+                            <Icon type="inbox" />
+                            <div className="btn-upload-text">点击上传</div>
+                        </div>
+                    </Upload>
+                }
                 <Modal
-                    title="预览"
+                    title={this.state.modalTitle}
                     visible={previewVisible}
                     style={{top: '20px'}}
                     footer={null}
                     onCancel={this.handleCancel.bind(this)}
                 >
-                    <img alt="预览" style={{ width: '100%' }} src={previewImage} />
+                    {
+                        this.state.type === 'cut' ?
+                            <PictureCut action="/movie/cutPoster" fileData={cutImage} onSave={this.handlePictureCutSave}/> :
+                            <img alt="预览" style={{ width: '100%' }} src={previewImage} />
+                    }
                 </Modal>
             </div>
         );

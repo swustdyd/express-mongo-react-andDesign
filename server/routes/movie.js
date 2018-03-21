@@ -1,13 +1,16 @@
 /**
  * Created by Aaron on 2018/1/6.
  */
-const express = require('express'),
-       router = express.Router();
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 const _ = require('underscore');
 const logger = require('../common/logger');
 const MovieService = require('../service/movie');
 const PublicFunc = require('../common/publicFunc');
 const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
+const BaseConfig = require('../../baseConfig');
 
 /**
  * 获取电影列表
@@ -97,17 +100,47 @@ router.get('/delete', function (request, response) {
 
 router.post('/uploadPoster', function (req, res) {
     PublicFunc.uploadFiles(req, res, {
-        subDir: 'movie/poster',
+        subDir: 'movie/poster/temp',
         fileFilter: ['.png', '.jpg']
     }).then(function (files) {
         if(files){
-            files.forEach((item, index) => item.src = `uploads/movie/poster/${item.filename}`)
+            files.forEach(item => item.src = `uploads/movie/poster/temp/${item.filename}`);
+            res.json({success: true, message: '上传成功', result: files});
+        }else{
+            res.json({success: false, message: '上传文件为空', result: files});
         }
-        res.json({success: true, message: '上传成功', result: files});
     }).catch(function (err) {
         logger.error(err);
         res.json({success: false, message: err.message});
     });
 });
+
+router.post('/cutPoster', function (req, res) {
+    let file = req.body.file;
+    let cutArea = req.body.cutArea;
+    let input = path.resolve(BaseConfig.root, `public/${file.src}`);
+    let index = file.src.lastIndexOf('/');
+    let savePath = `${path.dirname(file.src.substr(0, index))}/resize/${file.filename}`;
+    let output = path.resolve(BaseConfig.root, `public/${savePath}`);
+    logger.debug(input);
+    logger.debug(output);
+    PublicFunc.cutAndResizeImgTo250px(
+        input,
+        output,
+        {
+            left: cutArea.x,
+            top: cutArea.y,
+            width: cutArea.width,
+            height: cutArea.height
+        }
+    ).then(() => {
+        //fs.unlinkSync(input);
+        res.json({success: true, message: '裁剪成功', result: Object.assign(file, {src: savePath})});
+    }).catch(err => {
+        logger.error(err);
+        res.json({success: false, message: err.message});
+    });
+});
+
 
 module.exports = router;
