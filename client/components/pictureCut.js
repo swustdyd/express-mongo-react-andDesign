@@ -63,6 +63,7 @@ class PictureCut extends React.Component{
             });
             _this.draw();
         };
+        console.log(fileData.url)
         img.src = fileData.url;
     }
 

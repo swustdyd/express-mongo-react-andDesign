@@ -27,7 +27,7 @@ class MovieEdit extends React.Component{
         this.handleFileUploadChange = this.handleFileUploadChange.bind(this);
     }
     handleSubmit(e) {
-        console.log('表单提交', e);
+        //console.log('表单提交', e);
         e.preventDefault();
         let _this = this;
         this.props.form.validateFieldsAndScroll((err, value) => {

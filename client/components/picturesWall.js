@@ -48,7 +48,6 @@ class PicturesWall extends React.Component {
         let { fileList } = this.state;
         fileList.forEach((item, index) => {
             if(item.uid === uid){
-                console.log(uid, this);
                 this.setState({
                     previewImage: item,
                     modalVisible: true,
@@ -88,13 +87,10 @@ class PicturesWall extends React.Component {
     }
 
     handleChange(fileList){
-        console.log(fileList)
         let newFileList = [];
         fileList.forEach(item => {
-            console.log(item.name);
             newFileList.push(Object.assign({},{name: item.name}, item));
         });
-        console.log(newFileList)
         if(this.props.onChange){
             this.props.onChange(newFileList);
         }
@@ -197,6 +193,7 @@ class PicturesWall extends React.Component {
                     style={{top: '20px'}}
                     footer={null}
                     width={modalWidth}
+                    destroyOnClose={true}
                     onCancel={this.handleCancel.bind(this)}
                 >
                     {

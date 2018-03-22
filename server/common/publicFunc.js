@@ -11,7 +11,7 @@ const _ = require('underscore');
 const multer = require('multer');
 const  fs = require('fs');
 const path = require('path');
-/*const sharp = require('sharp');*/
+const sharp = require('sharp');
 
 const bcryptString = (string) => {
     return new Promise(function (resolve, reject) {
@@ -150,20 +150,30 @@ const uploadFiles = (request, response, options) => {
     });
 };
 
-const cutAndResizeImgTo250px = (sharp, output, cutArea) => {
-    return cutAndResizeImg(sharp, output, cutArea, 250, 250);
+const cutAndResizeImgTo250px = (input, output, cutArea) => {
+    return cutAndResizeImg(input, output, cutArea, 250, 250);
 };
 
-const cutAndResizeImg = (sharp, output, cutArea, resizeWidth, resizeHeight) => {
+const cutAndResizeImg = (input, output, cutArea, resizeWidth, resizeHeight) => {
     return new Promise((resolve, reject) => {
-        sharp.extract(cutArea)
-            .resize(resizeWidth, resizeHeight)
-            .toFile(output, (err) => {
-                if(err){
-                    reject(err)
-                }
-                resolve({success: true});
-            })
+        let stream = fs.createReadStream(input);
+        let fileData = [];//存储文件流
+        stream.on('data', (data) => {
+            fileData.push(data);
+        });
+        stream.on( 'end', function() {
+            let finalData = Buffer.concat(fileData);
+            sharp(finalData)
+                .extract(cutArea)
+                .resize(resizeWidth, resizeHeight)
+                .toFile(output, (err) => {
+                    if(err){
+                        reject(err)
+                    }
+                    resolve({success: true});
+                })
+        });
+
     })
 };
 

@@ -11,7 +11,6 @@ const MovieService = require('../service/movie');
 const PublicFunc = require('../common/publicFunc');
 const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 const BaseConfig = require('../../baseConfig');
-const sharp = require('sharp');
 
 /**
  * 获取电影列表
@@ -100,7 +99,6 @@ router.get('/delete', function (request, response) {
 });
 
 router.post('/uploadPoster', function (req, res) {
-    logger.debug('文件开始上传');
     PublicFunc.uploadFiles(req, res, {
         subDir: 'movie/poster/temp',
         fileFilter: ['.png', '.jpg']
@@ -124,11 +122,8 @@ router.post('/cutPoster', function (req, res) {
     let index = file.url.lastIndexOf('/');
     let savePath = `${path.dirname(file.url.substr(0, index))}/resize/${file.filename}`;
     let output = path.resolve(BaseConfig.root, `public/${savePath}`);
-    logger.debug(input);
-    logger.debug(output);
-    let sharps = sharp(input);
     PublicFunc.cutAndResizeImgTo250px(
-        sharps,
+        input,
         output,
         {
             left: cutArea.x,
@@ -138,13 +133,12 @@ router.post('/cutPoster', function (req, res) {
         }
     ).then(() => {
         //sharps = sharp(path.resolve(BaseConfig.root, 'public/uploads/reset.jpg'));
-        //fs.unlinkSync(input);
+        fs.unlinkSync(input);
         res.json({success: true, message: '裁剪成功', result: Object.assign(file, {url: savePath})});
     }).catch(err => {
         logger.error(err);
         res.json({success: false, message: err.message});
     });
-
 });
 
 
