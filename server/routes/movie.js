@@ -11,6 +11,7 @@ const MovieService = require('../service/movie');
 const PublicFunc = require('../common/publicFunc');
 const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 const BaseConfig = require('../../baseConfig');
+const sharp = require('sharp');
 
 /**
  * 获取电影列表
@@ -99,12 +100,13 @@ router.get('/delete', function (request, response) {
 });
 
 router.post('/uploadPoster', function (req, res) {
+    logger.debug('文件开始上传');
     PublicFunc.uploadFiles(req, res, {
         subDir: 'movie/poster/temp',
         fileFilter: ['.png', '.jpg']
     }).then(function (files) {
         if(files){
-            files.forEach(item => item.src = `uploads/movie/poster/temp/${item.filename}`);
+            files.forEach(item => item.url = `uploads/movie/poster/temp/${item.filename}`);
             res.json({success: true, message: '上传成功', result: files});
         }else{
             res.json({success: false, message: '上传文件为空', result: files});
@@ -118,14 +120,15 @@ router.post('/uploadPoster', function (req, res) {
 router.post('/cutPoster', function (req, res) {
     let file = req.body.file;
     let cutArea = req.body.cutArea;
-    let input = path.resolve(BaseConfig.root, `public/${file.src}`);
-    let index = file.src.lastIndexOf('/');
-    let savePath = `${path.dirname(file.src.substr(0, index))}/resize/${file.filename}`;
+    let input = path.resolve(BaseConfig.root, `public/${file.url}`);
+    let index = file.url.lastIndexOf('/');
+    let savePath = `${path.dirname(file.url.substr(0, index))}/resize/${file.filename}`;
     let output = path.resolve(BaseConfig.root, `public/${savePath}`);
     logger.debug(input);
     logger.debug(output);
+    let sharps = sharp(input);
     PublicFunc.cutAndResizeImgTo250px(
-        input,
+        sharps,
         output,
         {
             left: cutArea.x,
@@ -134,12 +137,14 @@ router.post('/cutPoster', function (req, res) {
             height: cutArea.height
         }
     ).then(() => {
+        //sharps = sharp(path.resolve(BaseConfig.root, 'public/uploads/reset.jpg'));
         //fs.unlinkSync(input);
-        res.json({success: true, message: '裁剪成功', result: Object.assign(file, {src: savePath})});
+        res.json({success: true, message: '裁剪成功', result: Object.assign(file, {url: savePath})});
     }).catch(err => {
         logger.error(err);
         res.json({success: false, message: err.message});
     });
+
 });
 
 

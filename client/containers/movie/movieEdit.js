@@ -27,6 +27,7 @@ class MovieEdit extends React.Component{
         this.handleFileUploadChange = this.handleFileUploadChange.bind(this);
     }
     handleSubmit(e) {
+        console.log('表单提交', e);
         e.preventDefault();
         let _this = this;
         this.props.form.validateFieldsAndScroll((err, value) => {
@@ -35,6 +36,12 @@ class MovieEdit extends React.Component{
                 _this.setState({submiting: true});
                 movie._id = this.state.initData._id;
                 let fileList = this.state.fileList;
+                fileList.forEach(item => {
+                    item.displayName = item.name;
+                    item.src = item.url;
+                    item.name = undefined;
+                    item.url = undefined;
+                });
                 if(fileList &&  fileList.length > 0){
                     movie.poster = fileList[0];
                 }else {
@@ -106,15 +113,11 @@ class MovieEdit extends React.Component{
             },
         };
         let { initData, fileList } = this.state;
-        let fileListTemps = [];
         fileList.forEach((item, index) => {
-            fileListTemps.push({
-                uid: index,
-                name: item.displayName,
-                status: 'done',
-                url: item.src,
-                test: 'test'
-            })
+            item.uid = index;
+            item.name = item.displayName || item.name;
+            item.status = 'done';
+            item.url = item.src || item.url;
         });
         return (
             <Spin tip="提交中..." spinning={this.state.submiting}>
@@ -224,8 +227,9 @@ class MovieEdit extends React.Component{
                                 <PicturesWall
                                     name="poster"
                                     action="/movie/uploadPoster"
+                                    cutAction="/movie/cutPoster"
                                     maxLength={1}
-                                    fileList={fileListTemps}
+                                    defaultFileList={fileList}
                                     onChange={this.handleFileUploadChange}
                                 />
                             </div>

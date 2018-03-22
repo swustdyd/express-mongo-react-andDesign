@@ -1,23 +1,33 @@
+$picturesWidth: 200px;
+$picturesHeight: $picturesWidth;
+$picturesPadding: 5px;
 .pictures-wall .ant-upload-list{
   display: none;
 }
 .pictures-wall .picture-item,
-.pictures-wall .btn-upload{
-  display: inline-block;
-  width: 200px;
-  height: 200px;
+.pictures-wall .btn-upload,
+.pictures-wall .picture-upload{
+  width: $picturesWidth;
+  height: $picturesHeight;
 }
+.pictures-wall .picture-item,
+.pictures-wall .picture-upload{
+  display: inline-block;
+  vertical-align: middle;
+  margin:5px 0 0 5px;
+}
+
 .pictures-wall .picture-item{
-  position: relative;
-  padding: 5px;
+  /*position: relative;*/
+  padding: $picturesPadding;
   border-radius: 5px;
   background-color: #c6c6c6;
 }
 .pictures-wall .picture-item .picture-item-drop{
   display: none;
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: $picturesWidth - $picturesPadding * 2;
+  height: $picturesWidth - $picturesPadding * 2;
   background-color: rgba(0,0,0,0.3);
 }
 .pictures-wall .picture-item .picture-item-drop.active{
@@ -45,4 +55,19 @@
   display: block;
   font-size: 16px;
   color: #aaaaaa;
+}
+.pictures-wall .picture-item-drop{
+  text-align: center;
+  line-height: $picturesWidth - $picturesPadding * 2;
+}
+.pictures-wall .picture-item-drop .anticon{
+  margin-top: 30px;
+  font-size: 30px;
+  color: #fff;
+}
+.pictures-wall .picture-item-drop .anticon:hover{
+  cursor:  pointer;
+}
+.pictures-wall .picture-item-drop .anticon:not(:first-child){
+  margin-left: 10px;
 }

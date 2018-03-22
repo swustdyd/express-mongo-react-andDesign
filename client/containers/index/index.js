@@ -160,7 +160,6 @@ class IndexPage extends React.Component{
         if(this.state.resData.pageIndex === Math.floor( this.state.resData.total / this.state.resData.pageSize)){
             nextPageProps.disabled = true;
         }
-        console.log(this.state.styleObj[this.state.currentPoster]);
         return (
             <div>
                 <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>

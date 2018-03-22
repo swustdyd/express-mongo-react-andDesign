@@ -11,7 +11,7 @@ const _ = require('underscore');
 const multer = require('multer');
 const  fs = require('fs');
 const path = require('path');
-const sharp = require('sharp');
+/*const sharp = require('sharp');*/
 
 const bcryptString = (string) => {
     return new Promise(function (resolve, reject) {
@@ -149,14 +149,14 @@ const uploadFiles = (request, response, options) => {
         })
     });
 };
-const cutAndResizeImgTo250px = (input, output, cutArea) => {
-    return cutAndResizeImg(input, output, cutArea, 250, 250);
+
+const cutAndResizeImgTo250px = (sharp, output, cutArea) => {
+    return cutAndResizeImg(sharp, output, cutArea, 250, 250);
 };
 
-const cutAndResizeImg = (input, output, cutArea, resizeWidth, resizeHeight) => {
+const cutAndResizeImg = (sharp, output, cutArea, resizeWidth, resizeHeight) => {
     return new Promise((resolve, reject) => {
-        sharp(input)
-            .extract(cutArea)
+        sharp.extract(cutArea)
             .resize(resizeWidth, resizeHeight)
             .toFile(output, (err) => {
                 if(err){

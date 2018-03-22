@@ -55,11 +55,15 @@ class PictureCut extends React.Component{
                 magnifierCanvasContext: magnifierCanvasContext,
                 image: img,
                 clearArea: clearArea,
-                cutArea: clearArea
+                cutArea: clearArea,
+                originPosition: {
+                    x: clearArea.x,
+                    y: clearArea.y
+                }
             });
             _this.draw();
         };
-        img.src = fileData.src;
+        img.src = fileData.url;
     }
 
     draw() {
