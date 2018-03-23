@@ -38,21 +38,23 @@ module.exports = {
         let options = _.extend({}, queryDefaultOptions, customOptions);
         return new Promise(function (resolve, reject) {
             User.count(options.condition, function (err, count) {
-                User.find(options.condition, function (err, users) {
-                    if(err){
-                        reject(err);
-                    }
-                    resolve({
-                        success: true,
-                        result: users,
-                        total: count,
-                        pageIndex: options.pageIndex,
-                        pageSize: options.pageSize
-                    });
-                    resolve({success: true, result: users});
-                }).sort(options.sort)
+                User.find(options.condition)
+                    .sort(options.sort)
                     .skip(options.pageIndex * options.pageSize)
-                    .limit(options.pageSize);
+                    .limit(options.pageSize)
+                    .exec((err, users) => {
+                        if(err){
+                            reject(err);
+                        }
+                        resolve({
+                            success: true,
+                            result: users,
+                            total: count,
+                            pageIndex: options.pageIndex,
+                            pageSize: options.pageSize
+                        });
+                        resolve({success: true, result: users});
+                    })
             });
         });
     },

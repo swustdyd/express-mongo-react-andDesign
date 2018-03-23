@@ -20,20 +20,22 @@ module.exports = {
                 if(err){
                     reject(err);
                 }
-                Movie.find(options.condition, function (err, movies) {
-                    if(err){
-                        reject(err);
-                    }
-                    resolve({
-                        success: true,
-                        result: movies,
-                        total: count,
-                        pageIndex: options.pageIndex,
-                        pageSize: options.pageSize
-                    });
-                }).sort(options.sort)
+                Movie.find(options.condition)
+                    .sort(options.sort)
+                    .limit(options.pageSize)
                     .skip(options.pageIndex * options.pageSize)
-                    .limit(options.pageSize);
+                    .exec((err, movies) => {
+                        if(err){
+                            reject(err);
+                        }
+                        resolve({
+                            success: true,
+                            result: movies,
+                            total: count,
+                            pageIndex: options.pageIndex,
+                            pageSize: options.pageSize
+                        });
+                    });
             });
         });
     },
