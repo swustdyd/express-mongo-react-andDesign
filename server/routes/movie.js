@@ -116,13 +116,12 @@ router.post('/uploadPoster', function (req, res) {
 });
 
 router.post('/cutPoster', function (req, res) {
-    let file = req.body.file;
-    let cutArea = req.body.cutArea;
+    let {file, cutArea, resizeWidth, resizeHeight} = req.body;
     let input = path.resolve(BaseConfig.root, `public/${file.url}`);
     let index = file.url.lastIndexOf('/');
     let savePath = `${path.dirname(file.url.substr(0, index))}/resize/${file.filename}`;
     let output = path.resolve(BaseConfig.root, `public/${savePath}`);
-    PublicFunc.cutAndResizeImgTo250px(
+    PublicFunc.cutAndResizeImg(
         input,
         output,
         {
@@ -130,7 +129,9 @@ router.post('/cutPoster', function (req, res) {
             top: cutArea.y,
             width: cutArea.width,
             height: cutArea.height
-        }
+        },
+        resizeWidth,
+        resizeHeight
     ).then(() => {
         //sharps = sharp(path.resolve(BaseConfig.root, 'public/uploads/reset.jpg'));
         fs.unlinkSync(input);
@@ -139,6 +140,17 @@ router.post('/cutPoster', function (req, res) {
         logger.error(err);
         res.json({success: false, message: err.message});
     });
+});
+
+router.get('/getMoviesByGroup', (req, res) => {
+    let groupArray = JSON.parse(req.query.groupArray || '[]');
+    let match = JSON.parse(req.query.match || '{}');
+    MovieService.getMoviesByGroup(groupArray, match).then(resData => {
+        res.json(resData);
+    }).catch(err => {
+        logger.error(err);
+        res.json({success: false, message: err.message});
+    })
 });
 
 

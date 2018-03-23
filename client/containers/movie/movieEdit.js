@@ -228,6 +228,8 @@ class MovieEdit extends React.Component{
                                     name="poster"
                                     action="/movie/uploadPoster"
                                     cutAction="/movie/cutPoster"
+                                    cutWidth={350}
+                                    cutHeight={350}
                                     maxLength={1}
                                     defaultFileList={fileList}
                                     onChange={this.handleFileUploadChange}

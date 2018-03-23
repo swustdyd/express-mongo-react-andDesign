@@ -93,5 +93,24 @@ module.exports = {
                 })
             });
         })
+    },
+    getMoviesByGroup: (groupArray, match) => {
+        return new Promise((resolve, reject) => {
+            let group = {};
+            groupArray = groupArray || [];
+            groupArray.forEach(item => {
+                group[item] = `$${item}`
+            });
+            match = match || {};
+            Movie.aggregate([
+                {$match: match},
+                {$group: {_id: group, count: { $sum: 1}}}
+            ], (err, data) => {
+                if(err){
+                    reject(err);
+                }
+                resolve({success: true, result: data});
+            })
+        });
     }
 };

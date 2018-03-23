@@ -12,8 +12,8 @@ class PictureCut extends React.Component{
         this.state = {
             width: 500,
             height: 500,
-            cutWidth: 250,
-            cutHeight: 250,
+            cutWidth: Math.min(this.props.cutWidth || 250, 500),
+            cutHeight: Math.min(this.props.cutHeight || 250, 500),
             cutArea: undefined,
             clearArea: undefined,
             isMouseDown: false,
@@ -63,7 +63,6 @@ class PictureCut extends React.Component{
             });
             _this.draw();
         };
-        console.log(fileData.url)
         img.src = fileData.url;
     }
 
@@ -207,7 +206,7 @@ class PictureCut extends React.Component{
 
     handleSaveClick(){
         let _this = this;
-        let { cutArea } = this.state;
+        let { cutArea, cutWidth, cutHeight} = this.state;
         let path = this.props.action;
         let { fileData } = this.props;
         fetch(path, {
@@ -215,7 +214,7 @@ class PictureCut extends React.Component{
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({file: fileData, cutArea: cutArea})
+            body: JSON.stringify({file: fileData, cutArea: cutArea, resizeWidth: cutWidth, resizeHeight: cutHeight})
         }).then(res => res.json())
             .then(data => {
                 if(data.success){
@@ -261,7 +260,6 @@ class PictureCut extends React.Component{
                     />
                 </div>
                 <div style={{textAlign: 'right'}}>
-                    {/*<Button type="danger" onClick={this.handleRestClick}>重置</Button>*/}
                     <Button type="primary" onClick={this.handleSaveClick}>保存</Button>
                 </div>
             </div>

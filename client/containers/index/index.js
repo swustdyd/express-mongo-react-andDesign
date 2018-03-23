@@ -31,7 +31,7 @@ class IndexPage extends React.Component{
 
     getAndLoadMovies(pageIndex){
         let _this = this;
-        _this.props.movieListAction.searchMovies({}, pageIndex, 5, (err, data) => {
+        _this.props.movieListAction.searchMovies({}, pageIndex, 15, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{

@@ -165,7 +165,7 @@ const cutAndResizeImg = (input, output, cutArea, resizeWidth, resizeHeight) => {
             let finalData = Buffer.concat(fileData);
             sharp(finalData)
                 .extract(cutArea)
-                .resize(resizeWidth, resizeHeight)
+                .resize(resizeWidth || 150, resizeHeight || 150)
                 .toFile(output, (err) => {
                     if(err){
                         reject(err)
@@ -182,5 +182,6 @@ module.exports = {
     comparePassword: comparePassword,
     mkdirsSync: mkdirsSync,
     uploadFiles: uploadFiles,
-    cutAndResizeImgTo250px: cutAndResizeImgTo250px
+    cutAndResizeImgTo250px: cutAndResizeImgTo250px,
+    cutAndResizeImg: cutAndResizeImg
 };

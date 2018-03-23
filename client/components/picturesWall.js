@@ -14,6 +14,8 @@ class PicturesWall extends React.Component {
             modalVisible: false,
             modalTitle: '',
             modalWidth: 600,
+            cutWidth: this.props.cutWidth || 250,
+            cutHeight: this.props.cutHeight || 250,
             previewImage: '',
             fileList: this.props.defaultFileList || []
         };
@@ -29,32 +31,30 @@ class PicturesWall extends React.Component {
         });
     }
 
-    handleEdit(uid){
-        let { fileList } = this.state;
-        fileList.forEach((item, index) => {
-            if(item.uid === uid){
-                this.setState({
-                    previewImage: item,
-                    modalVisible: true,
-                    modalTitle: `编辑：${item.name}`,
-                    operation: 'edit',
-                    modalWidth: 800
-                });
-            }
-        });
+    handleEdit(item){
+        let { cutWidth, cutHeight } = this.state;
+        let currentImage = this.refs[`img${item.uid}`];
+        if(currentImage.naturalWidth < cutWidth || currentImage.naturalHeight < cutHeight){
+            message.error(
+                `当前图片大小为${currentImage.naturalWidth}*${currentImage.naturalHeight}，不能剪切为${cutWidth}*${cutHeight}`
+            )
+        }else{
+            this.setState({
+                previewImage: item,
+                modalVisible: true,
+                modalTitle: `编辑：${item.name}`,
+                operation: 'edit',
+                modalWidth: 800
+            });
+        }
     }
 
-    handlePreview(uid) {
-        let { fileList } = this.state;
-        fileList.forEach((item, index) => {
-            if(item.uid === uid){
-                this.setState({
-                    previewImage: item,
-                    modalVisible: true,
-                    modalTitle: `预览：${item.name}`,
-                    operation: 'preview'
-                });
-            }
+    handlePreview(item) {
+        this.setState({
+            previewImage: item,
+            modalVisible: true,
+            modalTitle: `预览：${item.name}`,
+            operation: 'preview'
         });
     }
 
@@ -155,11 +155,11 @@ class PicturesWall extends React.Component {
                      onMouseMove={() => this.handlePicItemMouseMove(item.uid)}
                 >
                     <div className={`picture-item-drop ${_this.state.activeItem === item.uid ? 'active' : ''}`}>
-                        <Icon type="edit" onClick={() => this.handleEdit(item.uid)}/>
-                        <Icon type="eye-o" onClick={() => this.handlePreview(item.uid)}/>
+                        <Icon type="edit" onClick={() => this.handleEdit(item)}/>
+                        <Icon type="eye-o" onClick={() => this.handlePreview(item)}/>
                         <Icon type="delete" onClick={() => this.handleRemove(item.uid)}/>
                     </div>
-                    <img src={item.url} alt={item.name} title={item.name}/>
+                    <img ref={`img${item.uid}`} src={item.url} alt={item.name} title={item.name}/>
                 </div>
             )
         });
@@ -167,7 +167,7 @@ class PicturesWall extends React.Component {
     }
 
     render() {
-        let { modalVisible, previewImage, fileList, operation, modalWidth } = this.state;
+        let { modalVisible, previewImage, fileList, operation, modalWidth, cutWidth, cutHeight } = this.state;
         const maxLength = this.props.maxLength || 3;
         return (
             <div className="pictures-wall">
@@ -201,6 +201,8 @@ class PicturesWall extends React.Component {
                             <PictureCut
                                 action={this.props.cutAction}
                                 fileData={previewImage}
+                                cutWidth={cutWidth}
+                                cutHeight={cutHeight}
                                 onSave={this.handlePictureCutSave}
                             /> :
                             <img
