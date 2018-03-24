@@ -37,7 +37,7 @@ class MovieCount extends React.Component{
     rebuildMoviesDataByLanguage(data){
         let newData = [];
         data.forEach((item) => {
-            if(item._id.language === '日语'){
+            /*if(item._id.language === '英语'){
                 newData.push({
                     name: item._id.language,
                     y: item.count,
@@ -45,7 +45,8 @@ class MovieCount extends React.Component{
                 });
             }else{
                 newData.push([item._id.language, item.count]);
-            }
+            }*/
+            newData.push([item._id.language, item.count]);
         });
         return newData;
     }
@@ -102,13 +103,13 @@ class MovieCount extends React.Component{
                     rotation: 0
                 }
             },
+            tooltip: {
+                headerFormat: '<b>{point.key}年</b><br>',
+                pointFormat: '产量: {point.y}部'
+            },
             series: [{
                 type: 'line',
                 name: '电影产量',
-                tooltip: {
-                    headerFormat: '<span style="font-size: 12px">{point.key}年</span><br/>',
-                    valueSuffix: '部'
-                },
                 data: moviesOfEachYear.count
             }]
         };
@@ -122,8 +123,8 @@ class MovieCount extends React.Component{
                 text: '电影各个语种占比'
             },
             tooltip: {
-                headerFormat: '{series.name}<br>',
-                pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+                headerFormat: '<b>{point.key}</b><br>',
+                pointFormat: '<b>百分比: <i>{point.percentage:.1f}%</i></b>'
             },
             plotOptions: {
                 pie: {
