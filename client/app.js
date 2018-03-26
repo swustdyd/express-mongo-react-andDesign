@@ -1,6 +1,8 @@
 /**
  * Created by Aaron on 2018/3/2.
  */
+import 'babel-polyfill'
+import 'fetch-polyfill'
 import React from 'react'
 import { HashRouter, Route } from 'react-router-dom'
 import ReactDom from 'react-dom'

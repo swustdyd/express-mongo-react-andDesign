@@ -1,6 +1,6 @@
 {
   "plugins": [
-    ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }],
-    ["dynamic-import-webpack"]// `style: true` 会加载 less 文件
+    ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }],// `style: true` 会加载 less 文件
+    ["dynamic-import-webpack"]
   ]
 }

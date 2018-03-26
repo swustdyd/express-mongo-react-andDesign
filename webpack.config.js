@@ -18,7 +18,7 @@ let devConfig = {
         path: path.resolve(__dirname, baseConfig.webpackPath),
         publicPath: publicPath,
         chunkFilename: 'js/[name].bundle.js',
-        libraryTarget : 'var'
+        /*libraryTarget : 'var'*/
     },
     devtool: 'eval-source-map',
     module: {
@@ -28,7 +28,7 @@ let devConfig = {
                 exclude: /node_modules/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['react']
+                    presets: ['react', 'es2015']
                 }
             },
             {
