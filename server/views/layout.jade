@@ -4,16 +4,6 @@ html
     meta(charset="utf-8")
     title #{title}
     block style
-    script(type="text/javascript").
-      String.prototype.endWith = function(str) {
-          let reg = new RegExp(str + "$");
-          return reg.test(this);
-      };
-
-      String.prototype.startsWith = function(str) {
-        let reg = new RegExp(str + "^");
-        return reg.test(this);
-      };
   body
     block content
       #app

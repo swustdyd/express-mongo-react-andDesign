@@ -3,6 +3,7 @@
  */
 import 'babel-polyfill'
 import 'fetch-polyfill'
+import './common/common'
 import React from 'react'
 import { HashRouter, Route } from 'react-router-dom'
 import ReactDom from 'react-dom'
@@ -14,9 +15,11 @@ import Logger from 'redux-logger'
 import AppReducer from './reducers/app'
 import Modal from './containers/common/customModal'
 import IndexPage from './containers/index/index'
+import Nav from './nav'
+import Footer from './footer'
 import { asyncComponent } from './components/asyncComponent'
-const MoviePage = asyncComponent(() => import (/* webpackChunkName: "movie" */ "./containers/movie/movie"))
-const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ "./containers/user/user"))
+const MoviePage = asyncComponent(() => import (/* webpackChunkName: "movie" */ "./containers/movie/moviePage"))
+const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ "./containers/user/userPage"))
 
 import './app.scss'
 
@@ -28,10 +31,17 @@ let store = createStore(
 ReactDom.render(
     <Provider store={store}>
         <HashRouter>
-            <HMFLayout>
-                <Route exact path="/" component={IndexPage}/>
-                <Route path="/moviePage" component={MoviePage}/>
-                <Route path="/userPage" component={UserPage}/>
+            <HMFLayout
+                header={Nav}
+                content={
+                    <div>
+                        <Route exact path="/" component={IndexPage}/>
+                        <Route path="/moviePage" component={MoviePage}/>
+                        <Route path="/userPage" component={UserPage}/>
+                    </div>
+                }
+                footer={Footer}
+            >
                 <Modal />
             </HMFLayout>
         </HashRouter>

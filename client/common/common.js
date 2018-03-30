@@ -2,6 +2,16 @@ import React from 'react'
 import { Select } from 'antd'
 const Option = Select.Option;
 
+String.prototype.endWith = function(str) {
+    let reg = new RegExp(str + "$");
+    return reg.test(this);
+};
+
+String.prototype.startsWith = function(str) {
+    let reg = new RegExp(str + "^");
+    return reg.test(this);
+};
+
 export default {
     getCurrentMenuKey: (props) => {
         let paths = [];

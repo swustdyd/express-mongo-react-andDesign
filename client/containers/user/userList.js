@@ -20,6 +20,7 @@ let FormItem = Form.Item;
 class UserList extends React.Component{
     constructor(){
         super();
+        /*this.handleEditClick = this.handleEditClick.bind(this)*/
     }
     componentDidMount(){
         this.searchAndLoadUsers();
@@ -50,6 +51,7 @@ class UserList extends React.Component{
         });
     }
     handleEditClick(id){
+        console.log(id);
         let condition = {
             _id: id
         };
@@ -131,7 +133,7 @@ class UserList extends React.Component{
                 title: '编辑',
                 dataIndex: '_id',
                 key: 'edit',
-                render:  id => <Button type="primary" size="small" onClick={this.handleEditClick.bind(this, id)}>编辑</Button>
+                render:  id => <Button type="primary" size="small" onClick={() => this.handleEditClick(id)}>编辑</Button>
             },
             {
                 title: '删除',
@@ -143,7 +145,7 @@ class UserList extends React.Component{
                             title={`确认删除“${record.name}”？`}
                             cancelText="取消"
                             okText="确认"
-                            onConfirm={this.handleDeleteClick.bind(this, text)}
+                            onConfirm={() => this.handleDeleteClick(text)}
                         >
                             <Button type="danger" size="small">删除</Button>
                         </Popconfirm>
