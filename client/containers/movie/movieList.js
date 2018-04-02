@@ -17,7 +17,6 @@ import YearRangePicker from '../../components/yearRangePicker'
 import Common from '../../common/common'
 
 const FormItem = Form.Item;
-const { RangePicker } = DatePicker;
 
 class MovieList extends React.Component{
     constructor(){

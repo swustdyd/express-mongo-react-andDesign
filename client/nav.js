@@ -6,17 +6,30 @@ import { Link } from 'react-router-dom'
 import {Menu} from 'antd'
 import HashRouterMenu from './components/hashRouterMenu'
 import LoginControl from './containers/common/loginControl'
+import { connect } from 'react-redux';
 
 class Nav extends React.Component{
     render(){
+        let logoStyle = {
+            width: '120px',
+            height: `${this.props.pageStyle.headerHeight}px`,
+            float: 'left',
+            textAlign: 'center',
+            lineHeight: `${this.props.pageStyle.headerHeight}px`,
+            color: '#ffffff',
+            fontSize: '30px',
+        };
         return(
             <div>
-                <div className="logo" >LOGO</div>
+                <div style={logoStyle}>LOGO</div>
                 <HashRouterMenu
                     theme="dark"
                     mode="horizontal"
                     defaultKeys={['index']}
-                    style={{ lineHeight: '64px' }}
+                    style={{
+                        lineHeight: `${this.props.pageStyle.headerHeight}px`,
+                        border: 'none'
+                    }}
                     level={1}
                 >
                     <Menu.Item key="index"><Link to="/">主页</Link></Menu.Item>
@@ -28,4 +41,9 @@ class Nav extends React.Component{
         );
     }
 }
-export default Nav;
+const mapStateToPros = state => ({
+    pageStyle: state.style
+});
+
+export default connect(mapStateToPros, undefined, undefined, { pure: false })(Nav);
+//export default Nav;

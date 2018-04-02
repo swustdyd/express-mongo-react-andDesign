@@ -16,7 +16,7 @@ import './movieEdit.scss'
 class MovieEdit extends React.Component{
     constructor(props){
         super(props);
-        let { initData } = this.props;
+        let { initData } = props;
         let fileList = initData && initData.poster ? [initData.poster] : [];
         this.state = {
             submiting: false,

@@ -11,7 +11,7 @@ let Option = Select.Option;
 class UserEdit extends React.Component{
     constructor(props){
         super(props);
-        let { initData } = this.props;
+        let { initData } = props;
         this.state = {
             submiting: false,
             initData: initData || {}

@@ -1,5 +1,6 @@
 let webpack = require('webpack');
 let ExtractTextPlugin = require('extract-text-webpack-plugin');
+let CleanWebpackPlugin = require('clean-webpack-plugin');
 let BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 let path = require('path');
 let baseConfig = require('./baseConfig');
@@ -11,14 +12,15 @@ let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
 let devConfig = {
     entry: {
         index: ['./client/app', hotMiddlewareScript],
-        vendor: ['react','react-dom','react-router-dom', 'redux', 'react-redux', 'redux-thunk', 'redux-logger']
+        vendor: ['./polyfill', 'react','react-dom','react-router-dom', 'redux',
+            'react-redux', 'redux-thunk', 'redux-logger', 'antd'
+        ]
     },
     output: {
         filename: './js/[name].bundle.js',
         path: path.resolve(__dirname, baseConfig.webpackPath),
         publicPath: publicPath,
-        chunkFilename: 'js/[name].bundle.js',
-        /*libraryTarget : 'var'*/
+        chunkFilename: 'js/[name].bundle.js'
     },
     devtool: 'eval-source-map',
     module: {
@@ -65,12 +67,13 @@ let devConfig = {
             filename: './stylesheet/[name].css',
             allChunks: true
         }),
+        new CleanWebpackPlugin([baseConfig.webpackPath]),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
-            minChunks: Infinity,
+            minChunks: 2,
             filename: './js/[name].bundle.js'
-        })/*,
-        new BundleAnalyzerPlugin({
+        }),
+       /* new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
             // In `server` mode analyzer will start HTTP server to show bundle report.
             // In `static` mode single HTML file with bundle report will be generated.

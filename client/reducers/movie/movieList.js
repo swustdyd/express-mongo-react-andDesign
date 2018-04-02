@@ -1,8 +1,6 @@
 /**
  * Created by Aaron on 2018/3/10.
  */
-import { fromJS } from 'immutable'
-
 let initState = {
     total: 0,
     pageIndex: 0,

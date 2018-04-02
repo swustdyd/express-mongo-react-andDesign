@@ -6,7 +6,9 @@ const baseConfig = require('./baseConfig');
 const productionConfig = [{
     entry: {
         index: ['./client/app'],
-        vendor: ['react','react-dom','react-router-dom']
+        vendor: ['react','react-dom','react-router-dom', 'redux', 'react-redux', 'redux-thunk', 'redux-logger',
+            'babel-polyfill', 'fetch-polyfill', 'antd'
+        ]
     },
     output: {
         filename: './js/[name].bundle.js',
@@ -48,6 +50,11 @@ const productionConfig = [{
         new ExtractTextPlugin({
             filename: './stylesheet/[name].css',
             allChunks: true
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks: 2,
+            filename: './js/[name].bundle.js'
         }),
         new webpack.optimize.UglifyJsPlugin({
             // 最紧凑的输出

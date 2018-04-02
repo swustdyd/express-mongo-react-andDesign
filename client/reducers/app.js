@@ -9,5 +9,9 @@ import UserReducer from './user/user'
 export default combineReducers({
     movie: MovieReducer,
     common: CommonReducer,
-    user: UserReducer
+    user: UserReducer,
+    style: () =>({
+        headerHeight: 60,
+        footerHeight: 50
+    })
 });

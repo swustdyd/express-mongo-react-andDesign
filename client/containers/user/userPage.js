@@ -22,14 +22,14 @@ class UserPage extends React.Component{
                         level={2}
                     >
                         <Menu.Item key="userList"><Link to="/userPage/userList" >用户列表</Link></Menu.Item>
-                        <Menu.Item key="userCount"><Link to="/userPage/userCount" >统计</Link></Menu.Item>
+                        {/*<Menu.Item key="userCount"><Link to="/userPage/userCount" >统计</Link></Menu.Item>*/}
                     </HashRouterMenu>
                 }
                 right={
                     <div>
                         <Route path="/userPage/userList" component={UserList}/>
-                        <Route path="/userPage/userNew" component={UserEdit}/>
-                        <Route path="/userPage/userCount" component={UserCount}/>
+                       {/* <Route path="/userPage/userNew" component={UserEdit}/>
+                        <Route path="/userPage/userCount" component={UserCount}/>*/}
                     </div>
                 }
             />
