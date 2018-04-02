@@ -6,8 +6,8 @@ const baseConfig = require('./baseConfig');
 const productionConfig = [{
     entry: {
         index: ['./client/app'],
-        vendor: ['react','react-dom','react-router-dom', 'redux', 'react-redux', 'redux-thunk', 'redux-logger',
-            'babel-polyfill', 'fetch-polyfill', 'antd'
+        vendor: ['./polyfill', 'react','react-dom','react-router-dom',
+            'redux', 'react-redux', 'redux-thunk', 'redux-logger', 'antd'
         ]
     },
     output: {
@@ -22,7 +22,7 @@ const productionConfig = [{
             exclude: /node_modules/,
             loader: 'babel-loader',
             query: {
-                presets: ['react']
+                presets: ['react', 'es2015']
             }
         },{
             test: /\.(png|jpg)$/,
