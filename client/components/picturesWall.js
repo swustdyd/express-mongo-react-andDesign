@@ -82,14 +82,14 @@ class PicturesWall extends React.Component {
                 }
             }).catch(err => {
                 message.error(err.message);
-        });
+            });
         return false;
     }
 
     handleChange(fileList){
         let newFileList = [];
         fileList.forEach(item => {
-            newFileList.push(Object.assign({},{name: item.name}, item));
+            newFileList.push(Object.assign({}, {name: item.name}, item));
         });
         if(this.props.onChange){
             this.props.onChange(newFileList);
@@ -99,10 +99,10 @@ class PicturesWall extends React.Component {
     handleRemove(uid){
         let {fileList} = this.state;
         fileList.forEach((item, index) => {
-           if(item.uid === uid){
-               fileList.splice(index, 1);
-               return false;
-           }
+            if(item.uid === uid){
+                fileList.splice(index, 1);
+                return false;
+            }
         });
         this.setState({
             fileList: fileList
@@ -149,10 +149,10 @@ class PicturesWall extends React.Component {
         fileList.forEach((item, index) => {
             itemList.push(
                 <div className="picture-item"
-                     key={item.uid}
-                     onMouseEnter={ () => this.handlePicItemMouseEnter(item.uid)}
-                     onMouseLeave={() => this.handlePicItemMouseLeave(item.uid)}
-                     onMouseMove={() => this.handlePicItemMouseMove(item.uid)}
+                    key={item.uid}
+                    onMouseEnter={ () => this.handlePicItemMouseEnter(item.uid)}
+                    onMouseLeave={() => this.handlePicItemMouseLeave(item.uid)}
+                    onMouseMove={() => this.handlePicItemMouseMove(item.uid)}
                 >
                     <div className={`picture-item-drop ${_this.state.activeItem === item.uid ? 'active' : ''}`}>
                         <Icon type="edit" onClick={() => this.handleEdit(item)}/>

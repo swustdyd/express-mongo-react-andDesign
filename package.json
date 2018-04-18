@@ -12,12 +12,14 @@
     "start": "cross-env NODE_ENV=dev supervisor -w server,app.js -e node,js,jade app",
     "browsersync": "cross-env NODE_ENV=dev node app_browsersync",
     "build": "webpack",
-    "production": "webpack --config webpack.production.config.js -p & cross-env NODE_ENV=production node app"
+    "production": "webpack --config webpack.production.config.js -p & cross-env NODE_ENV=production node app",
+    "eslint": "eslint client/**"
   },
   "license": "MIT",
   "dependencies": {
     "antd": "^3.2.2",
     "babel-polyfill": "^6.26.0",
+    "babel-preset-stage-3": "^6.24.1",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",

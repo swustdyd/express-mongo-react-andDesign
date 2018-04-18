@@ -1,3 +1,6 @@
+//async await
+require('babel-core/register')
+
 //格式化输出信息
 const morgan = require('morgan');
 const compression = require('compression')

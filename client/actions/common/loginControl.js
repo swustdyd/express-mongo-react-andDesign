@@ -10,20 +10,19 @@ const loginControlAction = {
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
             credentials: 'include',
             body: JSON.stringify({user: {name: name, password: password}})
-        })
-        .then(res => res.json())
-        .then((data) => {
-            if(data.success){
-                //dispatch(loginControlAction.loginSuccess(name, data.message))
-                window.location.reload();
-            }else {
-                //console.log(data);
-                dispatch(loginControlAction.loginFail(data.message))
-            }
-        });
+        }).then(res => res.json())
+            .then((data) => {
+                if(data.success){
+                    //dispatch(loginControlAction.loginSuccess(name, data.message))
+                    window.location.reload();
+                }else {
+                    //console.log(data);
+                    dispatch(loginControlAction.loginFail(data.message))
+                }
+            });
     },
     logout: () => (dispatch, getState) =>{
-        fetch('/user/logout',{credentials: 'include'})
+        fetch('/user/logout', {credentials: 'include'})
             .then(res => res.json())
             .then((data) => {
                 if(data.success){
@@ -35,7 +34,7 @@ const loginControlAction = {
             });
     },
     checkLogin: () => (dispatch, getState) =>{
-        fetch('/user/checkLogin',{credentials: 'include'})
+        fetch('/user/checkLogin', {credentials: 'include'})
             .then(res => res.json())
             .then((data) => {
                 if(data.success){
@@ -69,7 +68,7 @@ const loginControlAction = {
         }
     }),
     modifyPwd: (originPwd, newPwd) => (dispatch) => {
-        fetch('/user/updatePwd',{
+        fetch('/user/updatePwd', {
             method: 'post',
             headers: {
                 'Content-type': 'application/json'
@@ -98,7 +97,7 @@ const loginControlAction = {
         }
     }),
     userRegister: (name, pwd) => (dispatch) => {
-        fetch('/user/signup',{
+        fetch('/user/signup', {
             method: 'post',
             headers: {
                 'Content-type': 'application/json'
@@ -125,7 +124,7 @@ const loginControlAction = {
         payload:{
             message: message
         }
-    }),
+    })
 };
 
 export default loginControlAction;

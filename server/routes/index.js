@@ -1,6 +1,6 @@
-var Movie = require('../models/movie');
-var logger = require('../common/logger');
-var MovieService = require('../service/movie');
+let Movie = require('../models/movie');
+let logger = require('../common/logger');
+let MovieService = require('../service/movie');
 
 module.exports = function (app) {
     app.use('/movie', require('./movie'));
@@ -20,4 +20,15 @@ module.exports = function (app) {
                 throw err;
         });
     });
+
+    app.get('/test', function (request, response) {
+        asyncTest().then(result => {
+            response.json({success: true, result: result});
+        });
+
+    });
+
+    async function asyncTest() {
+        return await MovieService.getMoviesByCondition();
+    }
 };
