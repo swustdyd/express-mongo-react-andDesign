@@ -77,7 +77,7 @@ const mkdirsSync = (dirname) => {
 const uploadFiles = (request, response, options) => {
     let defaultOptions = {
         subDir: '',
-        maxSize: 1024 * 1024,//1 MB
+        maxSize: 1024 * 1024, //1 MB
         fileFilter: []
     };
     let finalOption = {};
@@ -89,7 +89,7 @@ const uploadFiles = (request, response, options) => {
             if(!fs.existsSync(path)){
                 //logger.info('create upload directory');
                 mkdirsSync(path);
-             }
+            }
             cb(null, path);
         },
         filename: function (req, file, cb) {
@@ -178,10 +178,10 @@ const cutAndResizeImg = (input, output, cutArea, resizeWidth, resizeHeight) => {
 };
 
 module.exports = {
-    bcryptString: bcryptString,
-    comparePassword: comparePassword,
-    mkdirsSync: mkdirsSync,
-    uploadFiles: uploadFiles,
-    cutAndResizeImgTo250px: cutAndResizeImgTo250px,
-    cutAndResizeImg: cutAndResizeImg
+    bcryptString,
+    comparePassword,
+    mkdirsSync,
+    uploadFiles,
+    cutAndResizeImgTo250px,
+    cutAndResizeImg
 };

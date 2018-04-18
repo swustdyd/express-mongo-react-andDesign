@@ -1,11 +1,11 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-var Comment = require('../models/comment');
-var logger = require('../common/logger');
-var Promise = require('promise');
-var queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-var _ = require('underscore');
+let Comment = require('../models/comment');
+let logger = require('../common/logger');
+let Promise = require('promise');
+let queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
+let _ = require('underscore');
 
 module.exports = {
     getCommentById: function (id) {
@@ -48,7 +48,7 @@ module.exports = {
     getCommentsByMovieId: function (id, options) {
         return new Promise(function (resolve, reject) {
             if(!id){
-                reject(new Error("电影id不能为空"));
+                reject(new Error('电影id不能为空'));
             }
             options = _.extend({}, queryDefaultOptions, options);
             Comment.find({movie: id})
@@ -77,13 +77,13 @@ module.exports = {
         });
     },
     saveOrUpdateComment: function (comment) {
-        var service = this;
-        var message;
+        let service = this;
+        let message = '';
         return new Promise(function (resolve, reject) {
             if(comment._id){
                 message = '修改成功';
                 return service.getCommentById(comment._id).then(function (resData) {
-                    var originComment = resData.result;
+                    let originComment = resData.result;
                     _.extend(originComment, comment);
                     comment.meta.updateAt = Date.now();
                     resolve(originComment);

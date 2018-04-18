@@ -1,17 +1,18 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-var express = require('express'),
-    router = express.Router();
-var Comment = require('../models/comment');
-var _ = require('underscore');
-var Authority = require('../common/authority');
-var logger = require('../common/logger');
-var CommentService = require('../service/comment');
+let express = require('express');
+let Comment = require('../models/comment');
+let _ = require('underscore');
+let Authority = require('../common/authority');
+let logger = require('../common/logger');
+let CommentService = require('../service/comment');
+
+const router = express.Router();
 
 router.post('/commit', Authority.requestSignin, function (req, res) {
-    var comment = req.body.comment;
-    var currentUser = req.session.user;
+    let comment = req.body.comment;
+    let currentUser = req.session.user;
     comment.from = currentUser._id;
     CommentService.saveOrUpdateComment(comment).then(function (resData) {
         res.json({

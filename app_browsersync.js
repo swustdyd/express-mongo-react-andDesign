@@ -1,10 +1,10 @@
-var express = require('express'),
+let express = require('express'),
     path = require('path'),
     consolidate = require('consolidate');
 
-var isDev = process.env.NODE_ENV !== 'production';
-var app = express();
-var port = 3000;
+let isDev = process.env.NODE_ENV !== 'production';
+let app = express();
+let port = 3000;
 
 app.engine('html', consolidate.ejs);
 app.set('view engine', 'html');
@@ -14,12 +14,12 @@ app.locals.env = process.env.NODE_ENV || 'dev';
 app.locals.reload = false;
 
 if (isDev) {
-    var webpack = require('webpack'),
+    let webpack = require('webpack'),
         webpackDevMiddleware = require('webpack-dev-middleware'),
         webpackHotMiddleware = require('webpack-hot-middleware'),
         webpackDevConfig = require('./webpack.config.js');
 
-    var compiler = webpack(webpackDevConfig);
+    let compiler = webpack(webpackDevConfig);
 
     app.use(webpackDevMiddleware(compiler, {
         publicPath: webpackDevConfig.output.publicPath,
@@ -33,7 +33,7 @@ if (isDev) {
     require('./server/routes')(app);
 
     // browsersync is a nice choice when modifying only views (with their css & js)
-    var bs = require('browser-sync').create();
+    let bs = require('browser-sync').create();
     app.listen(port, function(){
         bs.init({
             open: false,

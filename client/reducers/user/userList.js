@@ -2,7 +2,7 @@ let initState ={
     total: 0,
     pageIndex: 0,
     pageSize: 0,
-    users: [],
+    users: []
 };
 
 export default (state = initState, action) => {

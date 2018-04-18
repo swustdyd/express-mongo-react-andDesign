@@ -7,7 +7,7 @@ const compression = require('compression')
 //文件的创建
 const fs = require('fs');
 //自定义error
-const errorHandle = require('./server/common/errorHandle').errorHandle;
+const errorHandle = require('./server/common/error').errorHandle;
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -20,6 +20,7 @@ const MongoStore = require('connect-mongo')(session);
 const isDev = process.env.NODE_ENV !== 'production';
 const BaseConfig = require('./baseConfig');
 const app = express();
+const filter = require('./server/common/filter');
 let devPort = process.env.PORT || BaseConfig.devPort;
 let proPort = process.env.PORT || BaseConfig.proPort;
 devPort = parseInt(devPort, 10);
@@ -38,6 +39,8 @@ app.locals.moment = require('moment');
 
 //开启gzip
 app.use(compression());
+//filter
+app.use(filter);
 app.use(bodyParser());
 app.use(cookieParser());
 app.use(session({
@@ -106,7 +109,7 @@ if (isDev) {
     reload(server, app);
 
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
-    errorHandle(app);
+    app.use(errorHandle);
     server.listen(devPort, function(){
         console.log('App (dev) is now running on devPort '+devPort+'!');
     });
@@ -114,7 +117,7 @@ if (isDev) {
     // static assets served by express.static() for production
     //app.use(express.static(path.join(__dirname, BaseConfig.webpackPath)));
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
-    errorHandle(app);
+    app.use(errorHandle);
     app.listen(proPort, function () {
         console.log('App (production) is now running on proPort '+proPort+'!');
     });

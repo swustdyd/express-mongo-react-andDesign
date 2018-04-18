@@ -1,8 +1,8 @@
 /**
  * Created by Aaron on 2017/12/15.
  */
-var mongooes = require('mongoose');
-var UserSchema = require('../schemas/user');
-var User = mongooes.model('User', UserSchema);
+let mongooes = require('mongoose');
+let UserSchema = require('../schemas/user');
+let User = mongooes.model('User', UserSchema);
 
 module.exports = User;

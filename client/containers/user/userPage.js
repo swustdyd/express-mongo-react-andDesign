@@ -28,8 +28,6 @@ class UserPage extends React.Component{
                 right={
                     <div>
                         <Route path="/userPage/userList" component={UserList}/>
-                       {/* <Route path="/userPage/userNew" component={UserEdit}/>
-                        <Route path="/userPage/userCount" component={UserCount}/>*/}
                     </div>
                 }
             />

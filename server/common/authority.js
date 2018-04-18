@@ -7,7 +7,7 @@ let role = {
     admin: 10,
     superAdmin: 50
 };
-let errorCode = require('./errorHandle').errorCode;
+let errorCode = require('./error').errorCode;
 
 module.exports = {
     requestSignin: function (req, res, next) {

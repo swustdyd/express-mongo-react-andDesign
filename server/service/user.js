@@ -1,12 +1,12 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-var User = require('../models/user');
-var logger = require('../common/logger');
-var Promise = require('promise');
-var queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-var _ = require('underscore');
-var PubFunction = require('../common/publicFunc');
+let User = require('../models/user');
+let logger = require('../common/logger');
+let Promise = require('promise');
+let queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
+let _ = require('underscore');
+let PubFunction = require('../common/publicFunc');
 
 module.exports = {
     /**
@@ -17,7 +17,7 @@ module.exports = {
     getUserById: function (id) {
         return new Promise(function (resolve, reject) {
             if(!id){
-                reject(new Error("用户id不能为空"));
+                reject(new Error('用户id不能为空'));
             }
             User.findOne({_id: id}, function (err, user) {
                 if(err){
@@ -65,8 +65,8 @@ module.exports = {
      * @return {*}
      */
     saveOrUpdateUser: function (_user) {
-        var inputUser = _user;
-        var service = this;
+        let inputUser = _user;
+        let service = this;
         return new Promise(function (resolve, reject) {
             if(inputUser.password){
                 return PubFunction.bcryptString(inputUser.password).then(function (bcryptPassword) {
@@ -80,7 +80,7 @@ module.exports = {
             logger.info(inputUser);
             if(inputUser._id){
                 return service.getUserById(inputUser._id).then(function (resData) {
-                    var originUser = resData.result;
+                    let originUser = resData.result;
                     originUser.meta.updateAt = Date.now();
                     _.extend(originUser, inputUser);
                     return originUser;

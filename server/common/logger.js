@@ -1,7 +1,7 @@
 /**
  * Created by Aaron on 2018/1/9.
  */
-var colors = require('colors');
+let colors = require('colors');
 
 colors.setTheme({
     warn: 'yellow',
@@ -25,8 +25,8 @@ module.exports = {
             return;
         }
         if (message instanceof Error) {
-            var msg = message.message;
-            var stack = message.stack;
+            let msg = message.message;
+            let stack = message.stack;
             if (type) {
                 console.log(msg[type]);
                 console.log(stack[type]);

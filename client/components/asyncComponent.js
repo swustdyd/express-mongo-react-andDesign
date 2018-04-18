@@ -7,7 +7,7 @@ export const asyncComponent = loadComponent => (
         constructor(){
             super();
             this.state = {
-                Component: null,
+                Component: null
             }
         }
         componentWillMount() {
@@ -21,7 +21,7 @@ export const asyncComponent = loadComponent => (
                     this.setState({ Component });
                 })
                 .catch((err) => {
-                    console.error(`Cannot load component in <AsyncComponent />`);
+                    console.error('Cannot load component in <AsyncComponent />');
                     throw err;
                 });
         }

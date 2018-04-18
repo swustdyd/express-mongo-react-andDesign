@@ -1,11 +1,11 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var ObjectId = Schema.Types.ObjectId;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let ObjectId = Schema.Types.ObjectId;
 
-var CommentSchema = new mongoose.Schema({
+let CommentSchema = new mongoose.Schema({
     movie: {
         type: ObjectId,
         ref: 'Movie'

@@ -8,8 +8,8 @@ import LRLayout from '../../lrLayout'
 import HashRouterMenu from '../../components/hashRouterMenu'
 import {Menu } from 'antd'
 import { asyncComponent } from '../../components/asyncComponent'
-const MovieList = asyncComponent(() => import (/* webpackChunkName: "movieList" */ "./movieList"))
-const MovieCount = asyncComponent(() => import (/* webpackChunkName: "movieCount" */ "./movieCount"))
+const MovieList = asyncComponent(() => import (/* webpackChunkName: "movieList" */ './movieList'))
+const MovieCount = asyncComponent(() => import (/* webpackChunkName: "movieCount" */ './movieCount'))
 
 class MoviePage extends React.Component{
     constructor(props){

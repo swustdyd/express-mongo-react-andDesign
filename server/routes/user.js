@@ -1,14 +1,14 @@
 /**
  * Created by Aaron on 2018/1/4.
  */
-var express = require('express'),
+let express = require('express'),
     router = express.Router();
-var User = require('../models/user');
-var _ = require('underscore');
-var Authority = require('../common/authority');
-var UserService = require('../service/user');
-var logger = require('../common/logger');
-var PubFunction = require('../common/publicFunc');
+let User = require('../models/user');
+let _ = require('underscore');
+let Authority = require('../common/authority');
+let UserService = require('../service/user');
+let logger = require('../common/logger');
+let PubFunction = require('../common/publicFunc');
 const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 
 
@@ -17,26 +17,26 @@ const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.p
  */
 router.post('/signup', function (request, response) {
     //request.param('user'),可拿到所有的参数，若在body和query都有user这个参数，routes>query>body
-    var _user = request.body.user;
+    let _user = request.body.user;
     UserService.getUsersByCondition({condition: {name: _user.name}})
-    .then(function (resData) {
-        if(resData.result && resData.result.length > 0){
-            return Promise.reject({success: false, message: '该用户名已存在'})
-        }else {
-            return UserService.saveOrUpdateUser(_user).then(function (resData) {
-                return response.json({
-                    success: true,
-                    message: '注册成功'
-                });
-            })
-        }
-    }).catch(function (err) {
-        logger.error(err);
-        return response.json({
-            success: false,
-            message: err.message
+        .then(function (resData) {
+            if(resData.result && resData.result.length > 0){
+                return Promise.reject({success: false, message: '该用户名已存在'})
+            }else {
+                return UserService.saveOrUpdateUser(_user).then(function (resData) {
+                    return response.json({
+                        success: true,
+                        message: '注册成功'
+                    });
+                })
+            }
+        }).catch(function (err) {
+            logger.error(err);
+            return response.json({
+                success: false,
+                message: err.message
+            });
         });
-    });
 });
 
 /**
@@ -98,16 +98,12 @@ router.get('/logout', function (request, response) {
  * 获取用户信息
  */
 router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, function (request, response) {
-    let condition = request.query.condition || '{}';
-    let pageIndex = 0;
-    if(/^[0-9]+$/.test(request.query.pageIndex)){
-        pageIndex = parseInt(request.query.pageIndex);
-    }
-    let pageSize = DefaultPageSize;
-    if(/^[1-9][0-9]*$/.test(request.query.pageSize)){
-        pageSize = Math.min(parseInt(request.query.pageSize), DefaultPageSize);
-    }
+    let condition = request.query.condition || '{}',
+        pageIndex = request.query.pageIndex,
+        pageSize = request.query.pageSize;
+
     condition = JSON.parse(condition);
+
     let newCondition = {};
     if(condition.searchName){
         newCondition.name = new RegExp(`^${condition.searchName}.*$`, 'i')
@@ -136,9 +132,9 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, functio
  * 修改密码
  */
 router.post('/updatePwd', Authority.requestSignin, function (request, response) {
-    var originPwd = request.param('originPwd');
-    var newPwd = request.param('newPwd');
-    var userId = request.session.user._id;
+    let originPwd = request.param('originPwd');
+    let newPwd = request.param('newPwd');
+    let userId = request.session.user._id;
     logger.info(userId);
     UserService.getUserById(userId).then(function (resData) {
         logger.info(resData);
@@ -149,7 +145,7 @@ router.post('/updatePwd', Authority.requestSignin, function (request, response) 
         }
     }).then(function (isMatch) {
         if(isMatch){
-            var user = {
+            let user = {
                 _id: userId,
                 password: newPwd
             };
@@ -237,15 +233,15 @@ router.post('/edit', Authority.requestSignin, function (request, response) {
             })
         }
     })
-    .then(function (user) {
-        return UserService.saveOrUpdateUser(user).then(function () {
-            response.json({ success: true, message: '保存成功'});
+        .then(function (user) {
+            return UserService.saveOrUpdateUser(user).then(function () {
+                response.json({ success: true, message: '保存成功'});
+            });
+        })
+        .catch(function (err) {
+            logger.error(err);
+            response.json({ success: false, message: err.message});
         });
-    })
-    .catch(function (err) {
-        logger.error(err);
-        response.json({ success: false, message: err.message});
-    });
 });
 
 module.exports = router;

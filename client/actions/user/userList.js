@@ -14,15 +14,14 @@ export default {
             cb = pageSize;
             pageSize = 5;
         }
-        fetch(`/user/getUsers?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`,{
+        fetch(`/user/getUsers?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`, {
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-            credentials: 'include',
-        })
-        .then(res => res.json())
-        .then(data => {
-            cb(undefined, data);
-        })
-        .catch(err => cb(err));
+            credentials: 'include'
+        }).then(res => res.json())
+            .then(data => {
+                cb(undefined, data);
+            })
+            .catch(err => cb(err));
     },
     loadUsersList: (users, pageIndex, pageSize, total) =>({
         type: 'LOAD_USER_LIST',
@@ -34,11 +33,10 @@ export default {
         }
     }),
     deleteUser: (id, cb) => () =>{
-        fetch(`/user/delete?id=${id}`,{
+        fetch(`/user/delete?id=${id}`, {
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-            credentials: 'include',
-        })
-            .then(res => res.json())
+            credentials: 'include'
+        }).then(res => res.json())
             .then(data => {
                 cb(undefined, data);
             })

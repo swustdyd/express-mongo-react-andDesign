@@ -17,8 +17,8 @@ import IndexPage from './containers/index/index'
 import Nav from './nav'
 import Footer from './footer'
 import { asyncComponent } from './components/asyncComponent'
-const MoviePage = asyncComponent(() => import (/* webpackChunkName: "movie" */ "./containers/movie/moviePage"))
-const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ "./containers/user/userPage"))
+const MoviePage = asyncComponent(() => import (/* webpackChunkName: "movie" */ './containers/movie/moviePage'))
+const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ './containers/user/userPage'))
 
 import './app.scss'
 

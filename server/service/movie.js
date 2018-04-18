@@ -1,11 +1,11 @@
 /**
  * Created by Aaron on 2018/1/17.
  */
-var Movie = require('../models/movie');
-var logger = require('../common/logger');
-var Promise = require('promise');
-var queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-var _ = require('underscore');
+let Movie = require('../models/movie');
+let logger = require('../common/logger');
+let Promise = require('promise');
+let queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
+let _ = require('underscore');
 
 module.exports = {
     /**
@@ -46,7 +46,7 @@ module.exports = {
     getMovieById: function (id) {
         return new Promise(function (resolve, reject) {
             if(!id){
-                reject(new Error("电影id不能为空"));
+                reject(new Error('电影id不能为空'));
             }
             Movie.findOne({_id: id}, function (err, movie) {
                 if(err){
@@ -59,7 +59,7 @@ module.exports = {
     deleteMovieById: function (id) {
         return new Promise(function (resolve, reject) {
             if(!id){
-                reject(new Error("电影id不能为空"));
+                reject(new Error('电影id不能为空'));
             }
             Movie.remove({_id: id}, function (err, movie) {
                 if(err){
@@ -70,12 +70,12 @@ module.exports = {
         });
     },
     saveOrUpdateMovie: function (movie) {
-        var service = this;
+        let service = this;
         return new Promise(function (resolve, reject) {
             //修改
             if(movie._id){
                 return service.getMovieById(movie._id).then(function (resData) {
-                    var originMovie = resData.result;
+                    let originMovie = resData.result;
                     _.extend(originMovie, movie);
                     originMovie.meta.updateAt = Date.now();
                     resolve(originMovie);

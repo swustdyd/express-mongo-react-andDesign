@@ -1,8 +1,8 @@
 /**
  * Created by Aaron on 2017/12/15.
  */
-var mongoose = require('mongoose');
-var UserSchema = new mongoose.Schema({
+let mongoose = require('mongoose');
+let UserSchema = new mongoose.Schema({
     name: {
         unique: true,
         type: String

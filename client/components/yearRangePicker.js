@@ -16,7 +16,7 @@ class YearRangePicker extends React.Component {
             startOfSecond: this.props.start || 2000,
             endOfSecond: this.props.end || 2050,
             valueOfFirst: undefined,
-            valueOfSecond: undefined,
+            valueOfSecond: undefined
         }
     }
 

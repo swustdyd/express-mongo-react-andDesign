@@ -41,7 +41,7 @@ class UserRegister extends React.Component{
         return (
             <Form onSubmit={this.handleRegisterClick.bind(this)} className="userRegister-form">
                 <FormItem>
-                    {getFieldDecorator(`name`, {
+                    {getFieldDecorator('name', {
                         rules:[
                             {
                                 required: true,
@@ -66,7 +66,7 @@ class UserRegister extends React.Component{
                     )}
                 </FormItem>*/}
                 <FormItem>
-                    {getFieldDecorator(`password`,{
+                    {getFieldDecorator('password', {
                         rules:[
                             {
                                 required: true,
@@ -81,7 +81,7 @@ class UserRegister extends React.Component{
                     )}
                 </FormItem>
                 <FormItem>
-                    {getFieldDecorator(`confirmPwd`,{
+                    {getFieldDecorator('confirmPwd', {
                         rules:[
                             {
                                 required: true,

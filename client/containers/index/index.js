@@ -136,7 +136,7 @@ class IndexPage extends React.Component{
         let controllers = [];
         if(movies && movies.length > 0){
             movies.forEach((item, index) => {
-                let className;
+                let className = '';
                 if(this.state.currentPoster == item._id){
                     className = 'poster-controller active';
                 }else {
@@ -171,21 +171,25 @@ class IndexPage extends React.Component{
                 <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>
                     {this.createMoviePosters(result)}
                 </div>
-                <div style={{
-                    height: this.state.controllerHeight,
-                    lineHeight: `${this.state.controllerHeight}px`}}
-                     className="controller"
+                <div
+                    style={{
+                        height: this.state.controllerHeight,
+                        lineHeight: `${this.state.controllerHeight}px`
+                    }}
+                    className="controller"
                 >
-                    <a className="page-icon"
-                       onClick={() => this.getAndLoadMovies(this.state.resData.pageIndex - 1)}
-                       {...lastPageProps}
+                    <a
+                        className="page-icon"
+                        onClick={() => this.getAndLoadMovies(this.state.resData.pageIndex - 1)}
+                        {...lastPageProps}
                     >
                         last page
                     </a>
-                        {this.createControlPosters(result)}
-                    <a className="page-icon"
-                       onClick={() => this.getAndLoadMovies(this.state.resData.pageIndex + 1)}
-                       {...nextPageProps}
+                    {this.createControlPosters(result)}
+                    <a
+                        className="page-icon"
+                        onClick={() => this.getAndLoadMovies(this.state.resData.pageIndex + 1)}
+                        {...nextPageProps}
                     >
                         next page
                     </a>

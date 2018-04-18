@@ -58,26 +58,25 @@ class MovieEdit extends React.Component{
                         movie: movie,
                         fileList: fileList
                     })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.success){
-                        message.success(data.message);
-                        //window.location.href = '/#/moviePage/movieList';
-                        if( _this.props.onSubmitSuccess){
-                            _this.props.onSubmitSuccess();
+                }).then(res => res.json())
+                    .then(data => {
+                        if(data.success){
+                            message.success(data.message);
+                            //window.location.href = '/#/moviePage/movieList';
+                            if( _this.props.onSubmitSuccess){
+                                _this.props.onSubmitSuccess();
+                            }
+                        }else{
+                            message.error(data.message);
+                            if( _this.props.onSubmitFail){
+                                _this.props.onSubmitFail();
+                            }
                         }
-                    }else{
-                        message.error(data.message);
-                        if( _this.props.onSubmitFail){
-                            _this.props.onSubmitFail();
-                        }
-                    }
-                    _this.setState({submiting: false});
-                }).catch(err => {
-                    message.error(err.message);
-                     _this.setState({submiting: false});
-                });
+                        _this.setState({submiting: false});
+                    }).catch(err => {
+                        message.error(err.message);
+                        _this.setState({submiting: false});
+                    });
             }
         });
     }
@@ -93,24 +92,24 @@ class MovieEdit extends React.Component{
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
-                sm: { span: 4 },
+                sm: { span: 4 }
             },
             wrapperCol: {
                 xs: { span: 24 },
-                sm: { span: 20 },
-            },
+                sm: { span: 20 }
+            }
         };
         const tailFormItemLayout = {
             wrapperCol: {
                 xs: {
                     span: 24,
-                    offset: 16,
+                    offset: 16
                 },
                 sm: {
                     span: 24,
-                    offset: 22,
-                },
-            },
+                    offset: 22
+                }
+            }
         };
         let { initData, fileList } = this.state;
         fileList.forEach((item, index) => {
@@ -126,7 +125,7 @@ class MovieEdit extends React.Component{
                         {...formItemLayout}
                         label="电影名称"
                     >
-                        {getFieldDecorator('title',{
+                        {getFieldDecorator('title', {
                             rules: [{
                                 required: true,
                                 message: '请输入电影名称'

@@ -70,7 +70,7 @@ class LoginControl extends React.Component{
                             &emsp;|&emsp;
                             <a onClick={this.handleModifyPwdClick.bind(this)}>修改密码</a>
                         </div>
-                    :
+                        :
                         <div>
                             <a onClick={this.handleLoginClick.bind(this)}>登录</a>
                             &emsp;|&emsp;

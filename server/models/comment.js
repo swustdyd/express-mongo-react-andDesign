@@ -1,8 +1,8 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-var mongooes = require('mongoose');
-var CommentSchema = require('../schemas/comment');
-var Comment = mongooes.model('Comment', CommentSchema);
+let mongooes = require('mongoose');
+let CommentSchema = require('../schemas/comment');
+let Comment = mongooes.model('Comment', CommentSchema);
 
 module.exports = Comment;

@@ -1,9 +1,9 @@
 /**
  * Created by Aaron on 2017/12/12.
  */
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-var MovieSchema = new mongoose.Schema({
+let MovieSchema = new mongoose.Schema({
     doctor: String,
     title: {
         type: String

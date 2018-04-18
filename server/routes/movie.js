@@ -16,34 +16,30 @@ const BaseConfig = require('../../baseConfig');
  * 获取电影列表
  */
 router.get('/getMovies', function (req, res) {
-    let condition = req.query.condition || '{}';
-    let pageIndex = 0;
-    if(/^[0-9]+$/.test(req.query.pageIndex)){
-        pageIndex = parseInt(req.query.pageIndex);
-    }
-    let pageSize = DefaultPageSize;
-    if(/^[1-9][0-9]*$/.test(req.query.pageSize)){
-        pageSize = Math.min(parseInt(req.query.pageSize), DefaultPageSize);
-    }
-    condition = JSON.parse(condition);
+    let condition = req.query.condition || '{}',
+        pageIndex = req.query.pageIndex,
+        pageSize = req.query.pageSize;
 
+    condition = JSON.parse(condition);
     let newCondition = {};
+
     if(condition.title){
         newCondition.title = new RegExp(`^${condition.title}.*$`, 'i');
     }
     if(condition._id){
         newCondition._id = condition._id;
     }
-    if(condition.searchYear && (condition.searchYear.start || condition.searchYear.end)){
-        newCondition.year = {};
-        if(condition.searchYear.start){
-            newCondition.year.$gte = condition.searchYear.start
-        }
-        if(condition.searchYear.end){
-            newCondition.year.$lte = condition.searchYear.end;
-        }
 
+    //newCondition.year = undefined;
+    if(condition.searchYear && condition.searchYear.start){
+        newCondition.year = {};
+        newCondition.year.$gte = condition.searchYear.start
     }
+    if(condition.searchYear && condition.searchYear.end){
+        newCondition.year = newCondition.year || {};
+        newCondition.year.$lte = condition.searchYear.end;
+    }
+
     if(condition.language){
         newCondition.language = condition.language;
     }
@@ -52,8 +48,7 @@ router.get('/getMovies', function (req, res) {
         condition: newCondition,
         pageIndex: pageIndex,
         pageSize: pageSize
-    })
-    .then(function (resData) {
+    }).then(function (resData) {
         res.json(resData);
     }).catch(function (err) {
         logger.error(err);

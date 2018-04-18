@@ -174,14 +174,14 @@ class UserList extends React.Component{
                 <Row gutter={12}>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="用户名">
-                            {getFieldDecorator(`searchName`)(
+                            {getFieldDecorator('searchName')(
                                 <Input />
                             )}
                         </FormItem>
                     </Col>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="角色">
-                            {getFieldDecorator(`searchRole`)(
+                            {getFieldDecorator('searchRole')(
                                 <Select allowClear>{Common.createUserRoleOptions()}</Select>
                             )}
                         </FormItem>

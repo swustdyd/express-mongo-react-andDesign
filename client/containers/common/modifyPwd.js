@@ -40,7 +40,7 @@ class ModifyPwd extends React.Component{
         return (
             <Form onSubmit={this.handleModifyClick.bind(this)} className="modifyPwd-form">
                 <FormItem>
-                    {getFieldDecorator(`originPwd`, {
+                    {getFieldDecorator('originPwd', {
                         rules:[
                             {
                                 required: true,
@@ -52,7 +52,7 @@ class ModifyPwd extends React.Component{
                     )}
                 </FormItem>
                 <FormItem>
-                    {getFieldDecorator(`newPwd`,{
+                    {getFieldDecorator('newPwd', {
                         rules:[
                             {
                                 required: true,
@@ -67,7 +67,7 @@ class ModifyPwd extends React.Component{
                     )}
                 </FormItem>
                 <FormItem>
-                    {getFieldDecorator(`confirmPwd`,{
+                    {getFieldDecorator('confirmPwd', {
                         rules:[
                             {
                                 required: true,

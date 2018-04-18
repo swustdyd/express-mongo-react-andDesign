@@ -6,7 +6,7 @@ const baseConfig = require('./baseConfig');
 const productionConfig = [{
     entry: {
         index: ['./client/app'],
-        vendor: ['./polyfill', 'react','react-dom','react-router-dom',
+        vendor: ['./client/polyfill', 'react', 'react-dom', 'react-router-dom',
             'redux', 'react-redux', 'redux-thunk', 'redux-logger', 'antd'
         ]
     },
@@ -14,7 +14,7 @@ const productionConfig = [{
         filename: './js/[name].bundle.js',
         path: path.resolve(__dirname, baseConfig.webpackPath),
         publicPath: baseConfig.publicPath,
-        chunkFilename: 'js/[name].bundle.js',
+        chunkFilename: 'js/[name].bundle.js'
     },
     module: {
         rules: [{
@@ -24,7 +24,7 @@ const productionConfig = [{
             query: {
                 presets: ['react', 'es2015']
             }
-        },{
+        }, {
             test: /\.(png|jpg)$/,
             use: 'url-loader?limit=8192&context=client&name=[path][name].[ext]'
         }, {

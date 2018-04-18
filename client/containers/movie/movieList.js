@@ -210,21 +210,21 @@ class MovieList extends React.Component{
                 <Row gutter={12}>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="电影名">
-                            {getFieldDecorator(`searchTitle`)(
+                            {getFieldDecorator('searchTitle')(
                                 <Input />
                             )}
                         </FormItem>
                     </Col>
                     <Col xl={8}>
                         <FormItem labelCol={{span: 4}} wrapperCol={{span: 20}} label="年代">
-                            {getFieldDecorator(`searchYear`)(
+                            {getFieldDecorator('searchYear')(
                                 <YearRangePicker />
                             )}
                         </FormItem>
                     </Col>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="语言">
-                            {getFieldDecorator(`searchLanguage`)(
+                            {getFieldDecorator('searchLanguage')(
                                 <Select allowClear>
                                     {Common.createLanguageOptions()}
                                 </Select>

@@ -1,6 +1,6 @@
-let Movie = require('../models/movie');
-let logger = require('../common/logger');
-let MovieService = require('../service/movie');
+const Movie = require('../models/movie');
+const logger = require('../common/logger');
+const MovieService = require('../service/movie');
 
 module.exports = function (app) {
     app.use('/movie', require('./movie'));
@@ -18,7 +18,7 @@ module.exports = function (app) {
             }).catch(function (err) {
                 //logger.error(err);
                 throw err;
-        });
+            });
     });
 
     app.get('/test', function (request, response) {

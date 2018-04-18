@@ -21,7 +21,7 @@ class Login extends React.Component{
         return (
             <Form onSubmit={this.handleLoginClick.bind(this)} className="login-form">
                 <FormItem>
-                    {getFieldDecorator(`name`, {
+                    {getFieldDecorator('name', {
                         rules:[
                             {
                                 required: true,
@@ -37,7 +37,7 @@ class Login extends React.Component{
                     )}
                 </FormItem>
                 <FormItem>
-                    {getFieldDecorator(`password`,{
+                    {getFieldDecorator('password', {
                         rules:[
                             {
                                 required: true,

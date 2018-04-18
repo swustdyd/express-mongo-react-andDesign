@@ -30,7 +30,7 @@ class MoviePoster extends React.Component{
     render(){
         let { movieData } = this.props;
         let { frontStatus } = this.state;
-        let classNameOfFront, classNameOfBack;
+        let classNameOfFront = '', classNameOfBack = '';
         if( frontStatus){
             classNameOfFront = 'show';
             classNameOfBack = 'hide';
@@ -40,9 +40,9 @@ class MoviePoster extends React.Component{
         }
         return(
             <Col style={this.props.style || {}}
-                 xs={12} md={6} lg={6} xl={4}
-                 className={`poster ${this.props.className}`}
-                 onClick={this.handleClick.bind(this, movieData._id)}
+                xs={12} md={6} lg={6} xl={4}
+                className={`poster ${this.props.className}`}
+                onClick={this.handleClick.bind(this, movieData._id)}
             >
                 <Spin tip="图片加载中..." spinning={!this.state.loaded}>
                     <Card className={`front ${classNameOfFront}`}

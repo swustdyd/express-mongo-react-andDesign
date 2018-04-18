@@ -13,7 +13,7 @@ $('#commitComment').click(function () {
     $.ajax({
         url: '/comment/commit',
         type: 'post',
-        dataType: "json",
+        dataType: 'json',
         data: {'comment[movie]': movieID, 'comment[content]': content},
         global: false,
         beforeSend: function () {
@@ -22,13 +22,13 @@ $('#commitComment').click(function () {
         success: function (data) {
             alert(data.message);
             if(data.success){
-                $('#commentContent').val("");
+                $('#commentContent').val('');
                 addCommentToPage(data.result);
             }
             $commitComment.removeAttr('disabled');
         },
         error: function () {
-            alert("评论失败");
+            alert('评论失败');
             $commitComment.removeAttr('disabled');
         }
     });

@@ -12,7 +12,7 @@ let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
 let devConfig = {
     entry: {
         index: ['./client/app', hotMiddlewareScript],
-        vendor: ['./polyfill', 'react','react-dom','react-router-dom', 'redux',
+        vendor: ['./client/polyfill', 'react', 'react-dom', 'react-router-dom', 'redux',
             'react-redux', 'redux-thunk', 'redux-logger', 'antd'
         ]
     },
@@ -72,8 +72,8 @@ let devConfig = {
             name: 'vendor',
             minChunks: 2,
             filename: './js/[name].bundle.js'
-        }),
-       /* new BundleAnalyzerPlugin({
+        })
+        /* new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
             // In `server` mode analyzer will start HTTP server to show bundle report.
             // In `static` mode single HTML file with bundle report will be generated.
