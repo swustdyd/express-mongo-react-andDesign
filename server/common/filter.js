@@ -10,7 +10,6 @@ const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.p
  * @param next
  */
 module.exports = (req, res, next) => {
-    req.query.pageIndex = 0;
     if (req.query.pageIndex) {
         req.query.pageIndex = /^[0-9]+$/.test(req.query.pageIndex) ? parseInt(req.query.pageIndex) : 0;
     }

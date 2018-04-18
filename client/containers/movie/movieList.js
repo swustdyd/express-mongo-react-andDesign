@@ -35,18 +35,16 @@ class MovieList extends React.Component{
         if(searchLanguage){
             condition.language = searchLanguage;
         }
-        console.log(condition);
         return condition;
     }
     handleDeleteClick(id){
-        let _this = this;
-        _this.props.movieListAction.deleteMovie(id, (err, data) => {
+        this.props.movieListAction.deleteMovie(id, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
                 if(data.success){
                     message.success(data.message);
-                    _this.searchAndLoadMovies(_this.props.movieListState.pageIndex);
+                    this.searchAndLoadMovies(this.props.movieListState.pageIndex);
                 }else{
                     message.error(data.message);
                 }
@@ -57,19 +55,18 @@ class MovieList extends React.Component{
         let condition = {
             _id: id
         };
-        let _this = this;
-        _this.props.movieListAction.searchMovies(condition, 0, (err, data) => {
+        this.props.movieListAction.searchMovies(condition, 0, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
                 if(data.success){
-                    _this.props.modalAction.showModal({
+                    this.props.modalAction.showModal({
                         title: `编辑电影：${data.result[0].title}`,
                         maskClosable: false,
                         modalContent: <MovieEdit
                             onSubmitSuccess={() => {
-                                _this.props.modalAction.hideModal();
-                                _this.searchAndLoadMovies(_this.props.movieListState.pageIndex);
+                                this.props.modalAction.hideModal();
+                                this.searchAndLoadMovies(this.props.movieListState.pageIndex);
                             }}
                             initData={data.result[0]}
                         />,
@@ -89,8 +86,7 @@ class MovieList extends React.Component{
         this.searchAndLoadMovies();
     }
     searchAndLoadMovies(pageIndex, condition){
-        let _this = this;
-        _this.props.movieListAction.searchMovies(condition, pageIndex, 10, (err, data) => {
+        this.props.movieListAction.searchMovies(condition, pageIndex, 10, (err, data) => {
             if(err){
                 message.error(err.message)
             }else {
@@ -98,7 +94,7 @@ class MovieList extends React.Component{
                     data.result.forEach(function (item) {
                         item.key = item._id;
                     });
-                    _this.props.movieListAction.loadMovieList(data.result, data.pageIndex, data.pageSize, data.total);
+                    this.props.movieListAction.loadMovieList(data.result, data.pageIndex, data.pageSize, data.total);
                 }else {
                     message.error(data.message)
                 }
@@ -106,22 +102,20 @@ class MovieList extends React.Component{
         });
     }
     handleNewClick(){
-        let _this = this;
-        _this.props.modalAction.showModal({
+        this.props.modalAction.showModal({
             title: '新增电影',
             maskClosable: false,
             modalContent: <MovieEdit
                 onSubmitSuccess={() => {
-                    _this.props.modalAction.hideModal();
-                    _this.searchAndLoadMovies(_this.props.movieListState.pageIndex);
+                    this.props.modalAction.hideModal();
+                    this.searchAndLoadMovies(this.props.movieListState.pageIndex);
                 }}
             />,
             width: 800
         });
     }
     render(){
-        let _this = this;
-        let {total, pageIndex, pageSize, movies } = _this.props.movieListState;
+        let {total, pageIndex, pageSize, movies } = this.props.movieListState;
         let columns = [
             {
                 title: '序号',
@@ -159,7 +153,7 @@ class MovieList extends React.Component{
                 dataIndex: '_id',
                 key: 'edit',
                 render: (id) =>
-                    <Button type="primary" size="small" onClick={this.handleEditClick.bind(this, id)}>
+                    <Button type="primary" size="small" onClick={() => this.handleEditClick(id)}>
                         编辑
                     </Button>
             },
@@ -173,7 +167,7 @@ class MovieList extends React.Component{
                             title={`确认删除“${record.title}”？`}
                             cancelText="取消"
                             okText="确认"
-                            onConfirm={this.handleDeleteClick.bind(this, text)}
+                            onConfirm={() => this.handleDeleteClick(text)}
                         >
                             <Button type="danger" size="small">删除</Button>
                         </Popconfirm>
@@ -186,10 +180,10 @@ class MovieList extends React.Component{
             pageSize: pageSize,
             current: pageIndex + 1,
             onChange: (pageIndex) => {
-                _this.searchAndLoadMovies(pageIndex - 1, _this.getSearchCondition())
+                this.searchAndLoadMovies(pageIndex - 1, this.getSearchCondition())
             }
         };
-        const { getFieldDecorator } = _this.props.form;
+        const { getFieldDecorator } = this.props.form;
         const colLayout = {
             xs: 24,
             sm: 24,
@@ -206,7 +200,7 @@ class MovieList extends React.Component{
             }
         };
         return(
-            <Form onSubmit={this.handleSearchClick.bind(this)}>
+            <Form onSubmit={() => this.handleSearchClick()}>
                 <Row gutter={12}>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="电影名">
@@ -235,7 +229,7 @@ class MovieList extends React.Component{
                 <Row>
                     <Button type="primary" htmlType="submit" icon="search">搜索</Button>
                     &emsp;
-                    <Button type="primary" icon="plus-circle-o" onClick={this.handleNewClick.bind(this)}>新增电影</Button>
+                    <Button type="primary" icon="plus-circle-o" onClick={() => this.handleNewClick()}>新增电影</Button>
                 </Row>
                 <Divider />
                 <Table

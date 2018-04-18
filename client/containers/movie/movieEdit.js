@@ -29,11 +29,10 @@ class MovieEdit extends React.Component{
     handleSubmit(e) {
         //console.log('表单提交', e);
         e.preventDefault();
-        let _this = this;
         this.props.form.validateFieldsAndScroll((err, value) => {
             if(!err && !this.state.submiting){
                 let movie = this.props.form.getFieldsValue();
-                _this.setState({submiting: true});
+                this.setState({submiting: true});
                 movie._id = this.state.initData._id;
                 let fileList = this.state.fileList;
                 fileList.forEach(item => {
@@ -63,19 +62,19 @@ class MovieEdit extends React.Component{
                         if(data.success){
                             message.success(data.message);
                             //window.location.href = '/#/moviePage/movieList';
-                            if( _this.props.onSubmitSuccess){
-                                _this.props.onSubmitSuccess();
+                            if( this.props.onSubmitSuccess){
+                                this.props.onSubmitSuccess();
                             }
                         }else{
                             message.error(data.message);
-                            if( _this.props.onSubmitFail){
-                                _this.props.onSubmitFail();
+                            if( this.props.onSubmitFail){
+                                this.props.onSubmitFail();
                             }
                         }
-                        _this.setState({submiting: false});
+                        this.setState({submiting: false});
                     }).catch(err => {
                         message.error(err.message);
-                        _this.setState({submiting: false});
+                        this.setState({submiting: false});
                     });
             }
         });

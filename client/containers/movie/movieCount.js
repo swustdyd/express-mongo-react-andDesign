@@ -59,7 +59,7 @@ class MovieCount extends React.Component{
             .then(data => {
                 if(data.success){
                     data = _this.rebuildMoviesDataByYear(data.result);
-                    _this.setState({
+                    this.setState({
                         moviesOfEachYear: data
                     });
                 }else{
@@ -76,7 +76,7 @@ class MovieCount extends React.Component{
             .then(data => {
                 if(data.success){
                     data = _this.rebuildMoviesDataByLanguage(data.result);
-                    _this.setState({
+                    this.setState({
                         moviesOfEachLanguage: data
                     });
                 }else{
@@ -124,7 +124,7 @@ class MovieCount extends React.Component{
             },
             tooltip: {
                 headerFormat: '<b>{point.key}</b><br>',
-                pointFormat: '<b>百分比: <i>{point.percentage:.1f}%</i></b>'
+                pointFormat: '<b>百分比: <i>{point.percentage:.1f}%</i></b><br><b>数\u3000量：</b>{point.y}部'
             },
             plotOptions: {
                 pie: {
