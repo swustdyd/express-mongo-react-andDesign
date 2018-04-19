@@ -39,9 +39,9 @@ app.locals.moment = require('moment');
 
 //开启gzip
 app.use(compression());
+app.use(bodyParser());
 //filter
 app.use(filter);
-app.use(bodyParser());
 app.use(cookieParser());
 app.use(session({
     secret: 'demo',

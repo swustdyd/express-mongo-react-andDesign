@@ -10,6 +10,7 @@ import {Menu } from 'antd'
 import { asyncComponent } from '../../components/asyncComponent'
 const MovieList = asyncComponent(() => import (/* webpackChunkName: "movieList" */ './movieList'))
 const MovieCount = asyncComponent(() => import (/* webpackChunkName: "movieCount" */ './movieCount'))
+const CommentPage = asyncComponent(() => import (/* webpackChunkName: "user" */ '../comment/commentPage'))
 
 class MoviePage extends React.Component{
     constructor(props){
@@ -33,6 +34,7 @@ class MoviePage extends React.Component{
                     <div>
                         <Route path="/moviePage/movieList" component={MovieList}/>
                         <Route path="/moviePage/movieCount" component={MovieCount}/>
+                        <Route path="/moviePage/comment/:movieId" component={CommentPage}/>
                     </div>
                 }
             />

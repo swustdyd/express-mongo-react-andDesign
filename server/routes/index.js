@@ -23,7 +23,8 @@ module.exports = function (app) {
 
     app.get('/test', function (request, response) {
         asyncTest().then(result => {
-            response.json({success: true, result: result});
+            response.app.set('jsonp callback name', 'jsonpssCallback');
+            response.jsonp(result);
         });
 
     });

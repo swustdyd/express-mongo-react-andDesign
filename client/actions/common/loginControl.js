@@ -1,7 +1,7 @@
 import Common from '../../common/common'
 
 const loginControlAction = {
-    login: (name, password) =>(dispatch, getState) => {
+    login: (name, password, sevenDay) =>(dispatch, getState) => {
         fetch('/user/signin', {
             method: 'post',
             headers: {
@@ -9,7 +9,7 @@ const loginControlAction = {
             },
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
             credentials: 'include',
-            body: JSON.stringify({user: {name: name, password: password}})
+            body: JSON.stringify({user: {name: name, password: password}, sevenDay: sevenDay})
         }).then(res => res.json())
             .then((data) => {
                 if(data.success){

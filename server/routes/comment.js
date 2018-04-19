@@ -2,7 +2,6 @@
  * Created by Aaron on 2018/1/16.
  */
 let express = require('express');
-let Comment = require('../models/comment');
 let _ = require('underscore');
 let Authority = require('../common/authority');
 let logger = require('../common/logger');
@@ -27,6 +26,24 @@ router.post('/commit', Authority.requestSignin, function (req, res) {
             success: false
         });
     });
+});
+
+router.get('/getComment/:id', (req, res) => {
+    const movieId = req.params.id,
+        pageIndex = req.query.pageIndex,
+        pageSize = req.query.pageSize,
+        level = req.query.level;
+    CommentService.getCommentsByMovieId(movieId, {
+        condition: {
+            level: level
+        },
+        pageIndex,
+        pageSize
+    }).then(resData => {
+        res.json(resData);
+    }).catch(err => {
+        res.json({success: false, message: err.message});
+    })
 });
 
 module.exports = router;

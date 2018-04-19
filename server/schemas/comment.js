@@ -19,6 +19,11 @@ let CommentSchema = new mongoose.Schema({
         ref: 'User'
     },
     content: String,
+    level: Number,
+    state: {
+        type: Boolean,
+        default: true
+    },
     meta: {
         createAt:{
             type: Date,

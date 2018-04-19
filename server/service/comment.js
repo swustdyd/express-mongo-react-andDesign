@@ -45,35 +45,40 @@ module.exports = {
      * @param {Object} options 查询的配置
      * @return {Promise}
      */
-    getCommentsByMovieId: function (id, options) {
+    getCommentsByMovieId: function (id, customOptions) {
+        let options = _.extend({}, queryDefaultOptions, customOptions);
         return new Promise(function (resolve, reject) {
             if(!id){
                 reject(new Error('电影id不能为空'));
             }
-            options = _.extend({}, queryDefaultOptions, options);
-            Comment.find({movie: id})
-                .populate([
-                    {
-                        path: 'from',
-                        select: 'name'
-                    },
-                    {
-                        path: 'to',
-                        select: 'name'
-                    }
-                ])
-                .sort(options.sort)
-                .skip(options.pageSetting.pageIndex * options.pageSetting.pageSize)
-                .limit(options.pageSetting.pageSize)
-                .exec(function (err, comments) {
-                    if(err){
-                        reject(err)
-                    }
-                    resolve({
-                        success: true,
-                        result: comments
+            Comment.count({movie: id, ...options.condition}, function (err, count) {
+                Comment.find({movie: id, ...options.condition})
+                    .populate([
+                        {
+                            path: 'from',
+                            select: 'name'
+                        },
+                        {
+                            path: 'to',
+                            select: 'name'
+                        }
+                    ])
+                    .sort(options.sort)
+                    .skip(options.pageIndex * options.pageSize)
+                    .limit(options.pageSize)
+                    .exec(function (err, comments) {
+                        if(err){
+                            reject(err)
+                        }
+                        resolve({
+                            success: true,
+                            result: comments,
+                            total: count,
+                            pageIndex: options.pageIndex,
+                            pageSize: options.pageSize
+                        });
                     });
-                });
+            });
         });
     },
     saveOrUpdateComment: function (comment) {

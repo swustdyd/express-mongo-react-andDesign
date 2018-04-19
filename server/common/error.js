@@ -30,7 +30,7 @@ router.use(function(err, req, res, next) {
     logger.error(err);
     res.locals.message = message;
     res.status(err.status || 500);
-    res.json({message: message, success: false, erroCode: err.status || 500});
+    res.json({message: message, success: false, errorCode: err.status || 500});
 });
 
 module.exports.errorHandle = router;

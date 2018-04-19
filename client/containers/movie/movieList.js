@@ -7,10 +7,11 @@ import {
     Table, Button, message, Popconfirm, Select,
     Divider, Col, Row, Form, Input, DatePicker
 } from 'antd'
-import MovieEdit from './movieEdit'
+import { Link } from 'react-router-dom'
 import momont from 'moment'
-import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import MovieEdit from './movieEdit'
+import { connect } from 'react-redux';
 import MovieListAction from '../../actions/movie/movieList'
 import ModalAction from '../../actions/common/customModal'
 import YearRangePicker from '../../components/yearRangePicker'
@@ -23,7 +24,8 @@ class MovieList extends React.Component{
         super();
         this.state = {
             yearRange: {}
-        }
+        };
+        this.handleSearchClick = this.handleSearchClick.bind(this);
     }
     getSearchCondition(){
         let condition = {};
@@ -149,6 +151,12 @@ class MovieList extends React.Component{
                 render: (text) => momont(text.updateAt).format('YYYY-MM-DD HH:mm:ss')
             },
             {
+                title: '评论',
+                dataIndex: '_id',
+                key: 'comment',
+                render: id => <Link to={`/moviePage/comment/${id}`} >查看评论</Link>
+            },
+            {
                 title: '编辑',
                 dataIndex: '_id',
                 key: 'edit',
@@ -200,7 +208,7 @@ class MovieList extends React.Component{
             }
         };
         return(
-            <Form onSubmit={() => this.handleSearchClick()}>
+            <Form onSubmit={this.handleSearchClick}>
                 <Row gutter={12}>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="电影名">

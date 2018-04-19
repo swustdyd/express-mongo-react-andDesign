@@ -46,7 +46,8 @@ router.post('/signin', function (request, response) {
     //logger.info(request.sessionID);
     let _user = request.body.user,
         name = _user.name,
-        password = _user.password;
+        password = _user.password,
+        sevenDay = request.body.sevenDay;
     UserService.getUsersByCondition({
         condition:{
             name: name
@@ -60,6 +61,13 @@ router.post('/signin', function (request, response) {
                 if(isMatch){
                     let user = users[0];
                     user.password = '';
+                    if(sevenDay){
+                        //七天免登录
+                        request.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+                    }else{
+                        //30分钟
+                        request.session.cookie.maxAge = 1000 * 60 * 30;
+                    }
                     request.session.user = user;
                     request.app.locals.user = user;
                     //logger.info("用户名：" + request.app.locals.user.name);

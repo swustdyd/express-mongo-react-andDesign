@@ -1,8 +1,10 @@
 import React from 'react'
-import {Form, Button, Input, Icon} from 'antd'
+import {Form, Button, Input, Icon, Checkbox} from 'antd'
 import LoginControlAction from '../../actions/common/loginControl'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
+import './login.scss'
 
 const FormItem = Form.Item;
 
@@ -12,7 +14,7 @@ class Login extends React.Component{
         this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
                 let userInput = this.props.form.getFieldsValue();
-                this.props.loginControlAction.login(userInput.name, userInput.password);
+                this.props.loginControlAction.login(userInput.name, userInput.password, userInput.sevenDay);
             }
         });
     }
@@ -48,8 +50,15 @@ class Login extends React.Component{
                         <Input type='password' prefix={<Icon type="lock"/>} placeholder="密码" />
                     )}
                 </FormItem>
-                <FormItem >
+                <FormItem className='login-btn-container'>
                     <Button style={{width: '100%'}} type="primary" htmlType="submit" >登录</Button>
+                </FormItem>
+                <FormItem className="sevenDayContainer">
+                    {getFieldDecorator('sevenDay')(
+                        <Checkbox>
+                            7天免登录
+                        </Checkbox>
+                    )}
                 </FormItem>
             </Form>
         )
