@@ -18,6 +18,7 @@ let CommentSchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'User'
     },
+    replayTo: ObjectId,
     content: String,
     level: Number,
     state: {

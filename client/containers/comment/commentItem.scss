@@ -18,6 +18,9 @@
 .comment-detail{
   margin-left: 65px;
 }
+.comment-detail .comment-detail{
+  margin-left: 0;
+}
 .comment-detail .comment-content{
   line-height: 1.8em;
   margin-bottom: 0;
@@ -27,4 +30,18 @@
   padding: 10px;
   margin-top: 10px;
   border-radius: 4px;
+}
+.replay-btn{
+  margin-top: 10px;
+  display: inline-block;
+}
+.replay-input{
+  margin-top: 10px;
+}
+.replay-input input.ant-input{
+  display: inline-block;
+}
+.replay-input button.ant-btn{
+  border-radius: 0 4px 4px 0;
+  display: inline-block;
 }

@@ -23,7 +23,8 @@ class CommentPage extends  React.Component{
             inputComment: '',
             pageIndex: 0,
             pageSize: 10,
-            total:0
+            total:0,
+            totalComments: 0
         };
         this.handlerCommentInputChange = this.handlerCommentInputChange.bind(this);
         this.handleCommentCommitClick = this.handleCommentCommitClick.bind(this)
@@ -51,7 +52,8 @@ class CommentPage extends  React.Component{
                     comments: data.result,
                     pageIndex: data.pageIndex,
                     pageSize: data.pageSize,
-                    total: data.total
+                    total: data.total,
+                    totalComments: data.totalComments
                 });
             });
         this.setState({
@@ -129,7 +131,7 @@ class CommentPage extends  React.Component{
     }
 
     render(){
-        const { movie, comments, pageIndex, pageSize, total, inputComment} = this.state;
+        const { movie, comments, pageIndex, pageSize, total, inputComment, totalComments} = this.state;
         return(
             <div>
                 { this.showMovieDetail(movie) }
@@ -143,7 +145,7 @@ class CommentPage extends  React.Component{
                     <Button onClick={this.handleCommentCommitClick} type='primary'>评论</Button>
                 </div>
                 <Spin tip="评论加载中..." spinning={!this.state.loaded}>
-                    已有评论（{total}）条
+                    已有评论（{totalComments}）条
                     <div className="comment-list">
                         {this.showComments(comments)}
                     </div>

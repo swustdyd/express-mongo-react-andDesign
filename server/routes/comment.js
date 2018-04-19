@@ -32,10 +32,12 @@ router.get('/getComment/:id', (req, res) => {
     const movieId = req.params.id,
         pageIndex = req.query.pageIndex,
         pageSize = req.query.pageSize,
-        level = req.query.level;
+        level = req.query.level,
+        condition = JSON.parse(req.query.condition || '{}');
     CommentService.getCommentsByMovieId(movieId, {
         condition: {
-            level: level
+            level: level,
+            ...condition
         },
         pageIndex,
         pageSize
