@@ -26,16 +26,13 @@ module.exports = (req, res, next) => {
     if (req.body.pageIndex) {
         req.body.pageIndex = /^[0-9]+$/.test(req.body.pageIndex) ? parseInt(req.body.pageIndex) : 0;
     }else{
-        req.query.pageIndex = 0;
+        req.body.pageIndex = 0;
     }
     if (req.body.pageSize) {
         req.body.pageSize = /^[1-9][0-9]*$/.test(req.body.pageSize)
             ? Math.min(parseInt(req.body.pageSize), DefaultPageSize) : DefaultPageSize;
     }else{
-        req.query.pageSize = DefaultPageSize;
+        req.body.pageSize = DefaultPageSize;
     }
-    /*console.log(typeof req.param('pageIndex'), req.param('pageIndex'), typeof req.param('pageSize'), req.param('pageSize'));
-    console.log(typeof req.query.pageIndex, req.query.pageIndex, typeof req.query.pageSize, req.query.pageSize);
-    console.log(typeof req.body.pageIndex, req.body.pageIndex, typeof req.body.pageSize, req.body.pageSize);*/
     next();
 };
