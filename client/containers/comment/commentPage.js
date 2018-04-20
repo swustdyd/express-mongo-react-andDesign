@@ -22,39 +22,53 @@ class CommentPage extends  React.Component{
             comments: [],
             inputComment: '',
             pageIndex: 0,
-            pageSize: 10,
+            pageSize: 2,
             total:0,
-            totalComments: 0
+            totalComments: 0,
+            latestCommentMap: {}
         };
         this.handlerCommentInputChange = this.handlerCommentInputChange.bind(this);
         this.handleCommentCommitClick = this.handleCommentCommitClick.bind(this)
     }
 
     componentDidMount(){
-        let { movie } = this.state;
+        let { movie, pageIndex, pageSize } = this.state;
         fetch(`/movie/getMovies?condition=${JSON.stringify({_id: movie._id})}`)
             .then(res => res.json())
             .then(data => {
                 this.setState({
                     movie: data.result[0]
                 });
-                this.getComments(0, 10);
+                this.getComments(pageIndex, pageSize);
             });
     }
 
     getComments(pageIndex, pageSize){
-        let { movie } = this.state;
+        let { movie, comments, latestCommentMap} = this.state;
         fetch(`/comment/getComment/${movie._id}/?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=1`)
             .then(res => res.json())
             .then(data => {
+                data.result.forEach((item, index) => {
+                    let obj = latestCommentMap[item._id];
+                    if(obj){
+                        data.result.splice(index, 1);
+                    }
+                });
+                comments.push(...data.result);
                 this.setState({
                     loaded: true,
-                    comments: data.result,
+                    comments: comments,
                     pageIndex: data.pageIndex,
                     pageSize: data.pageSize,
                     total: data.total,
                     totalComments: data.totalComments
                 });
+            })
+            .catch(err => {
+                message.error(err.message);
+                this.setState({
+                    loaded: true
+                })
             });
         this.setState({
             loaded: false
@@ -87,7 +101,7 @@ class CommentPage extends  React.Component{
     }
 
     handleCommentCommitClick(){
-        let { inputComment, movie, pageIndex, pageSize} = this.state;
+        let { inputComment, movie, pageIndex, pageSize, comments, latestCommentMap} = this.state;
         if(inputComment){
             let comment = {
                 movie: movie._id,
@@ -108,9 +122,13 @@ class CommentPage extends  React.Component{
                 .then(data => {
                     if(data.success){
                         message.success('评论成功');
-                        this.getComments(pageIndex, pageSize);
+                        comments.push(data.result);
+                        latestCommentMap[data.result._id] = data.result;
                         this.setState({
-                            inputComment: ''
+                            inputComment: '',
+                            comments: comments,
+                            total: data.total,
+                            latestCommentMap: latestCommentMap
                         });
                     }else {
                         message.error(data.message);
@@ -125,13 +143,43 @@ class CommentPage extends  React.Component{
     showComments(comments){
         let results = [];
         comments.forEach((item, index) => {
-            results.push(<CommentItem key={index} comment={item}/>);
+            results.push(<CommentItem key={index} comment={item} level={1}/>);
         });
         return results;
     }
 
+    getNextPageComment(){
+        let { pageIndex, pageSize} = this.state;
+        pageIndex++;
+        this.getComments(pageIndex, pageSize);
+    }
+
+    getPageControl(){
+        let { comments, total, loaded} = this.state;
+        const hasNextPage =  total > comments.length;
+        return(
+            <Spin tip="评论加载中..." spinning={!loaded}>
+                <div className="page-control">
+                    {
+                        loaded ?
+                            hasNextPage ?
+                                <i>
+                                    <a onClick={() => this.getNextPageComment()}>
+                                        点击加载更多（{total - comments.length}）条评论
+                                    </a>
+                                </i>
+                                :
+                                <i>无更多评论</i>
+                            :
+                            ''
+                    }
+                </div>
+            </Spin>
+        )
+    }
+
     render(){
-        const { movie, comments, pageIndex, pageSize, total, inputComment, totalComments} = this.state;
+        let { movie, comments, inputComment, total} = this.state;
         return(
             <div>
                 { this.showMovieDetail(movie) }
@@ -144,12 +192,11 @@ class CommentPage extends  React.Component{
                     />
                     <Button onClick={this.handleCommentCommitClick} type='primary'>评论</Button>
                 </div>
-                <Spin tip="评论加载中..." spinning={!this.state.loaded}>
-                    已有评论（{totalComments}）条
-                    <div className="comment-list">
-                        {this.showComments(comments)}
-                    </div>
-                </Spin>
+                已有评论（{total}）条
+                <div className="comment-list">
+                    {this.showComments(comments)}
+                    {this.getPageControl()}
+                </div>
             </div>
         );
     }

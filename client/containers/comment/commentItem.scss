@@ -1,6 +1,8 @@
 .comment-item{
   position: relative;
-  margin-top: 15px;
+}
+.comment-item:not(:first-child){
+  margin-top: 10px;
 }
 .comment-icon{
   position: absolute;
@@ -19,20 +21,21 @@
   margin-left: 65px;
 }
 .comment-detail .comment-detail{
-  margin-left: 0;
+  margin-left: 1px;
 }
+
 .comment-detail .comment-content{
   line-height: 1.8em;
   margin-bottom: 0;
 }
 .sub-comment{
   background-color: #f0f2f5;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 5px;
+  margin-top: 5px;
   border-radius: 4px;
+  box-shadow: 0 0 10px #000;
 }
 .replay-btn{
-  margin-top: 10px;
   display: inline-block;
 }
 .replay-btn:hover{
@@ -47,4 +50,15 @@
 .replay-input button.ant-btn{
   border-radius: 0 4px 4px 0;
   display: inline-block;
+}
+
+.item-page-control{
+  margin-top: 15px;
+  font-size: 16px;
+  text-align: center;
+  min-height: 1px;
+  line-height: 20px;
+}
+.item-page-control a:hover{
+  text-decoration: underline;
 }

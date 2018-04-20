@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import moment from 'moment'
-import {Icon, message, Input, Button} from 'antd'
+import {Icon, message, Input, Spin} from 'antd'
 
 import './commentItem.scss'
 
@@ -17,13 +17,19 @@ class CommentItem extends React.Component{
             comment: comment,
             subComments: [],
             replayInput: '',
-            replayShow: false
+            replayShow: false,
+            pageIndex: 0,
+            pageSize: 2,
+            total: 0,
+            loaded: true,
+            latestReplayMap: {}
         };
         this.handleReplayInputChange = this.handleReplayInputChange.bind(this);
     }
 
     componentDidMount(){
-        this.getSubComments(0, 10);
+        let { pageIndex, pageSize } = this.state;
+        this.getSubComments(pageIndex, pageSize);
     }
 
     handleReplayBtnClick(){
@@ -38,13 +44,13 @@ class CommentItem extends React.Component{
         });
     }
 
-    handleReplayCommitClick(value, replayTo){
-        let { comment } = this.state;
+    handleReplayCommitClick(value){
+        let { comment, pageIndex, pageSize, subComments, latestReplayMap} = this.state;
         if(value){
             let replayComment = {
-                to: replayTo,
+                to: comment.from._id,
                 content: value,
-                level: 2,
+                level: this.props.level + 1,
                 movie: comment.movie,
                 replayTo: comment._id
             };
@@ -63,11 +69,15 @@ class CommentItem extends React.Component{
                 .then(data => {
                     if(data.success){
                         message.success('回复成功');
+                        subComments.push(data.result);
+                        latestReplayMap = latestReplayMap[data.result._id] = data.result;
                         this.setState({
                             replayInput: '',
-                            replayShow: false
+                            replayShow: false,
+                            subComments: subComments,
+                            total: data.total,
+                            latestReplayMap: latestReplayMap
                         });
-                        this.getSubComments(0, 10)
                     }else {
                         message.error(data.message);
                     }
@@ -78,16 +88,26 @@ class CommentItem extends React.Component{
     }
 
     getSubComments(pageIndex, pageSize){
-        let { comment } = this.state;
+        let { comment, subComments, latestReplayMap } = this.state;
         let condition = {
-            to: comment.from._id,
             replayTo: comment._id
         };
-        fetch(`/comment/getComment/${comment.movie}/?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=2&condition=${JSON.stringify(condition)}`)
+        fetch(`/comment/getComment/${comment.movie}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=${this.props.level + 1}&condition=${JSON.stringify(condition)}`)
             .then(res => res.json())
             .then(data => {
+                data.result.forEach((item, index) => {
+                    let obj = latestReplayMap[item._id];
+                    if(obj){
+                        data.result.splice(index, 1);
+                    }
+                });
+
+                subComments.push(...data.result);
                 this.setState({
-                    subComments: data.result
+                    subComments: subComments,
+                    pageIndex: data.pageIndex,
+                    pageSize: data.pageSize,
+                    total: data.total
                 });
             });
     }
@@ -96,55 +116,84 @@ class CommentItem extends React.Component{
         let results = [];
         subComments.forEach((item, index) => {
             results.push(
-                <div className="comment-detail" key={index}>
-                    <span className="comment-name">
-                        <b>{item.from.name}</b>
-                        &nbsp;回复&nbsp;
-                        <b>{item.to.name}</b>
-                        &emsp;
-                        <small>
-                            <i>{moment(item.meta.createAt).format('YYYY-MM-DD HH:mm:ss')}</i>
-                        </small>
-                    </span>
-                    <p className="comment-content">{item.content}</p>
-                </div>
+                <CommentItem
+                    key={index}
+                    comment={item}
+                    level={this.props.level + 1}
+                />
             )
         });
         return results;
+    }
+
+    getPageControl() {
+        let {subComments, total, loaded} = this.state;
+        const hasNextPage = total > subComments.length;
+        return (
+            <Spin tip="评论加载中..." spinning={!loaded}>
+                <div className="item-page-control">
+                    {
+                        loaded ?
+                            hasNextPage ?
+                                <i>
+                                    <a onClick={() => this.getNextPageSubComment()}>
+                                        点击加载更多（{total - subComments.length}）条回复
+                                    </a>
+                                </i>
+                                :
+                                ''
+                            :
+                            ''
+                    }
+                </div>
+            </Spin>
+        )
+    }
+
+    getNextPageSubComment(){
+        let { pageIndex, pageSize} = this.state;
+        pageIndex++;
+        this.getSubComments(pageIndex, pageSize);
     }
 
     render(){
         let { comment, replayInput, replayShow, subComments} = this.state;
         return(
             <div className="comment-item">
-                <div className="comment-icon">
-                    <img src="/uploads/movie/poster/resize/2-1521781139410.jpg"/>
-                </div>
+                {
+                    this.props.level <= 1 ?
+                        <div className="comment-icon">
+                            <img src="/uploads/movie/poster/resize/2-1521781139410.jpg"/>
+                        </div>
+                        :
+                        ''
+                }
+
                 <div className="comment-detail">
                     <span className="comment-name">
                         <b>{comment.from.name}</b>
+                        {
+                            comment.to ?
+                                <span>
+                                    &nbsp;回复&nbsp;
+                                    <b>{comment.to.name}</b>
+                                </span>
+                                :
+                                ''
+                        }
                         &emsp;
                         <small>
-                            <i>{moment(comment.meta.createAt).format('YYYY-MM-DD HH:mm:ss')}</i>
+                            {moment(comment.meta.createAt).format('YYYY-MM-DD HH:mm:ss')}
                         </small>
                     </span>
                     <p className="comment-content">{comment.content}</p>
-                    {
-                        subComments.length > 0 ?
-                            <div className="sub-comment">
-                                {this.showSubComments(subComments)}
-                            </div>
-                            :
-                            ''
-                    }
-
                     <a className="replay-btn" onClick={() => this.handleReplayBtnClick()}><Icon type="message" />&nbsp;回复</a>
                     {
                         replayShow ?
                             <Search
                                 className="replay-input"
                                 placeholder="输入回复..."
-                                onSearch={ value => this.handleReplayCommitClick(value, comment.from)}
+                                onSearch={ value => this.handleReplayCommitClick(value)}
                                 onChange={this.handleReplayInputChange}
                                 enterButton="回复"
                                 value={replayInput}
@@ -152,7 +201,15 @@ class CommentItem extends React.Component{
                             :
                             ''
                     }
-
+                    {
+                        subComments.length > 0 ?
+                            <div className="sub-comment">
+                                {this.showSubComments(subComments)}
+                                {this.getPageControl()}
+                            </div>
+                            :
+                            ''
+                    }
                 </div>
             </div>
         );

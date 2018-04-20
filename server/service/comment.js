@@ -12,12 +12,22 @@ const getCommentById = function (id) {
         if(!id){
             reject(new Error('评论id不能为空'))
         }
-        Comment.findOne({_id: id}, function (err, comment) {
-            if(err){
-                reject(err)
-            }
-            resolve({suceess: true, result: comment});
-        })
+        Comment.findOne({_id: id}, )
+            .populate([
+                {
+                    path: 'from',
+                    select: 'name'
+                },
+                {
+                    path: 'to',
+                    select: 'name'
+                }
+            ]).exec(function (err, comment) {
+                if(err){
+                    reject(err)
+                }
+                resolve({success: true, result: comment});
+            })
     });
 };
 
@@ -29,14 +39,27 @@ const getCommentById = function (id) {
 const getCommentsByCondition = function (options) {
     return new Promise(function (resolve, reject) {
         options = _.extend({}, queryDefaultOptions, options);
-        Comment.find(options.condition, function (err, comments) {
+        Comment.count(options.condition, function (err, count) {
             if(err){
                 reject(err);
             }
-            resolve({success: true, result: comments});
-        }).sort(options.sort)
-            .skip(options.pageSetting.pageIndex * options.pageSetting.pageSize)
-            .limit(options.pageSetting.pageSize);
+            Comment.find(options.condition)
+                .sort(options.sort)
+                .skip(options.pageIndex * options.pageSize)
+                .limit(options.pageSize)
+                .exec((err, comments) => {
+                    if(err){
+                        reject(err);
+                    }
+                    resolve({
+                        success: true,
+                        result: comments,
+                        total: count,
+                        pageIndex: options.pageIndex,
+                        pageSize: options.pageSize
+                    });
+                });
+        });
     });
 };
 
