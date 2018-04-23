@@ -2,23 +2,19 @@
  * Created by Aaron on 2018/1/15.
  */
 
-let role = {
+const role = {
     normal: 0,
     admin: 10,
     superAdmin: 50
 };
-let errorCode = require('./error').errorCode;
+const errorCode = require('./errorCode');
+const BusinessException = require('./businessException');
 
 module.exports = {
     requestSignin: function (req, res, next) {
         let user = req.session.user;
         if(!user){
-            res.status(500);
-            res.json({
-                message: '请登录',
-                success: false,
-                errorCode: errorCode.requestSignin
-            });
+            next(new BusinessException('请登录', errorCode.requestSignin));
         }else{
             next();
         }
@@ -26,12 +22,7 @@ module.exports = {
     requestAdmin: function (req, res, next) {
         let user = req.session.user;
         if(!user || user.role < role['admin']){
-            res.status(500);
-            res.json({
-                message: '需要管理员权限',
-                success: false,
-                errorCode: errorCode.requestAdmin
-            });
+            next(new BusinessException('需要管理员权限', errorCode.requestAdmin));
         }else{
             next();
         }
@@ -39,12 +30,7 @@ module.exports = {
     requestSuperAdmin: function (req, res, next) {
         let user = req.session.user;
         if(!user || user.role < role['superAdmin']){
-            res.status(500);
-            res.json({
-                message: '需要超级管理员权限',
-                success: false,
-                errorCode: errorCode.requestAdmin
-            });
+            next(new BusinessException('需要超级管理员权限', errorCode.requestSuperAdmin));
         }else{
             next();
         }

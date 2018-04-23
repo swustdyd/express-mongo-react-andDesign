@@ -138,6 +138,7 @@ const uploadFiles = (request, response, options) => {
             //cb(new Error('I don\'t have a clue!'))
         }
     }).any();
+
     return new Promise(function (resolve, reject) {
         upload(request, response, function (err) {
             if (err) {

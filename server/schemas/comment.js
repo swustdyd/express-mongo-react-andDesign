@@ -37,24 +37,4 @@ let CommentSchema = new mongoose.Schema({
     }
 });
 
-/**
- * 每次调用save前都会调用该方法
- */
-CommentSchema.pre('save', function (next) {
-    if(this.isNew){
-        this.meta.createAt = this.meta.updateAt = Date.now();
-    }else{
-        this.meta.updateAt = Date.now();
-    }
-    next();
-});
-
-CommentSchema.statics = {
-    fetch: function (cb) {
-        return this.find({}).sort('meta.updateAt').exec(cb);
-    },
-    findById: function (id, cb) {
-        return this.findOne({_id: id}).exec(cb);
-    }
-};
 module.exports = CommentSchema;

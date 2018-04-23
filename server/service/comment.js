@@ -1,16 +1,17 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-let Comment = require('../models/comment');
-let logger = require('../common/logger');
-let Promise = require('promise');
-let queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-let _ = require('underscore');
+const Comment = require('../models/comment');
+const logger = require('../common/logger');
+const Promise = require('promise');
+const queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
+const _ = require('underscore');
+const BusinessException = require('../common/businessException');
 
 const getCommentById = function (id) {
     return new Promise(function (resolve, reject) {
         if(!id){
-            reject(new Error('评论id不能为空'))
+            reject(new BusinessException('评论id不能为空'))
         }
         Comment.findOne({_id: id}, )
             .populate([
@@ -70,13 +71,13 @@ const getCommentsByCondition = function (options) {
 const countCommentsByMovieId = function(id){
     return new Promise(function (resolve, reject) {
         if (!id) {
-            reject(new Error('电影id不能为空'));
+            reject(new BusinessException('电影id不能为空'))
         }
         Comment.count({movie: id}, function (err, count) {
             if (err) {
                 reject(err);
             }
-            resolve(count);
+            resolve({success: true, result: count});
         });
     });
 };
@@ -93,7 +94,7 @@ const getCommentsByMovieId = async function (id, customOptions) {
     let totalComments = await countCommentsByMovieId(id);
     return new Promise(function (resolve, reject) {
         if(!id){
-            reject(new Error('电影id不能为空'));
+            reject(new BusinessException('电影id不能为空'))
         }
         Comment.count({movie: id, ...options.condition}, function (err, count) {
             Comment.find({movie: id, ...options.condition})
@@ -127,38 +128,28 @@ const getCommentsByMovieId = async function (id, customOptions) {
     });
 };
 
-const saveOrUpdateComment = function (comment) {
-    let service = this;
-    let message = '';
+const saveOrUpdateComment = async function (comment) {
+    let originComment = '';
+    if(comment._id){
+        let resData = await getCommentById(comment._id);
+        originComment = resData.result;
+        _.extend(originComment, comment);
+        comment.meta.updateAt = Date.now();
+    }else{
+        originComment = new Comment(comment);
+        originComment.meta.createAt = originComment.meta.updateAt = Date.now();
+    }
     return new Promise(function (resolve, reject) {
-        if(comment._id){
-            message = '修改成功';
-            return service.getCommentById(comment._id).then(function (resData) {
-                let originComment = resData.result;
-                _.extend(originComment, comment);
-                comment.meta.updateAt = Date.now();
-                resolve(originComment);
-            })
-        }else{
-            message = '评论成功';
-            comment = new Comment(comment);
-            comment.meta.createAt = comment.meta.updateAt = Date.now();
-            resolve(comment);
-        }
-    }).then(function (comment) {
-        return new Promise(function (resolve, reject) {
-            comment.save(function (err, comment) {
-                if(err){
-                    reject(err);
-                }
-                resolve({
-                    success: true,
-                    result: comment,
-                    message: message
-                });
-            })
+        originComment.save(function (err, comment) {
+            if(err){
+                reject(err);
+            }
+            resolve({
+                success: true,
+                result: comment
+            });
         })
-    })
+    });
 };
 
 module.exports = {

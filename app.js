@@ -7,7 +7,7 @@ const compression = require('compression')
 //文件的创建
 const fs = require('fs');
 //自定义error
-const errorHandle = require('./server/common/error').errorHandle;
+const errorHandle = require('./server/common/errorHandle');
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -109,7 +109,7 @@ if (isDev) {
     reload(server, app);
 
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
-    app.use(errorHandle);
+    //app.use(errorHandle);
     server.listen(devPort, function(){
         console.log('App (dev) is now running on devPort '+devPort+'!');
     });
@@ -117,9 +117,18 @@ if (isDev) {
     // static assets served by express.static() for production
     //app.use(express.static(path.join(__dirname, BaseConfig.webpackPath)));
     //放在所有的routes和static资源的匹配后面，匹配到该处，证明为404
-    app.use(errorHandle);
+    //app.use(errorHandle);
     app.listen(proPort, function () {
         console.log('App (production) is now running on proPort '+proPort+'!');
     });
 }
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    let err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+//统一处理异常返回
+app.use(errorHandle);
 

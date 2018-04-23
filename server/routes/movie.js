@@ -9,144 +9,148 @@ const _ = require('underscore');
 const logger = require('../common/logger');
 const MovieService = require('../service/movie');
 const PublicFunc = require('../common/publicFunc');
-const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
 const BaseConfig = require('../../baseConfig');
+const BusinessException = require('../common/businessException');
 
 /**
  * 获取电影列表
  */
-router.get('/getMovies', function (req, res) {
-    let condition = req.query.condition || '{}',
-        pageIndex = req.query.pageIndex,
-        pageSize = req.query.pageSize;
+router.get('/getMovies', async function (req, res, next) {
+    try {
+        let condition = req.query.condition || '{}',
+            pageIndex = req.query.pageIndex,
+            pageSize = req.query.pageSize;
 
-    condition = JSON.parse(condition);
-    let newCondition = {};
+        condition = JSON.parse(condition);
+        let newCondition = {};
 
-    if(condition.title){
-        newCondition.title = new RegExp(`^${condition.title}.*$`, 'i');
-    }
-    if(condition._id){
-        newCondition._id = condition._id;
-    }
+        if(condition.title){
+            newCondition.title = new RegExp(`^${condition.title}.*$`, 'i');
+        }
+        if(condition._id){
+            newCondition._id = condition._id;
+        }
 
-    //newCondition.year = undefined;
-    if(condition.searchYear && condition.searchYear.start){
-        newCondition.year = {};
-        newCondition.year.$gte = condition.searchYear.start
-    }
-    if(condition.searchYear && condition.searchYear.end){
-        newCondition.year = newCondition.year || {};
-        newCondition.year.$lte = condition.searchYear.end;
-    }
+        if(condition.searchYear && condition.searchYear.start){
+            newCondition.year = {};
+            newCondition.year.$gte = condition.searchYear.start
+        }
+        if(condition.searchYear && condition.searchYear.end){
+            newCondition.year = newCondition.year || {};
+            newCondition.year.$lte = condition.searchYear.end;
+        }
 
-    if(condition.language){
-        newCondition.language = condition.language;
-    }
-    //logger.info(condition);
-    MovieService.getMoviesByCondition({
-        condition: newCondition,
-        pageIndex: pageIndex,
-        pageSize: pageSize
-    }).then(function (resData) {
+        if(condition.language){
+            newCondition.language = condition.language;
+        }
+
+        let resData = await MovieService.getMoviesByCondition({
+            condition: newCondition,
+            pageIndex: pageIndex,
+            pageSize: pageSize
+        });
         res.json(resData);
-    }).catch(function (err) {
-        logger.error(err);
-        res.json({success: false, message: err.message});
-    });
+    }catch(e) {
+        next(e);
+    }
 });
 
 /**
  * 保存或者修改电影
  */
-router.post('/newOrUpdate', function (request, response) {
-    let movie = request.body.movie;
-    MovieService.saveOrUpdateMovie(movie).then(function (resData) {
-        response.json({
-            success: true,
-            message: resData.message
-        })
-    }).catch(function (err) {
-        logger.error(err);
-        response.json({
-            success: false,
-            message: err.message
-        })
-    });
+router.post('/newOrUpdate', async function (request, response, next) {
+    try {
+        let movie = request.body.movie;
+        let resData = await MovieService.saveOrUpdateMovie(movie);
+        let message = movie._id ? '修改成功' : '新增成功';
+        if(resData.success){
+            resData.message = message;
+        }
+        response.json(resData);
+    }catch (e){
+        next(e);
+    }
 });
 
 
 /**
  * 删除电影
  */
-router.get('/delete', function (request, response) {
-    let id = request.query.id;
-    MovieService.deleteMovieById(id).then(function (resData) {
-        if(resData.success){
-            response.json({ success: true, message: '删除成功'});
-        }else{
-            response.json({ success: false, message: '删除失败'});
-        }
-    }).catch(function (err) {
-        logger.error(err);
-        response.json({ success: false, message: err.message});
-    });
+router.get('/delete', async function (request, response, next) {
+    try {
+        let id = request.query.id;
+        let resData = await MovieService.deleteMovieById(id);
+        resData.message = '删除成功';
+        response.json(resData);
+    }catch (e){
+        next(e);
+    }
 });
 
-router.post('/uploadPoster', function (req, res) {
-    PublicFunc.uploadFiles(req, res, {
-        subDir: 'movie/poster/temp',
-        fileFilter: ['.png', '.jpg']
-    }).then(function (files) {
+router.post('/uploadPoster', async function (req, res, next) {
+    try {
+        let files = await PublicFunc.uploadFiles(req, res, {
+            subDir: 'movie/poster/temp',
+            fileFilter: ['.png', '.jpg']
+        });
         if(files){
             files.forEach(item => item.url = `uploads/movie/poster/temp/${item.filename}`);
             res.json({success: true, message: '上传成功', result: files});
         }else{
-            res.json({success: false, message: '上传文件为空', result: files});
+            next(new BusinessException('上传文件为空'));
         }
-    }).catch(function (err) {
-        logger.error(err);
-        res.json({success: false, message: err.message});
-    });
+    }catch (e){
+        next(err);
+    }
 });
 
-router.post('/cutPoster', function (req, res) {
-    let {file, cutArea, resizeWidth, resizeHeight} = req.body;
-    let input = path.resolve(BaseConfig.root, `public/${file.url}`);
-    let index = file.url.lastIndexOf('/');
-    let savePath = `${path.dirname(file.url.substr(0, index))}/resize/${file.filename}`;
-    let output = path.resolve(BaseConfig.root, `public/${savePath}`);
-    PublicFunc.cutAndResizeImg(
-        input,
-        output,
-        {
-            left: cutArea.x,
-            top: cutArea.y,
-            width: cutArea.width,
-            height: cutArea.height
-        },
-        resizeWidth,
-        resizeHeight
-    ).then(() => {
-        //sharps = sharp(path.resolve(BaseConfig.root, 'public/uploads/reset.jpg'));
-        fs.unlinkSync(input);
-        res.json({success: true, message: '裁剪成功', result: Object.assign(file, {url: savePath})});
-    }).catch(err => {
-        logger.error(err);
-        res.json({success: false, message: err.message});
-    });
+router.post('/cutPoster', async function (req, res, next) {
+    try {
+        let { file, cutArea, resizeWidth, resizeHeight } = req.body;
+        let inputPath = path.resolve(BaseConfig.root, `public/${file.url}`);
+
+        //创建同级目录
+        let lastDir = path.dirname(file.url).substr(0, path.dirname(file.url).lastIndexOf('/'));
+        let saveDirectory = `${lastDir}/resize/`;
+        //logger.debug(path.dirname(file.url), lastDir, fs.existsSync(`public/${saveDirectory}`));
+        if(!fs.existsSync(`public/${saveDirectory}`)){
+            PublicFunc.mkdirsSync(`public/${saveDirectory}`)
+        }
+        let savePath = `${saveDirectory}/${file.filename}`;
+        let outputPath = path.resolve(BaseConfig.root, `public/${savePath}`);
+        await PublicFunc.cutAndResizeImg(
+            inputPath,
+            outputPath,
+            {
+                left: cutArea.x,
+                top: cutArea.y,
+                width: cutArea.width,
+                height: cutArea.height
+            },
+            resizeWidth,
+            resizeHeight
+        );
+        //删除原图
+        fs.unlinkSync(inputPath);
+        res.json({
+            success: true,
+            message: '裁剪成功',
+            result: Object.assign(file, {url: savePath})
+        });
+    }catch (e){
+        next(e);
+    }
 });
 
-router.get('/getMoviesByGroup', (req, res) => {
-    let groupArray = JSON.parse(req.query.groupArray || '[]');
-    let match = JSON.parse(req.query.match || '{}');
-    MovieService.getMoviesByGroup(groupArray, match).then(resData => {
+router.get('/getMoviesByGroup', async (req, res, next) => {
+    try {
+        let groupArray = JSON.parse(req.query.groupArray || '[]');
+        let match = JSON.parse(req.query.match || '{}');
+        let resData = await MovieService.getMoviesByGroup(groupArray, match);
         res.json(resData);
-    }).catch(err => {
-        logger.error(err);
-        res.json({success: false, message: err.message});
-    })
+    }catch (e){
+        next(err);
+    }
 });
-
 
 module.exports = router;

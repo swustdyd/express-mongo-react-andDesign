@@ -1,22 +1,26 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-let express = require('express');
-let _ = require('underscore');
-let Authority = require('../common/authority');
-let logger = require('../common/logger');
-let CommentService = require('../service/comment');
+const express = require('express');
+const _ = require('underscore');
+const Authority = require('../common/authority');
+const logger = require('../common/logger');
+const CommentService = require('../service/comment');
 
 const router = express.Router();
 
-router.post('/commit', Authority.requestSignin, function (req, res) {
-    let comment = req.body.comment;
-    let currentUser = req.session.user;
-    comment.from = currentUser._id;
-    CommentService.saveOrUpdateComment(comment).then(async function (resData) {
-        let comment = resData.result;
+router.post('/commit', Authority.requestSignin, async function (req, res, next) {
+    try {
+        let comment = req.body.comment;
+        let currentUser = req.session.user;
+        comment.from = currentUser._id;
+        let resData = CommentService.saveOrUpdateComment(comment);
+        comment = resData.result;
+        //再次查询，带出from与to
         resData = await CommentService.getCommentById(comment._id);
         comment = resData.result;
+
+        //查询同一电影，同级的评论条数
         let condition = {
             level: comment.level,
             movie: comment.movie
@@ -30,41 +34,37 @@ router.post('/commit', Authority.requestSignin, function (req, res) {
             pageSize: 1
         });
         res.json({
-            message: resData.message,
-            success: resData.success,
+            success: true,
             result: comment,
             total: resData.total
         });
-    }).catch(function (err) {
-        logger.error(err);
-        res.json({
-            message: err.message,
-            success: false
-        });
-    });
+    }catch (e){
+        next(e);
+    }
 });
 
-router.get('/getComment/:id', (req, res) => {
-    const movieId = req.params.id,
-        pageIndex = req.query.pageIndex,
-        pageSize = req.query.pageSize,
-        level = req.query.level,
-        condition = JSON.parse(req.query.condition || '{}');
-    CommentService.getCommentsByMovieId(movieId, {
-        condition: {
-            level: level,
-            ...condition
-        },
-        pageIndex,
-        pageSize,
-        sort: {
-            'meta.createAt': 1
-        }
-    }).then(resData => {
+router.get('/getComment/:id', async (req, res, next) => {
+    try{
+        const movieId = req.params.id,
+            pageIndex = req.query.pageIndex,
+            pageSize = req.query.pageSize,
+            level = req.query.level,
+            condition = JSON.parse(req.query.condition || '{}');
+        let resData = await CommentService.getCommentsByMovieId(movieId, {
+            condition: {
+                level: level,
+                ...condition
+            },
+            pageIndex,
+            pageSize,
+            sort: {
+                'meta.createAt': 1
+            }
+        });
         res.json(resData);
-    }).catch(err => {
-        res.json({success: false, message: err.message});
-    })
+    }catch (e){
+        next(e);
+    }
 });
 
 module.exports = router;
