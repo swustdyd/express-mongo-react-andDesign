@@ -74,7 +74,7 @@ const saveOrUpdateUser = async function (_user) {
         let resData = await getUserById(inputUser._id);
         let originUser = resData.result;
         originUser.meta.updateAt = Date.now();
-        _.extend(originUser, inputUser);
+        inputUser = _.extend(originUser, inputUser);
     }else{
         //新增用户
         inputUser = new User(inputUser);

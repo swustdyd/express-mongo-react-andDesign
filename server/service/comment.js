@@ -17,11 +17,11 @@ const getCommentById = function (id) {
             .populate([
                 {
                     path: 'from',
-                    select: 'name'
+                    select: 'name icon'
                 },
                 {
                     path: 'to',
-                    select: 'name'
+                    select: 'name icon'
                 }
             ]).exec(function (err, comment) {
                 if(err){
@@ -101,11 +101,11 @@ const getCommentsByMovieId = async function (id, customOptions) {
                 .populate([
                     {
                         path: 'from',
-                        select: 'name'
+                        select: 'name icon'
                     },
                     {
                         path: 'to',
-                        select: 'name'
+                        select: 'name icon'
                     }
                 ])
                 .sort(options.sort)

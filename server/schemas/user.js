@@ -11,6 +11,10 @@ let UserSchema = new mongoose.Schema({
         unique: true,
         type: String
     },
+    icon: {
+        displayName: String,
+        src: String
+    },
     /*
     * normal user 0
     * admin  user (10,50]

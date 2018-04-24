@@ -1,6 +1,6 @@
 let initState = {
     hasLogin: false,
-    userName: '',
+    user: '',
     message: '',
     actionSuccess: false
 };
@@ -11,7 +11,7 @@ export default (state = initState, action) => {
             return Object.assign({}, state, {
                 hasLogin: true,
                 actionSuccess: true,
-                userName: action.payload.name,
+                user: action.payload.user,
                 message: action.payload.message
             });
         case 'LOGIN_FAIL':

@@ -7,6 +7,7 @@ import Login from './login'
 import ModifyPwd from './modifyPwd'
 import UserRegister from './userRegister'
 import { message } from 'antd'
+import BaseConfig from '../../../baseConfig'
 
 import './loginControl.scss'
 
@@ -64,7 +65,16 @@ class LoginControl extends React.Component{
                 {
                     loginState.hasLogin ?
                         <div>
-                            <span>欢迎您，{loginState.userName}</span>
+                            <img
+                                className="user-icon"
+                                src={
+                                    loginState.user.icon && loginState.user.icon.src ?
+                                        loginState.user.icon.src
+                                        :
+                                        BaseConfig.userDefaultIcon
+                                }
+                            />
+                            <span>欢迎您，{loginState.user.name}</span>
                             &emsp;|&emsp;
                             <a onClick={this.handleLogoutClick.bind(this)}>登出</a>
                             &emsp;|&emsp;

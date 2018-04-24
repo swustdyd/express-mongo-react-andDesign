@@ -38,14 +38,14 @@ const loginControlAction = {
             .then(res => res.json())
             .then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.loginSuccess(data.result.name));
+                    dispatch(loginControlAction.loginSuccess(data.result));
                 }
             });
     },
-    loginSuccess: (name, message) =>({
+    loginSuccess: (user, message) =>({
         type: 'LOGIN_SUCCESS',
         payload: {
-            name: name,
+            user: user,
             message: message
         }
     }),

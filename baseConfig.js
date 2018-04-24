@@ -10,5 +10,6 @@ module.exports = {
     staticPath: 'public',
     webpackPath: './public/dist',
     publicPath: 'dist/',
-    root: path.resolve(__dirname)
+    root: path.resolve(__dirname),
+    userDefaultIcon: '/images/default-icon.jpg'
 };

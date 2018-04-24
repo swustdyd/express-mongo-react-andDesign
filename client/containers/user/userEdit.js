@@ -2,28 +2,40 @@
  * Created by Aaron on 2018/3/13.
  */
 import React from 'react'
-import {Form, Button, Input, Icon, Select, Spin, message} from 'antd'
+import {Form, Button, Input, Select, Spin, message, Tooltip, Icon} from 'antd'
 import Common from '../../common/common'
+import PicturesWall from '../../components/picturesWall'
 
-let FormItem = Form.Item;
-let Option = Select.Option;
+const FormItem = Form.Item;
 
 class UserEdit extends React.Component{
     constructor(props){
         super(props);
         let { initData } = props;
+        initData = initData || {};
+        let iconList = [];
+        if(initData.icon){
+            iconList.push(initData.icon)
+        }
         this.state = {
             submiting: false,
-            initData: initData || {}
+            initData: initData,
+            iconList: iconList
         };
     }
     handleSubmitClick(e){
         e.preventDefault();
-        let _this = this;
-        _this.props.form.validateFieldsAndScroll((err, valus) => {
+        this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
                 let userInput = this.props.form.getFieldsValue();
-                userInput._id = _this.state.initData._id;
+                userInput._id = this.state.initData._id;
+                let { iconList } = this.state;
+                if(iconList.length > 0){
+                    userInput.icon = {
+                        displayName: iconList[0].name,
+                        src: iconList[0].url
+                    }
+                }
                 fetch('/user/edit', {
                     method: 'post',
                     headers: {
@@ -36,24 +48,31 @@ class UserEdit extends React.Component{
                     .then(data => {
                         if(data.success){
                             message.success(data.message);
-                            if(_this.props.onSubmitSuccess){
-                                _this.props.onSubmitSuccess();
+                            if(this.props.onSubmitSuccess){
+                                this.props.onSubmitSuccess();
                             }
                         }else {
                             message.error(data.message);
-                            if(_this.props.onSubmitFail){
-                                _this.props.onSubmitFail();
+                            if(this.props.onSubmitFail){
+                                this.props.onSubmitFail();
                             }
                         }
                     }).catch(err => {
                         message.error(err.message);
                     });
-                console.log(userInput);
             }
         });
     }
+
+    handleIconUploadChange(iconList){
+        this.setState({
+            iconList: iconList
+        })
+    }
+
     render(){
         let {getFieldDecorator} = this.props.form;
+        let { initData, iconList } = this.state;
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
@@ -76,7 +95,12 @@ class UserEdit extends React.Component{
                 }
             }
         };
-        let { initData } = this.state;
+        iconList.forEach((item, index) => {
+            item.uid = index;
+            item.name = item.displayName || item.name;
+            item.status = 'done';
+            item.url = item.src || item.url;
+        });
         return (
             <Spin tip="提交中..." spinning={this.state.submiting}>
                 <Form onSubmit={this.handleSubmitClick.bind(this)} className="userEdit-form">
@@ -114,6 +138,28 @@ class UserEdit extends React.Component{
                                 {Common.createUserRoleOptions()}
                             </Select>
                         )}
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
+                        label={(
+                            <span>
+                                头像&nbsp;
+                                <Tooltip title="文件格式：JPG、PNG">
+                                    <Icon type="question-circle-o" />
+                                </Tooltip>
+                            </span>
+                        )}
+                    >
+                        <PicturesWall
+                            name="userIcon"
+                            action="/user/uploadIcon"
+                            cutAction="/cutImg"
+                            cutWidth={250}
+                            cutHeight={250}
+                            maxLength={1}
+                            defaultFileList={iconList}
+                            onChange={list => this.handleIconUploadChange(list)}
+                        />
                     </FormItem>
                     <FormItem {...tailFormItemLayout}>
                         <Button type="primary" htmlType="submit" >确认修改</Button>

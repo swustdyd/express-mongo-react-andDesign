@@ -14,6 +14,9 @@ import UserListAction from '../../actions/user/userList'
 import ModalAction from '../../actions/common/customModal'
 import UserEdit from './userEdit'
 import Common from '../../common/common'
+import BaseConfig from '../../../baseConfig'
+
+import './userList.scss'
 
 let FormItem = Form.Item;
 
@@ -97,6 +100,12 @@ class UserList extends React.Component{
         let {total, pageSize, pageIndex, users} = this.props.userListState;
         let { getFieldDecorator } = this.props.form;
         let columns = [
+            {
+                title: '头像',
+                dataIndex: 'icon',
+                key: 'icon',
+                render: icon => <img className="list-user-icon" src={icon && icon.src ? icon.src : BaseConfig.userDefaultIcon}/>
+            },
             {
                 title: '用户名',
                 dataIndex: 'name',

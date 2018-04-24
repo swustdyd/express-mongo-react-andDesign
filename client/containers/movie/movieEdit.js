@@ -6,7 +6,6 @@ import React from 'react'
 import { Form, Input, Tooltip, Icon, Button, message, Spin, Select, Modal} from 'antd'
 import PicturesWall from '../../components/picturesWall'
 import Common from '../../common/common'
-import PictureCut from '../../components/pictureCut'
 
 const {TextArea} = Input;
 const FormItem = Form.Item;
@@ -225,7 +224,7 @@ class MovieEdit extends React.Component{
                                 <PicturesWall
                                     name="poster"
                                     action="/movie/uploadPoster"
-                                    cutAction="/movie/cutPoster"
+                                    cutAction="/cutImg"
                                     cutWidth={350}
                                     cutHeight={350}
                                     maxLength={1}

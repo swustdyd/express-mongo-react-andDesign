@@ -4,6 +4,8 @@
 const express = require('express'),
     router = express.Router();
 const _ = require('underscore');
+const path = require('path');
+const fs = require('fs');
 const Authority = require('../common/authority');
 const UserService = require('../service/user');
 const logger = require('../common/logger');
@@ -58,6 +60,7 @@ router.post('/signin', async function (request, response, next) {
             let isMatch = await PubFunction.comparePassword(password, users[0].password);
             if(isMatch){
                 let user = users[0];
+                //过滤敏感信息
                 user.password = '';
                 if(sevenDay){
                     //七天免登录
@@ -165,9 +168,7 @@ router.get('/checkLogin', function (request, response, next) {
     if(request.session.user){
         response.json({
             success: true,
-            result: {
-                name: request.session.user.name
-            }
+            result: request.session.user
         })
     }else {
         response.json({success: false})
@@ -235,6 +236,26 @@ router.post('/edit', Authority.requestSignin, async function (request, response,
             }
         }
     }catch (e){
+        next(e);
+    }
+});
+
+/**
+ * 头像上传
+ */
+router.post('/uploadIcon', Authority.requestSignin, async (req, res, next) => {
+    try{
+        let files = await PubFunction.uploadFiles(req, res, {
+            subDir: 'user/icon/temp',
+            fileFilter: ['.png', '.jpg']
+        });
+        if(files){
+            files.forEach(item => item.url = `uploads/user/icon/temp/${item.filename}`);
+            res.json({success: true, message: '头像上传成功', result: files});
+        }else{
+            next(new BusinessException('上传文件为空'));
+        }
+    } catch (e) {
         next(e);
     }
 });

@@ -71,3 +71,6 @@ $picturesPadding: 5px;
 .pictures-wall .picture-item-drop .anticon:not(:first-child){
   margin-left: 10px;
 }
+.picture-preview .ant-modal-body{
+  padding: 0;
+}

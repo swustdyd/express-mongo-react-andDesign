@@ -2,11 +2,29 @@
  * Created by Aaron on 2018/3/5.
  */
 import React from 'react'
-import { Upload, Icon, Modal, message } from 'antd';
+import { Upload, Icon, Modal, message, Popconfirm} from 'antd';
 import PictureCut from './pictureCut'
 
 import './picturesWall.scss'
 
+const Operation = {
+    Delete: 'delete',
+    Edit: 'edit',
+    Preview: 'eye-o'
+};
+
+/**
+ * <PicturesWall
+     name="poster"
+     action="/movie/uploadPoster"
+     cutAction="/movie/cutPoster"
+     cutWidth={350}
+     cutHeight={350}
+     maxLength={1}
+     defaultFileList={fileList}
+     onChange={this.handleFileUploadChange}
+     />
+ */
 class PicturesWall extends React.Component {
     constructor(props) {
         super(props);
@@ -155,9 +173,16 @@ class PicturesWall extends React.Component {
                     onMouseMove={() => this.handlePicItemMouseMove(item.uid)}
                 >
                     <div className={`picture-item-drop ${_this.state.activeItem === item.uid ? 'active' : ''}`}>
-                        <Icon type="edit" onClick={() => this.handleEdit(item)}/>
-                        <Icon type="eye-o" onClick={() => this.handlePreview(item)}/>
-                        <Icon type="delete" onClick={() => this.handleRemove(item.uid)}/>
+                        <Icon type={Operation.Edit} onClick={() => this.handleEdit(item)}/>
+                        <Icon type={Operation.Preview} onClick={() => this.handlePreview(item)}/>
+                        <Popconfirm
+                            title="确认删除？"
+                            cancelText="取消"
+                            okText="确认"
+                            onConfirm={() => this.handleRemove(item.uid)}
+                        >
+                            <Icon type={Operation.Delete}/>
+                        </Popconfirm>
                     </div>
                     <img ref={`img${item.uid}`} src={item.url} alt={item.name} title={item.name}/>
                 </div>
@@ -167,8 +192,12 @@ class PicturesWall extends React.Component {
     }
 
     render() {
-        let { modalVisible, previewImage, fileList, operation, modalWidth, cutWidth, cutHeight } = this.state;
+        let { modalVisible, previewImage, fileList, operation, modalWidth, cutWidth, cutHeight, modalTitle } = this.state;
         const maxLength = this.props.maxLength || 3;
+        const maskClosable = operation !== Operation.Edit;
+        const extraClassName = operation !== Operation.Edit ? 'picture-preview' : '';
+        const closable = operation === Operation.Edit;
+        modalTitle = operation === Operation.Edit ? modalTitle : '';
         return (
             <div className="pictures-wall">
                 {this.getPictureList(fileList)}
@@ -188,12 +217,15 @@ class PicturesWall extends React.Component {
                     </div>
                 }
                 <Modal
-                    title={this.state.modalTitle}
+                    className={extraClassName}
+                    title={modalTitle}
                     visible={modalVisible}
                     style={{top: '20px'}}
                     footer={null}
                     width={modalWidth}
                     destroyOnClose={true}
+                    maskClosable={maskClosable}
+                    closable={closable}
                     onCancel={this.handleCancel.bind(this)}
                 >
                     {

@@ -14,7 +14,7 @@ router.post('/commit', Authority.requestSignin, async function (req, res, next) 
         let comment = req.body.comment;
         let currentUser = req.session.user;
         comment.from = currentUser._id;
-        let resData = CommentService.saveOrUpdateComment(comment);
+        let resData = await CommentService.saveOrUpdateComment(comment);
         comment = resData.result;
         //再次查询，带出from与to
         resData = await CommentService.getCommentById(comment._id);

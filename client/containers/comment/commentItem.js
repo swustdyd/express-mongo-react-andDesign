@@ -4,6 +4,7 @@
 import React from 'react'
 import moment from 'moment'
 import {Icon, message, Input, Spin} from 'antd'
+import BaseConfig from '../../../baseConfig'
 
 import './commentItem.scss'
 
@@ -163,7 +164,7 @@ class CommentItem extends React.Component{
                 {
                     this.props.level <= 1 ?
                         <div className="comment-icon">
-                            <img src="/uploads/movie/poster/resize/2-1521781139410.jpg"/>
+                            <img src={comment.from.icon && comment.from.icon.src ? comment.from.icon.src : BaseConfig.userDefaultIcon}/>
                         </div>
                         :
                         ''

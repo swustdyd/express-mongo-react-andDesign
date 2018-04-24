@@ -85,15 +85,14 @@ class IndexPage extends React.Component{
 
     componentDidMount(){
         this.getAndLoadMovies();
-        let _this = this;
         window.addEventListener('resize', () => {
-            _this.setState(_this.getWindowInnerArea());
+            this.setState(this.getWindowInnerArea());
         });
     }
 
     componentWillUnmount(){
         window.removeEventListener('resize', () => {
-            _this.setState(_this.getWindowInnerArea());
+            this.setState(this.getWindowInnerArea());
         });
     }
 

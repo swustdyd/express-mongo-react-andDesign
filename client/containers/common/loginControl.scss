@@ -7,6 +7,13 @@
 .login-control *{
   color: #fff;
 }
+.login-control .user-icon{
+  width: 40px;
+  height: 40px;
+  max-width: 100%;
+  margin-right: 15px;
+  border-radius: 50%;
+}
 .login-control .login-form-button {
   width: 100%;
 }
