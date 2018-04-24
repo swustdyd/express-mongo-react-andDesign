@@ -45,27 +45,22 @@ class HMFLayout extends React.Component{
             lineHeight: `${headerHeight}px`
         };
         let contentStyle = {
-            minHeight: windowInnerHeight - headerHeight - footerHeight,
-            padding: '0 50px'
+            minHeight: windowInnerHeight - headerHeight - footerHeight
         };
         let footerStyle = {
             height: footerHeight,
-            lineHeight: `${footerHeight}px`,
-            textAlign: 'center',
-            backgroundColor: '#001529',
-            padding: 0,
-            color: '#ddd'
+            lineHeight: `${footerHeight}px`
         };
         return(
             <Layout className="layout">
                 <Header style={headerStyle}>
                     {(typeof this.props.header) === 'function' ?  <this.props.header /> : this.props.header }
                 </Header>
-                <Content style={contentStyle}>
+                <Content className="content" style={contentStyle}>
                     {(typeof this.props.content) === 'function' ?  <this.props.content /> : this.props.content }
                     {this.props.children}
                 </Content>
-                <Footer style={footerStyle}>
+                <Footer className="footer" style={footerStyle}>
                     {(typeof this.props.footer) === 'function' ?  <this.props.footer /> : this.props.footer }
                 </Footer>
             </Layout>

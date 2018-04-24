@@ -1,2 +1,55 @@
+/*** 上中下布局 start ***/
+.content{
+  padding: 0 20px;
+}
+.footer{
+  text-align: center;
+  background-color: #001529;
+  padding: 0;
+  color: #ddd;
+}
+/*** 上中下布局 end ***/
 
+/*** 左右布局 start ***/
+.lr-layout{
+  padding: 10px 0;
+}
+
+$paddingTop: 25px;
+
+.left-layout{
+  background-color: #fff;
+  padding-top: $paddingTop;
+  overflow: hidden;
+}
+.right-layout{
+  background-color: #fff;
+  padding: $paddingTop 10px;
+  margin-left: 10px;
+  position: relative;
+}
+.right-layout-full{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow-y: scroll;
+  margin-left: 0;
+}
+
+.left-layout .menu-icon,
+.right-layout .full-screen-icon{
+  font-size: $paddingTop - 5px;
+  font-weight: bold;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.left-layout .menu-icon:hover,
+.right-layout .full-screen-icon:hover{
+  cursor: pointer;
+  color: #1890ff;
+}
+/*** 左右布局 end ***/
 
