@@ -1,6 +1,18 @@
 .list-user-icon{
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   max-width: 100%;
+}
+.user-icon-2x{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  max-width: 100%;
+  display: none;
+  position: fixed;
+  box-shadow: 0 0 10px #000;
+}
+.user-icon-2x.show{
+  display: block;
 }

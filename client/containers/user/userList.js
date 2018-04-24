@@ -23,14 +23,17 @@ let FormItem = Form.Item;
 class UserList extends React.Component{
     constructor(){
         super();
-        /*this.handleEditClick = this.handleEditClick.bind(this)*/
+        this.state = {
+            showIcon2X: false,
+            icon2X: '',
+            icon2XStyle: {}
+        }
     }
     componentDidMount(){
         this.searchAndLoadUsers();
     }
     getSearchCondition(){
-        let userInput = this.props.form.getFieldsValue();
-        return userInput;
+        return this.props.form.getFieldsValue();
     }
     handleSearchClick(e){
         e.preventDefault();
@@ -96,15 +99,35 @@ class UserList extends React.Component{
             }
         })
     }
+    handleIconMouseEnter(icon, e){
+        this.setState({
+            showIcon2X: true,
+            icon2X: icon,
+            icon2XStyle: {
+                left: e.clientX,
+                top: e.clientY
+            }
+        })
+    }
+    handleIconMouseLeave(icon, e){
+        this.setState({
+            showIcon2X: false
+        })
+    }
     render(){
         let {total, pageSize, pageIndex, users} = this.props.userListState;
         let { getFieldDecorator } = this.props.form;
+        let { showIcon2X, icon2X, icon2XStyle} = this.state;
         let columns = [
             {
                 title: '头像',
                 dataIndex: 'icon',
                 key: 'icon',
-                render: icon => <img className="list-user-icon" src={icon && icon.src ? icon.src : BaseConfig.userDefaultIcon}/>
+                render: icon => <img
+                    onMouseEnter={(e) => this.handleIconMouseEnter(icon, e)}
+                    onMouseLeave={(e) => this.handleIconMouseLeave(icon, e)}
+                    className="list-user-icon" src={icon && icon.src ? icon.src : BaseConfig.userDefaultIcon}
+                />
             },
             {
                 title: '用户名',
@@ -204,6 +227,11 @@ class UserList extends React.Component{
                     columns={columns}
                     dataSource={users}
                     pagination={pagination}
+                />
+                <img
+                    className={`user-icon-2x ${showIcon2X ? 'show' : ''}`}
+                    style={icon2XStyle}
+                    src={icon2X.src}
                 />
             </Form>
         );

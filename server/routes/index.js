@@ -13,7 +13,7 @@ module.exports = function (app) {
     app.get('/', function (request, response, next) {
         try {
             response.render('pages/index', {
-                title: 'imooc 首页'
+                title: BaseConfig.indexPageTitle
             })
         }catch (e){
             next(e)

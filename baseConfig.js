@@ -11,5 +11,6 @@ module.exports = {
     webpackPath: './public/dist',
     publicPath: 'dist/',
     root: path.resolve(__dirname),
-    userDefaultIcon: '/images/default-icon.jpg'
+    userDefaultIcon: '/images/default-icon.jpg',
+    indexPageTitle: 'Demo 首页'
 };

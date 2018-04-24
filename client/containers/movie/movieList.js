@@ -118,6 +118,7 @@ class MovieList extends React.Component{
     }
     render(){
         let {total, pageIndex, pageSize, movies } = this.props.movieListState;
+        const { getFieldDecorator } = this.props.form;
         let columns = [
             {
                 title: '序号',
@@ -191,7 +192,6 @@ class MovieList extends React.Component{
                 this.searchAndLoadMovies(pageIndex - 1, this.getSearchCondition())
             }
         };
-        const { getFieldDecorator } = this.props.form;
         const colLayout = {
             xs: 24,
             sm: 24,
