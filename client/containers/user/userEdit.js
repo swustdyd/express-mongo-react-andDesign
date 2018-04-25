@@ -35,6 +35,8 @@ class UserEdit extends React.Component{
                         displayName: iconList[0].name,
                         src: iconList[0].url
                     }
+                }else{
+                    userInput.icon = '';
                 }
                 fetch('/user/edit', {
                     method: 'post',

@@ -123,11 +123,16 @@ class UserList extends React.Component{
                 title: '头像',
                 dataIndex: 'icon',
                 key: 'icon',
-                render: icon => <img
-                    onMouseEnter={(e) => this.handleIconMouseEnter(icon, e)}
-                    onMouseLeave={(e) => this.handleIconMouseLeave(icon, e)}
-                    className="list-user-icon" src={icon && icon.src ? icon.src : BaseConfig.userDefaultIcon}
-                />
+                render: icon => {
+                    icon = (icon && icon.src) ? icon : { src: BaseConfig.userDefaultIcon };
+                    return(
+                        <img
+                            onMouseEnter={(e) => this.handleIconMouseEnter(icon, e)}
+                            onMouseLeave={(e) => this.handleIconMouseLeave(icon, e)}
+                            className="list-user-icon" src={icon.src }
+                        />
+                    )
+                }
             },
             {
                 title: '用户名',

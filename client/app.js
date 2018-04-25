@@ -22,9 +22,15 @@ const UserPage = asyncComponent(() => import (/* webpackChunkName: "user" */ './
 
 import './app.scss'
 
+let middleware = [];
+middleware.push(Thunk);
+if(__DEV__){
+    middleware.push(Logger);
+}
+
 let store = createStore(
     AppReducer,
-    applyMiddleware(Thunk, Logger)
+    applyMiddleware(...middleware)
 );
 
 ReactDom.render(

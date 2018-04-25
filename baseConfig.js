@@ -12,5 +12,6 @@ module.exports = {
     publicPath: 'dist/',
     root: path.resolve(__dirname),
     userDefaultIcon: '/images/default-icon.jpg',
-    indexPageTitle: 'Demo 首页'
+    indexPageTitle: 'Demo 首页',
+    logLevel: 'info'
 };

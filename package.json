@@ -11,7 +11,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=dev supervisor -w server,app.js -e node,js,jade app",
     "browsersync": "cross-env NODE_ENV=dev node app_browsersync",
-    "build": "webpack",
+    "build": "cross-env NODE_ENV=production & webpack --config webpack.production.config.js -p",
     "production": "webpack --config webpack.production.config.js -p & cross-env NODE_ENV=production node app",
     "eslint": "eslint **/*.js",
     "eslint:fix": "eslint **/*.js --fix"

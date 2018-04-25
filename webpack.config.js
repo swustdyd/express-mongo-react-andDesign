@@ -72,7 +72,10 @@ let devConfig = {
             name: 'vendor',
             minChunks: 2,
             filename: './js/[name].bundle.js'
-        })
+        }),
+        new webpack.DefinePlugin({
+            __DEV__: true
+        }),
         /* new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
             // In `server` mode analyzer will start HTTP server to show bundle report.

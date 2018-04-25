@@ -205,7 +205,7 @@ class MovieEdit extends React.Component{
                             }],
                             initialValue: initData.summary
                         })(
-                            <TextArea placeholder="请输入电影简介" autosize={{minRows: 3}}/>
+                            <TextArea placeholder="请输入电影简介" autosize={{minRows: 3, maxRows: 10}}/>
                         )}
                     </FormItem>
                     <FormItem

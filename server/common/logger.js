@@ -2,6 +2,10 @@
  * Created by Aaron on 2018/1/9.
  */
 const colors = require('colors');
+const fs = require('fs');
+const path = require('path');
+const BaseConfig = require('../../baseConfig');
+const errorLogPath = path.join(BaseConfig.root, 'logs/error.log');
 
 colors.setTheme({
     warn: 'yellow',
@@ -10,7 +14,7 @@ colors.setTheme({
     info: 'white'
 });
 
-let _currentLevel = 'info';
+let _currentLevel = BaseConfig.logLevel;
 const _levelData = {
     info:  1,
     debug: 2,
@@ -31,6 +35,7 @@ const _print = (type, ...args) => {
             if (type) {
                 console.log(msg[type], stack[type]);
             }
+
         } else{
             console.log(('Logger ' + type + '：' + JSON.stringify(item))[type]);
         }
