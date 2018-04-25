@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const logger = require('../common/logger');
-const MovieService = require('../service/movie');
+const BusinessException = require('../common/businessException');
 const PubFunction = require('../common/publicFunc');
 const BaseConfig = require('../../baseConfig');
 
@@ -62,14 +62,11 @@ module.exports = function (app) {
         }
     });
 
-    app.get('/test', function (request, response, next) {
-        asyncTest().then(result => {
-            response.app.set('jsonp callback name', 'jsonpssCallback');
-            response.jsonp(result);
-        }).catch( err => next(err) );
+    app.get('/logTest', function (request, response, next) {
+        logger.info('info');
+        logger.debug('debug');
+        logger.warning('warning');
+        logger.error('error', new Error('error by test'));
+        next(new BusinessException('business exception'));
     });
-
-    async function asyncTest() {
-        return await MovieService.getMoviesByCondition();
-    }
 };

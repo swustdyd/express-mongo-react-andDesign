@@ -1,58 +1,39 @@
 /**
  * Created by Aaron on 2018/1/9.
  */
-const colors = require('colors');
-const fs = require('fs');
-const path = require('path');
 const BaseConfig = require('../../baseConfig');
-const errorLogPath = path.join(BaseConfig.root, 'logs/error.log');
-
-colors.setTheme({
-    warn: 'yellow',
-    debug: 'green',
-    error: 'red',
-    info: 'white'
+const log4js = require('log4js');
+const path = require('path');
+log4js.configure({
+    appenders: {
+        logDate:{
+            type: 'dateFile',
+            filename: path.join(BaseConfig.root, './logs/log'),
+            alwaysIncludePattern: true,
+            pattern: '-yyyy-MM-dd.log'
+        }
+    },
+    categories: {
+        default: {
+            appenders: ['logDate'],
+            level: BaseConfig.logLevel
+        }
+    }
 });
 
-let _currentLevel = BaseConfig.logLevel;
-const _levelData = {
-    info:  1,
-    debug: 2,
-    warn:  3,
-    error: 4
-};
-
-const _print = (type, ...args) => {
-    type = type || 'info';
-    _currentLevel = _currentLevel || 'info';
-    if(_levelData[type] < _levelData[_currentLevel]){
-        return;
-    }
-    args.forEach(item => {
-        if (item instanceof Error) {
-            let msg = item.message;
-            let stack = item.stack;
-            if (type) {
-                console.log(msg[type], stack[type]);
-            }
-
-        } else{
-            console.log(('Logger ' + type + '：' + JSON.stringify(item))[type]);
-        }
-    });
-};
+const logger = log4js.getLogger('logDate');
 
 const info = (...args) => {
-    _print('info', ...args);
+    logger.info(...args);
 };
 const debug = (...args) => {
-    _print('debug', ...args)
+    logger.debug(...args)
 };
 const warning = (...args) => {
-    _print('warn', ...args)
+    logger.warn(...args)
 };
 const error =  (...args) => {
-    _print('error', ...args)
+    logger.error(...args)
 };
 
 module.exports = {
