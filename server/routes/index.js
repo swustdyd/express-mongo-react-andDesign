@@ -4,6 +4,7 @@ const logger = require('../common/logger');
 const BusinessException = require('../common/businessException');
 const PubFunction = require('../common/publicFunc');
 const BaseConfig = require('../../baseConfig');
+const HttpUtil = require('../common/httpUtil');
 
 module.exports = function (app) {
     app.use('/movie', require('./movie'));
@@ -62,6 +63,8 @@ module.exports = function (app) {
         }
     });
 
+    /*** 测试代码 ***/
+
     app.get('/logTest', function (request, response, next) {
         logger.info('info');
         logger.debug('debug');
@@ -69,4 +72,22 @@ module.exports = function (app) {
         logger.error('error', new Error('error by test'));
         next(new BusinessException('business exception'));
     });
+
+    app.get('/download', async (req, res, next) => {
+        try{
+            HttpUtil.download(
+                'http://119.27.187.248:3001/uploads/Java_1512024443940.pdf',
+                path.join(BaseConfig.root, './public/test.pdf'),
+                (err, data) => {
+                    if(err){
+                        next(err);
+                    }else {
+                        res.send(data);
+                    }
+                }
+            );
+        }catch (e){
+            next(e);
+        }
+    })
 };
