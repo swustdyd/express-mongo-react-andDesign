@@ -1,7 +1,9 @@
 /**
  * Created by Aaron on 2018/4/18.
  */
-const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.pageSize;
+import { QueryDefaultOptions } from '../common/commonSetting'
+
+const DefaultPageSize = QueryDefaultOptions.pageSize;
 
 /**
  * 对http请求进行过滤
@@ -9,7 +11,7 @@ const DefaultPageSize = require('../common/commonSetting').queryDefaultOptions.p
  * @param res
  * @param next
  */
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
     //初始化url中的分页信息
     if (req.query.pageIndex) {
         req.query.pageIndex = /^[0-9]+$/.test(req.query.pageIndex) ? parseInt(req.query.pageIndex) : 0;

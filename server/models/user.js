@@ -1,8 +1,9 @@
 /**
  * Created by Aaron on 2017/12/15.
  */
-let mongooes = require('mongoose');
-let UserSchema = require('../schemas/user');
-let User = mongooes.model('User', UserSchema);
+import mongooes from 'mongoose'
+import UserSchema from '../schemas/user'
 
-module.exports = User;
+const User = mongooes.model('User', UserSchema);
+
+export default User;

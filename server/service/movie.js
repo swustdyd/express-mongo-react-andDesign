@@ -1,12 +1,13 @@
 /**
  * Created by Aaron on 2018/1/17.
  */
-const Movie = require('../models/movie');
-const logger = require('../common/logger');
-const Promise = require('promise');
-const queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-const _ = require('underscore');
-const BusinessException = require('../common/businessException');
+import Movie from '../models/movie'
+import Promise from 'promise'
+import _ from 'underscore'
+import BusinessException from '../common/businessException'
+import { QueryDefaultOptions } from '../common/commonSetting'
+
+const queryDefaultOptions = QueryDefaultOptions;
 
 /**
  * 根据条件查询电影
@@ -114,7 +115,7 @@ const getMoviesByGroup = (groupArray, match) => {
     });
 };
 
-module.exports = {
+export default {
     getMoviesByGroup,
     getMovieById,
     getMoviesByCondition,

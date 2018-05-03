@@ -1,11 +1,11 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-let ObjectId = Schema.Types.ObjectId;
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema;
+const ObjectId = Schema.Types.ObjectId;
 
-let CommentSchema = new mongoose.Schema({
+const CommentSchema = new mongoose.Schema({
     movie: {
         type: ObjectId,
         ref: 'Movie'
@@ -37,4 +37,4 @@ let CommentSchema = new mongoose.Schema({
     }
 });
 
-module.exports = CommentSchema;
+export default CommentSchema;

@@ -1,17 +1,13 @@
 /**
  * Created by Aaron on 2018/1/4.
  */
-const express = require('express'),
-    router = express.Router();
-const _ = require('underscore');
-const path = require('path');
-const fs = require('fs');
-const Authority = require('../common/authority');
-const UserService = require('../service/user');
-const logger = require('../common/logger');
-const PubFunction = require('../common/publicFunc');
-const BusinessException = require('../common/businessException');
+import express from 'express'
+import Authority from '../common/authority'
+import UserService from '../service/user'
+import PubFunction from '../common/publicFunc'
+import BusinessException from '../common/businessException'
 
+const router = express.Router();
 
 /**
  * 用户注册
@@ -260,4 +256,4 @@ router.post('/uploadIcon', Authority.requestSignin, async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

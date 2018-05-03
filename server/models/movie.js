@@ -1,8 +1,9 @@
 /**
  * Created by Aaron on 2017/12/12.
  */
-let mongooes = require('mongoose');
-let MoviewSchema = require('../schemas/movie');
-let Movie = mongooes.model('Movie', MoviewSchema);
+import mongooes from 'mongoose'
+import MoviewSchema from '../schemas/movie'
 
-module.exports = Movie;
+const Movie = mongooes.model('Movie', MoviewSchema);
+
+export default Movie;

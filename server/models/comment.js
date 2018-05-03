@@ -1,8 +1,9 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-let mongooes = require('mongoose');
-let CommentSchema = require('../schemas/comment');
-let Comment = mongooes.model('Comment', CommentSchema);
+import mongooes from 'mongoose'
+import CommentSchema from '../schemas/comment'
 
-module.exports = Comment;
+const Comment = mongooes.model('Comment', CommentSchema);
+
+export default Comment;

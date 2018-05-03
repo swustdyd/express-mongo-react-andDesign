@@ -1,9 +1,9 @@
 /**
  * Created by Aaron on 2017/12/12.
  */
-let mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
-let MovieSchema = new mongoose.Schema({
+const MovieSchema = new mongoose.Schema({
     doctor: String,
     title: {
         type: String
@@ -29,4 +29,4 @@ let MovieSchema = new mongoose.Schema({
         }
     }
 });
-module.exports = MovieSchema;
+export default MovieSchema;

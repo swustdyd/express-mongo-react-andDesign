@@ -1,16 +1,15 @@
 /**
  * Created by Aaron on 2018/1/6.
  */
-const express = require('express');
+import express from 'express'
+import path from 'path'
+import fs from 'fs'
+import MovieService from '../service/movie'
+import PublicFunc from '../common/publicFunc'
+import BaseConfig from '../../baseConfig'
+import BusinessException from '../common/businessException'
+
 const router = express.Router();
-const path = require('path');
-const fs = require('fs');
-const _ = require('underscore');
-const logger = require('../common/logger');
-const MovieService = require('../service/movie');
-const PublicFunc = require('../common/publicFunc');
-const BaseConfig = require('../../baseConfig');
-const BusinessException = require('../common/businessException');
 
 /**
  * 获取电影列表
@@ -153,4 +152,4 @@ router.get('/getMoviesByGroup', async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

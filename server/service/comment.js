@@ -1,12 +1,13 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-const Comment = require('../models/comment');
-const logger = require('../common/logger');
-const Promise = require('promise');
-const queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-const _ = require('underscore');
-const BusinessException = require('../common/businessException');
+import Comment from '../models/comment'
+import Promise from 'promise'
+import _ from 'underscore'
+import BusinessException from '../common/businessException'
+import { QueryDefaultOptions } from '../common/commonSetting'
+
+const queryDefaultOptions = QueryDefaultOptions;
 
 const getCommentById = function (id) {
     return new Promise(function (resolve, reject) {
@@ -152,7 +153,7 @@ const saveOrUpdateComment = async function (comment) {
     });
 };
 
-module.exports = {
+export default {
     getCommentById,
     getCommentsByCondition,
     getCommentsByMovieId,

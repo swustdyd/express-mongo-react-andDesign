@@ -1,8 +1,8 @@
 /**
  * Created by Aaron on 2017/12/15.
  */
-let mongoose = require('mongoose');
-let UserSchema = new mongoose.Schema({
+import mongoose from 'mongoose'
+const UserSchema = new mongoose.Schema({
     name: {
         unique: true,
         type: String
@@ -35,4 +35,4 @@ let UserSchema = new mongoose.Schema({
         }
     }
 });
-module.exports = UserSchema;
+export default UserSchema;

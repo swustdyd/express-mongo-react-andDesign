@@ -1,11 +1,9 @@
 /**
  * Created by Aaron on 2018/1/16.
  */
-const express = require('express');
-const _ = require('underscore');
-const Authority = require('../common/authority');
-const logger = require('../common/logger');
-const CommentService = require('../service/comment');
+import express from 'express'
+import Authority from '../common/authority'
+import CommentService from '../service/comment'
 
 const router = express.Router();
 
@@ -67,4 +65,4 @@ router.get('/getComment/:id', async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

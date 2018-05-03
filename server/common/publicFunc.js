@@ -2,16 +2,16 @@
  * Created by Aaron on 2018/1/19.
  */
 
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcrypt'
+import Promise from 'promise'
+import _ from 'underscore'
+import multer from 'multer'
+import  fs from 'fs'
+import path from 'path'
+import sharp from 'sharp'
+
 //计算长度，数值越大，破解难度越大
 const SALT_WORK_FACTOR = 10;
-const logger = require('../common/logger');
-const Promise = require('promise');
-const _ = require('underscore');
-const multer = require('multer');
-const  fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
 
 const bcryptString = (string) => {
     return new Promise(function (resolve, reject) {
@@ -178,7 +178,7 @@ const cutAndResizeImg = (input, output, cutArea, resizeWidth, resizeHeight) => {
     })
 };
 
-module.exports = {
+export default {
     bcryptString,
     comparePassword,
     mkdirsSync,

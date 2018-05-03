@@ -2,11 +2,11 @@
  * Created by Aaron on 2018/1/5.
  */
 //日志打印
-const logger = require('./logger');
-const BusinessException = require('./businessException');
+import logger from './logger'
+import BusinessException from './businessException'
 
 // error handler
-function errorHandle(err, req, res, next) {
+export default (err, req, res, next) => {
     // set locals, only providing error in development
     if(err instanceof BusinessException){
         res.json({
@@ -27,5 +27,3 @@ function errorHandle(err, req, res, next) {
     }
     res.end();
 }
-
-module.exports = errorHandle;

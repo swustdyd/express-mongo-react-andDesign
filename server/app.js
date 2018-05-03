@@ -2,37 +2,27 @@
 //const morgan = require('morgan');
 import morgan from 'morgan'
 import compression from 'compression'
-//文件的创建
 import fs from 'fs'
-//自定义error
-const errorHandle = require('./common/errorHandle');
+import errorHandle from './common/errorHandle'
 import express from 'express'
-const path = require('path');
-const mongoose = require('mongoose');
-//body-parser 可将user[name]这种参数转化为user对象
-const bodyParser = require('body-parser');
-//使用connect-mongo,cookie-parser,express-session做session持久化
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
+import path from 'path'
+import mongoose from 'mongoose'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import session from 'express-session'
+import connectMongo from 'connect-mongo'
+import filter from './common/filter'
+import BaseConfig from '../baseConfig'
+import Route from './routes'
+
+const MongoStore = connectMongo(session);
 const isDev = process.env.NODE_ENV !== 'production';
-const BaseConfig = require('../baseConfig');
 const app = express();
-const filter = require('./common/filter');
 
 let serverPort = process.env.PORT || BaseConfig.serverPort;
 serverPort = parseInt(serverPort, 10);
 
 mongoose.connect(BaseConfig.dbConnectString);
-
-//设置模板引擎为jade
-/*app.set('view engine', 'jade');
-app.set('views', path.resolve(__dirname, './server/views'));*/
-
-// local variables for all views
-/*app.locals.env = process.env.NODE_ENV || 'dev';
-app.locals.reload = true;
-app.locals.moment = require('moment');*/
 
 //开启gzip
 app.use(compression());
@@ -53,6 +43,7 @@ app.use(session({
     resave: true,
     saveUninitialized: false
 }));
+
 if(isDev){
     app.use(morgan('dev'));
 }else{
@@ -60,7 +51,6 @@ if(isDev){
         stream: fs.createWriteStream(path.join(BaseConfig.root, 'logs/access.log'))
     }));
 }
-
 
 app.use(express.static(path.join(BaseConfig.root, 'public')));//设置静态目录
 
@@ -77,7 +67,7 @@ app.use(function (req, res, next) {
 });
 
 //设置路由
-require('./routes/index')(app);
+app.use(Route);
 
 
 app.listen(serverPort, function () {

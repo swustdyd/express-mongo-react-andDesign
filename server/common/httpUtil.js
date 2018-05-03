@@ -1,11 +1,11 @@
 /**
  * Created by Aaron on 2018/4/27.
  */
-const http = require('http');
-const ProgressBar = require('progress');
-const fs = require('fs');
+import http from 'http'
+import ProgressBar from 'progress'
+import fs from 'fs'
 
-class HttpUtil {
+export default class HttpUtil {
     static getAsync(options, resEncoding){
         options = Object.assign({}, options, { method: 'GET'});
         return new Promise((resolve, reject) => {
@@ -120,5 +120,3 @@ class HttpUtil {
         }
     }
 }
-
-module.exports = HttpUtil;

@@ -1,13 +1,15 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-const User = require('../models/user');
-const logger = require('../common/logger');
-const Promise = require('promise');
-const queryDefaultOptions = require('../common/commonSetting').queryDefaultOptions;
-const _ = require('underscore');
-const PubFunction = require('../common/publicFunc');
-const BusinessException = require('../common/businessException');
+import User from '../models/user'
+import logger from '../common/logger'
+import Promise from 'promise'
+import _ from 'underscore'
+import PubFunction from '../common/publicFunc'
+import BusinessException from '../common/businessException'
+import { QueryDefaultOptions } from '../common/commonSetting'
+
+const queryDefaultOptions = QueryDefaultOptions;
 
 /**
  * 根据用户id 获取用户
@@ -107,7 +109,7 @@ const deleteUserById = function (id) {
     });
 };
 
-module.exports = {
+export default {
     getUserById,
     getUsersByCondition,
     saveOrUpdateUser,

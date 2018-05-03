@@ -1,16 +1,16 @@
 /**
  * Created by Aaron on 2018/1/15.
  */
+import errorCode from './errorCode'
+import BusinessException from './businessException'
 
 const role = {
     normal: 0,
     admin: 10,
     superAdmin: 50
 };
-const errorCode = require('./errorCode');
-const BusinessException = require('./businessException');
 
-module.exports = {
+export default {
     requestSignin: function (req, res, next) {
         let user = req.session.user;
         if(!user){
