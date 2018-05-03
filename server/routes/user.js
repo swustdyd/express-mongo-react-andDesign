@@ -70,7 +70,7 @@ router.post('/signin', async function (request, response, next) {
                     request.session.cookie.maxAge = 1000 * 60 * 30;
                 }
                 request.session.user = user;
-                request.app.locals.user = user;
+                response.cookie('extra', { a: 1, b: 2, c: 3}, { maxAge: 30 * 60 * 1000});
                 response.json({
                     success: true,
                     message: '登录成功'

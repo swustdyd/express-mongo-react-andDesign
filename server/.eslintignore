@@ -1,0 +1,4 @@
+/node_modules/*
+#-- 忽略webpack配置文件
+webpack.config.js
+webpack.production.config.js

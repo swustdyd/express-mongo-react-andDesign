@@ -11,7 +11,7 @@ module.exports = function (app) {
     app.use('/user', require('./user'));
     app.use('/comment', require('./comment'));
 
-    app.get('/', function (request, response, next) {
+    app.get('/', (request, response, next) => {
         try {
             response.render('pages/index', {
                 title: BaseConfig.indexPageTitle
@@ -75,9 +75,17 @@ module.exports = function (app) {
 
     app.get('/download', async (req, res, next) => {
         try{
+            let downloadPath = req.query.downloadPath;
+            if(!downloadPath){
+                res.json({success: false, message: 'downloadPath can\'t be null'});
+                res.end();
+            }
             HttpUtil.download(
-                'http://119.27.187.248:3001/uploads/Java_1512024443940.pdf',
+                //url
+                `http://119.27.187.248:3001/${path}`,
+                //savePath
                 path.join(BaseConfig.root, './public/test.pdf'),
+                //callback
                 (err, data) => {
                     if(err){
                         next(err);
@@ -91,3 +99,14 @@ module.exports = function (app) {
         }
     })
 };
+
+type TestModelType = {
+    a: string,
+    b: number
+}
+
+let test : TestModelType;
+
+
+
+

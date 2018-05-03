@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
-import LRLayout from '../../lrLayout'
+import LRLayout from '../../common/lrLayout'
 import {Menu } from 'antd'
 import HashRouterMenu from '../../components/hashRouterMenu'
 import UserList from './userList'

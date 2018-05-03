@@ -4,7 +4,7 @@
 import '../../common/common'
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
-import LRLayout from '../../lrLayout'
+import LRLayout from '../../common/lrLayout'
 import HashRouterMenu from '../../components/hashRouterMenu'
 import {Menu } from 'antd'
 import { asyncComponent } from '../../components/asyncComponent'
