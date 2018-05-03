@@ -1,8 +1,8 @@
 /**
  * Created by Aaron on 2018/3/2.
  */
-import './common/polyfill'
-import './common/common'
+/*import './common/polyfill'
+import './common/common'*/
 import React from 'react'
 import { HashRouter, Route } from 'react-router-dom'
 import ReactDom from 'react-dom'
@@ -53,3 +53,9 @@ ReactDom.render(
     </Provider>,
     document.getElementById('app')
 );
+
+if (module.hot) {
+    module.hot.accept('./app.js', function() {
+        console.log('Accepting the updated app module!');
+    })
+}

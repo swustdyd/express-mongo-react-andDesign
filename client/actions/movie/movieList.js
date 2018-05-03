@@ -1,6 +1,8 @@
 /**
  * Created by Aaron on 2018/3/10.
  */
+import API from '../../common/api'
+
 export default {
     searchMovies: (condition, pageIndex, pageSize, cb) => (dispatch, getState) =>{
         if((typeof condition) === 'function'){
@@ -14,7 +16,7 @@ export default {
             cb = pageSize;
             pageSize = 5;
         }
-        fetch(`/movie/getMovies?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&condition=${JSON.stringify(condition || {})}`)
+        fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&condition=${JSON.stringify(condition || {})}`)
             .then(res => res.json())
             .then(data => {
                 cb(undefined, data);

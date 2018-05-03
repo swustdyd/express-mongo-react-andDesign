@@ -1,4 +1,4 @@
-import Common from '../../common/common'
+import API from '../../common/api'
 
 const loginControlAction = {
     login: (name, password, sevenDay) =>(dispatch, getState) => {
@@ -34,7 +34,7 @@ const loginControlAction = {
             });
     },
     checkLogin: () => (dispatch, getState) =>{
-        fetch('/user/checkLogin', {credentials: 'include'})
+        fetch(API.checkLogin, {credentials: 'include'})
             .then(res => res.json())
             .then((data) => {
                 if(data.success){

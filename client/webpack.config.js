@@ -1,37 +1,30 @@
-let webpack = require('webpack');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
-let CleanWebpackPlugin = require('clean-webpack-plugin');
-let BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-let path = require('path');
-let baseConfig = require('./../baseConfig');
-let devPort = process.env.PORT || baseConfig.devPort;
-//设置为http模式可以使其在开发过程中，使用?sourceMap时，style-loader会把css做成以下样式
-//<link rel="stylesheet" href="blob:http://localhost:3000/a9fe9187-7594-4b1f-b0f6-6ce46bf6cc4e">
-let publicPath = 'http://localhost:' + devPort + '/';
-let hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
-let devConfig = {
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const path = require('path');
+const baseConfig = require('../baseConfig');
+const devConfig = {
     entry: {
-        index: ['./app', hotMiddlewareScript],
+        index: './app',
         vendor: ['./common/polyfill', 'react', 'react-dom', 'react-router-dom', 'redux',
-            'react-redux', 'redux-thunk', 'redux-logger', 'antd'
-        ]
+            'react-redux', 'redux-thunk', 'redux-logger', 'antd']
     },
     output: {
-        filename: './js/[name].bundle.js',
-        path: path.resolve(__dirname, baseConfig.webpackPath),
-        publicPath: publicPath,
-        chunkFilename: 'js/[name].bundle.js'
+        filename: 'js/[name].bundle.js',
+        path: path.resolve(__dirname, './dist'),
+        publicPath: '/dist/'
     },
-    devtool: 'eval-source-map',
+    devtool: 'inline-source-map',
+    devServer: {
+        hot: true
+    },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['react', 'es2015']
-                }
+                loader: 'babel-loader'
             },
             {
                 test: /\.(png|jpg)$/,
@@ -61,17 +54,16 @@ let devConfig = {
         ]
     },
     plugins: [
+        new HtmlWebpackPlugin({
+            title: baseConfig.indexPageTitle,
+            filename: 'index.html',
+            template: './index.html'
+        }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
         new ExtractTextPlugin({
-            filename: './stylesheet/[name].css',
+            filename: 'stylesheet/[name].css',
             allChunks: true
-        }),
-        new CleanWebpackPlugin([baseConfig.webpackPath]),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            minChunks: 2,
-            filename: './js/[name].bundle.js'
         }),
         new webpack.DefinePlugin({
             __DEV__: true
@@ -103,7 +95,13 @@ let devConfig = {
             // Log level. Can be 'info', 'warn', 'error' or 'silent'.
             logLevel: 'info'
         })*/
-    ]
+    ],
+    optimization: {
+        splitChunks: {
+            name: 'vendor',
+            minChunks: 2
+        }
+    },
 };
 
 module.exports = devConfig;

@@ -6,6 +6,7 @@ const path = require('path')
 module.exports = {
     dbConnectString: 'mongodb://localhost:27017/imooc',
     clientPort: 3000,
+    serverHost: 'http://localhost',
     serverPort: 3001,
     staticPath: 'public',
     webpackPath: '../public/dist',
