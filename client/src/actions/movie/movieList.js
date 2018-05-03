@@ -33,7 +33,7 @@ export default {
         }
     }),
     deleteMovie: (id, cb) => () =>{
-        fetch(`/movie/delete?id=${id}`)
+        fetch(`${API.deleteMovie}?id=${id}`)
             .then(res => res.json())
             .then(data => {
                 cb(undefined, data);

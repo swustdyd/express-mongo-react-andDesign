@@ -2,6 +2,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node server.js",
+    "dev": "webpack-dev-server",
     "build": "webpack"
   },
   "dependencies": {

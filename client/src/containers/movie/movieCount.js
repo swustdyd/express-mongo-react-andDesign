@@ -4,6 +4,7 @@
 import React from 'react'
 import { message } from 'antd'
 import ReactHighcharts from 'react-highcharts' // Expects that Highcharts was loaded in the code.
+import API from '../../common/api'
 
 class MovieCount extends React.Component{
     constructor(props){
@@ -54,7 +55,7 @@ class MovieCount extends React.Component{
     getMoviesGroupByYear(){
         let _this = this;
         let groupArray = ['year'];
-        fetch(`/movie/getMoviesByGroup?groupArray=${JSON.stringify(groupArray)}`)
+        fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
             .then(res => res.json())
             .then(data => {
                 if(data.success){
@@ -71,7 +72,7 @@ class MovieCount extends React.Component{
     getMoviesGroupByLanguage(){
         let _this = this;
         let groupArray = ['language'];
-        fetch(`/movie/getMoviesByGroup?groupArray=${JSON.stringify(groupArray)}`)
+        fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
             .then(res => res.json())
             .then(data => {
                 if(data.success){

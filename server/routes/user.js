@@ -116,6 +116,11 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, async f
             pageIndex: pageIndex,
             pageSize: pageSize
         });
+        resData.result.forEach(item => {
+            if(item.icon && item.icon.src){
+                item.icon.src = `${BaseConfig.serverHost}:${BaseConfig.serverPort}/${item.icon.src}`;
+            }
+        });
         response.json(resData);
     }catch (e){
         next(e);

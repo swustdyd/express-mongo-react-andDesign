@@ -48,6 +48,12 @@ router.get('/getMovies', async function (req, res, next) {
             pageIndex: pageIndex,
             pageSize: pageSize
         });
+        let result = resData.result;
+        result.forEach(item => {
+            if(item.poster && item.poster.src){
+                item.poster.src = `${BaseConfig.serverHost}:${BaseConfig.serverPort}/${item.poster.src}`;
+            }
+        });
         res.json(resData);
     }catch(e) {
         next(e);

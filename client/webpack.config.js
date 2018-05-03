@@ -6,8 +6,8 @@ const path = require('path');
 const baseConfig = require('../baseConfig');
 const devConfig = {
     entry: {
-        index: './app',
-        vendor: ['./common/polyfill', 'react', 'react-dom', 'react-router-dom', 'redux',
+        index: './src/app',
+        vendor: ['./src/common/polyfill', 'react', 'react-dom', 'react-router-dom', 'redux',
             'react-redux', 'redux-thunk', 'redux-logger', 'antd']
     },
     output: {
@@ -15,16 +15,22 @@ const devConfig = {
         path: path.resolve(__dirname, './dist'),
         publicPath: '/dist/'
     },
-    devtool: 'inline-source-map',
+    devtool: 'cheap-eval-source-map',
     devServer: {
-        hot: true
+        contentBase: '/dist/',
+        host: 'localhost',
+        port: baseConfig.clientPort,
+        publicPath: '/dist/',
+        hot: true,
+        inline: true
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader'
+                loader: 'babel-loader?cacheDirectory=true',
+                include: [path.resolve('src')],
+                exclude: /node_modules/
             },
             {
                 test: /\.(png|jpg)$/,
@@ -57,7 +63,7 @@ const devConfig = {
         new HtmlWebpackPlugin({
             title: baseConfig.indexPageTitle,
             filename: 'index.html',
-            template: './index.html'
+            template: './src/index.html'
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
@@ -67,7 +73,7 @@ const devConfig = {
         }),
         new webpack.DefinePlugin({
             __DEV__: true
-        }),
+        })
         /* new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
             // In `server` mode analyzer will start HTTP server to show bundle report.
@@ -102,6 +108,10 @@ const devConfig = {
             minChunks: 2
         }
     },
+    resolve: {
+        modules:[path.resolve(__dirname, 'src'), 'node_modules'],
+        unsafeCache: true
+    }
 };
 
 module.exports = devConfig;

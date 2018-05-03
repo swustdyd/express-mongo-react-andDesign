@@ -2,7 +2,7 @@ import API from '../../common/api'
 
 const loginControlAction = {
     login: (name, password, sevenDay) =>(dispatch, getState) => {
-        fetch('/user/signin', {
+        fetch(API.signin, {
             method: 'post',
             headers: {
                 'Content-type': 'application/json'
@@ -22,7 +22,7 @@ const loginControlAction = {
             });
     },
     logout: () => (dispatch, getState) =>{
-        fetch('/user/logout', {credentials: 'include'})
+        fetch(API.logout, {credentials: 'include'})
             .then(res => res.json())
             .then((data) => {
                 if(data.success){
@@ -68,7 +68,7 @@ const loginControlAction = {
         }
     }),
     modifyPwd: (originPwd, newPwd) => (dispatch) => {
-        fetch('/user/updatePwd', {
+        fetch(API.updatePwd, {
             method: 'post',
             headers: {
                 'Content-type': 'application/json'
@@ -97,7 +97,7 @@ const loginControlAction = {
         }
     }),
     userRegister: (name, pwd) => (dispatch) => {
-        fetch('/user/signup', {
+        fetch(API.signup, {
             method: 'post',
             headers: {
                 'Content-type': 'application/json'

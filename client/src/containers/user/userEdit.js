@@ -5,6 +5,7 @@ import React from 'react'
 import {Form, Button, Input, Select, Spin, message, Tooltip, Icon} from 'antd'
 import Common from '../../common/common'
 import PicturesWall from '../../components/picturesWall'
+import API from '../../common/api'
 
 const FormItem = Form.Item;
 
@@ -38,7 +39,7 @@ class UserEdit extends React.Component{
                 }else{
                     userInput.icon = '';
                 }
-                fetch('/user/edit', {
+                fetch(API.editUser, {
                     method: 'post',
                     headers: {
                         'Content-type': 'application/json'
@@ -154,8 +155,8 @@ class UserEdit extends React.Component{
                     >
                         <PicturesWall
                             name="userIcon"
-                            action="/user/uploadIcon"
-                            cutAction="/cutImg"
+                            action={API.uploadIcon}
+                            cutAction={API.cutImg}
                             cutWidth={250}
                             cutHeight={250}
                             maxLength={1}

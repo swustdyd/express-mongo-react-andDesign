@@ -6,6 +6,7 @@ import React from 'react'
 import { Form, Input, Tooltip, Icon, Button, message, Spin, Select, Modal} from 'antd'
 import PicturesWall from '../../components/picturesWall'
 import Common from '../../common/common'
+import API from '../../common/api'
 
 const {TextArea} = Input;
 const FormItem = Form.Item;
@@ -45,7 +46,7 @@ class MovieEdit extends React.Component{
                 }else {
                     movie.poster = '';
                 }
-                fetch('/movie/newOrUpdate', {
+                fetch(API.newOrUpdateMovie, {
                     method: 'post',
                     headers: {
                         'Content-type': 'application/json'
@@ -223,8 +224,8 @@ class MovieEdit extends React.Component{
                             <div>
                                 <PicturesWall
                                     name="poster"
-                                    action="/movie/uploadPoster"
-                                    cutAction="/cutImg"
+                                    action={API.uploadPoster}
+                                    cutAction={API.cutImg}
                                     cutWidth={350}
                                     cutHeight={350}
                                     maxLength={1}

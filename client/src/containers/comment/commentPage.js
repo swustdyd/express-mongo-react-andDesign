@@ -5,6 +5,7 @@ import React from 'react'
 import { Spin, Input, Button, message} from 'antd'
 import Common from '../../common/common'
 import CommentItem from './commentItem'
+import API from '../../common/api'
 
 import './commentPage.scss'
 
@@ -33,7 +34,7 @@ class CommentPage extends  React.Component{
 
     componentDidMount(){
         let { movie, pageIndex, pageSize } = this.state;
-        fetch(`/movie/getMovies?condition=${JSON.stringify({_id: movie._id})}`)
+        fetch(`${API.getMovies}?condition=${JSON.stringify({_id: movie._id})}`)
             .then(res => res.json())
             .then(data => {
                 this.setState({
@@ -45,7 +46,7 @@ class CommentPage extends  React.Component{
 
     getComments(pageIndex, pageSize){
         let { movie, comments, latestCommentMap} = this.state;
-        fetch(`/comment/getComment/${movie._id}/?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=1`)
+        fetch(`${API.getComment}/${movie._id}/?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=1`)
             .then(res => res.json())
             .then(data => {
                 data.result.forEach((item, index) => {
@@ -108,7 +109,7 @@ class CommentPage extends  React.Component{
                 content: inputComment,
                 level: 1
             };
-            fetch('/comment/commit', {
+            fetch(API.postComment, {
                 method: 'post',
                 headers: {
                     'Content-type': 'application/json'

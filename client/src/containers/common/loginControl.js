@@ -7,7 +7,7 @@ import Login from './login'
 import ModifyPwd from './modifyPwd'
 import UserRegister from './userRegister'
 import { message } from 'antd'
-import BaseConfig from '../../../baseConfig'
+import BaseConfig from '../../../../baseConfig'
 
 import './loginControl.scss'
 

@@ -1,6 +1,8 @@
 /**
  * Created by Aaron on 2018/3/12.
  */
+import API from '../../common/api'
+
 export default {
     searchUsers: (condition, pageIndex, pageSize, cb) => (dispatch, getState) =>{
         if((typeof condition) === 'function'){
@@ -14,7 +16,7 @@ export default {
             cb = pageSize;
             pageSize = 5;
         }
-        fetch(`/user/getUsers?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`, {
+        fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`, {
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
             credentials: 'include'
         }).then(res => res.json())
@@ -33,7 +35,7 @@ export default {
         }
     }),
     deleteUser: (id, cb) => () =>{
-        fetch(`/user/delete?id=${id}`, {
+        fetch(`${API.deleteUser}?id=${id}`, {
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
             credentials: 'include'
         }).then(res => res.json())

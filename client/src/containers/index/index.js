@@ -136,7 +136,7 @@ class IndexPage extends React.Component{
         if(movies && movies.length > 0){
             movies.forEach((item, index) => {
                 let className = '';
-                if(this.state.currentPoster == item._id){
+                if(this.state.currentPoster === item._id){
                     className = 'poster-controller active';
                 }else {
                     className = 'poster-controller';

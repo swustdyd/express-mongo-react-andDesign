@@ -14,7 +14,7 @@ import UserListAction from '../../actions/user/userList'
 import ModalAction from '../../actions/common/customModal'
 import UserEdit from './userEdit'
 import Common from '../../common/common'
-import BaseConfig from '../../../baseConfig'
+import BaseConfig from '../../../../baseConfig'
 
 import './userList.scss'
 

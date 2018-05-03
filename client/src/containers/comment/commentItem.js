@@ -4,7 +4,8 @@
 import React from 'react'
 import moment from 'moment'
 import {Icon, message, Input, Spin} from 'antd'
-import BaseConfig from '../../../baseConfig'
+import BaseConfig from '../../../../baseConfig'
+import API from '../../common/api'
 
 import './commentItem.scss'
 
@@ -56,7 +57,7 @@ class CommentItem extends React.Component{
                 replayTo: comment._id
             };
 
-            fetch('/comment/commit', {
+            fetch(API.postComment, {
                 method: 'post',
                 headers: {
                     'Content-type': 'application/json'
@@ -93,7 +94,7 @@ class CommentItem extends React.Component{
         let condition = {
             replayTo: comment._id
         };
-        fetch(`/comment/getComment/${comment.movie}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=${this.props.level + 1}&condition=${JSON.stringify(condition)}`)
+        fetch(`${API.getComment}/${comment.movie}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=${this.props.level + 1}&condition=${JSON.stringify(condition)}`)
             .then(res => res.json())
             .then(data => {
                 data.result.forEach((item, index) => {
