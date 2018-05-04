@@ -1,9 +1,9 @@
 {
   "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "webpack-dev-server",
-    "build": "webpack"
+    "dev": "cross-env NODE_ENV=development nodemon --watch webpack.config.js --exec webpack-dev-server",
+    "build": "cross-env NODE_ENV=production webpack",
+    "dll": "webpack --config webpack.dll.config.js"
   },
   "dependencies": {
     "antd": "^3.2.2",
@@ -40,7 +40,9 @@
     "css-loader": "^0.26.4",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^0.10.1",
+    "happypack": "^5.0.0",
     "node-sass": "^4.9.0",
+    "nodemon": "^1.17.3",
     "postcss-loader": "^2.0.10",
     "reload": "^1.1.7",
     "resolve-url-loader": "^2.2.0",

@@ -6,6 +6,7 @@ import Authority from '../common/authority'
 import UserService from '../service/user'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
+import BaseConfig from '../../baseConfig'
 
 const router = express.Router();
 
@@ -115,11 +116,6 @@ router.get('/getUsers', Authority.requestSignin, Authority.requestAdmin, async f
             condition: newCondition,
             pageIndex: pageIndex,
             pageSize: pageSize
-        });
-        resData.result.forEach(item => {
-            if(item.icon && item.icon.src){
-                item.icon.src = `${BaseConfig.serverHost}:${BaseConfig.serverPort}/${item.icon.src}`;
-            }
         });
         response.json(resData);
     }catch (e){
@@ -251,7 +247,7 @@ router.post('/uploadIcon', Authority.requestSignin, async (req, res, next) => {
             fileFilter: ['.png', '.jpg']
         });
         if(files){
-            files.forEach(item => item.url = `uploads/user/icon/temp/${item.filename}`);
+            files.forEach(item => item.url = PubFunction.rebuildImgUrl(`uploads/user/icon/temp/${item.filename}`));
             res.json({success: true, message: '头像上传成功', result: files});
         }else{
             next(new BusinessException('上传文件为空'));

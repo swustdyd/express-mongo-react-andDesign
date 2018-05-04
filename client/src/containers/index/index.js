@@ -7,6 +7,7 @@ import { message } from 'antd'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieListAction from '../../actions/movie/movieList'
+import BaseConfig from '../../../../baseConfig'
 import './index.scss'
 
 class IndexPage extends React.Component{

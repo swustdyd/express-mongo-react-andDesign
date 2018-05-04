@@ -1,21 +1,24 @@
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HappyPack = require('happypack');
+const happyThreadPool = HappyPack.ThreadPool({ size: 20 });
 const path = require('path');
 const baseConfig = require('../baseConfig');
-const devConfig = {
+const env = process.env.NODE_ENV || 'development';
+const isDev = env === 'development';
+const config = {
     entry: {
-        index: './src/app',
-        vendor: ['./src/common/polyfill', 'react', 'react-dom', 'react-router-dom', 'redux',
-            'react-redux', 'redux-thunk', 'redux-logger', 'antd']
+        index: './src/app'
     },
     output: {
         filename: 'js/[name].bundle.js',
-        path: path.resolve(__dirname, './dist'),
+        path: path.resolve(__dirname, '../public/dist'),
         publicPath: '/dist/'
     },
-    devtool: 'cheap-eval-source-map',
+    devtool: 'eval-source-map',
     devServer: {
         contentBase: '/dist/',
         host: 'localhost',
@@ -28,7 +31,7 @@ const devConfig = {
         rules: [
             {
                 test: /\.js$/,
-                loader: 'babel-loader?cacheDirectory=true',
+                loader: 'happypack/loader?id=js',
                 include: [path.resolve('src')],
                 exclude: /node_modules/
             },
@@ -38,18 +41,13 @@ const devConfig = {
             },
             {
                 test: /\.scss$/,
-                use: [
-                    'style-loader',
-                    'css-loader?sourceMap',
-                    'resolve-url-loader',
-                    'sass-loader?sourceMap'
-                ]
+                loader: 'happypack/loader?id=scss'
             },
             {
                 test: /\.css$/,
                 use: [
                     'style-loader',
-                    'css-loader?sourceMap',
+                    'css-loader',
                     'resolve-url-loader'
                 ]
             },
@@ -72,7 +70,24 @@ const devConfig = {
             allChunks: true
         }),
         new webpack.DefinePlugin({
-            __DEV__: true
+            __DEV__: isDev
+        }),
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            /**
+             * 在这里引入 manifest 文件
+             */
+            manifest: require('./dist/vendor-manifest.json')
+        }),
+        new HappyPack({
+            id: 'js',
+            threadPool: happyThreadPool,
+            loaders: ['babel-loader?cacheDirectory=true']
+        }),
+        new HappyPack({
+            id: 'scss',
+            threadPool: happyThreadPool,
+            loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader']
         })
         /* new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
@@ -102,16 +117,31 @@ const devConfig = {
             logLevel: 'info'
         })*/
     ],
-    optimization: {
-        splitChunks: {
-            name: 'vendor',
-            minChunks: 2
-        }
-    },
+    /*optimization: {
+        minimizer: [
+            new webpack.optimize.UglifyJsPlugin({ /!* your config *!/ })
+        ]
+    },*/
     resolve: {
         modules:[path.resolve(__dirname, 'src'), 'node_modules'],
         unsafeCache: true
-    }
+    },
+    cache: true,
+    mode: env
 };
 
-module.exports = devConfig;
+if(!isDev){
+    config.plugins.push(
+        new CleanWebpackPlugin(
+            'dist',
+            {
+                root: path.join(baseConfig.root, 'public'),
+                exclude: ['dll'],
+                verbose: true,
+                dry: false
+            }
+        )
+    );
+}
+
+module.exports = config;

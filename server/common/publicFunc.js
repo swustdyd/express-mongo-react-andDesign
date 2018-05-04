@@ -9,6 +9,7 @@ import multer from 'multer'
 import  fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import BaseConfig from '../../baseConfig'
 
 //计算长度，数值越大，破解难度越大
 const SALT_WORK_FACTOR = 10;
@@ -84,13 +85,13 @@ const uploadFiles = (request, response, options) => {
     _.extend(finalOption, defaultOptions, options);
     let storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            let path = `public/uploads/${finalOption.subDir}`;
+            let savePath = path.join(BaseConfig.root, `public/uploads/${finalOption.subDir}`);
             //logger.info(`path is '${path}'`);
-            if(!fs.existsSync(path)){
+            if(!fs.existsSync(savePath)){
                 //logger.info('create upload directory');
-                mkdirsSync(path);
+                mkdirsSync(savePath);
             }
-            cb(null, path);
+            cb(null, savePath);
         },
         filename: function (req, file, cb) {
             let index = file.originalname.lastIndexOf('.');
@@ -178,11 +179,32 @@ const cutAndResizeImg = (input, output, cutArea, resizeWidth, resizeHeight) => {
     })
 };
 
+const rebuildImgUrl = url => {
+    return `${BaseConfig.staticSourceHost}/${url}`;
+};
+
+const parseUrl = url => {
+    let reg = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
+    const names = ['url', 'scheme', 'slash', 'host', 'port', 'path', 'query', 'hash'];
+    let result = reg.exec(url);
+    if(result){
+        let res = {};
+        for(let i = 0; i < names.length;i++){
+            res[names[i]] = result[i];
+        }
+        return res;
+    }else {
+        return null;
+    }
+};
+
 export default {
     bcryptString,
     comparePassword,
     mkdirsSync,
     uploadFiles,
     cutAndResizeImgTo250px,
-    cutAndResizeImg
+    cutAndResizeImg,
+    rebuildImgUrl,
+    parseUrl
 };

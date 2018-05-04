@@ -25,6 +25,9 @@ const getUserById = function (id) {
             if(err){
                 reject(err);
             }
+            if(user.icon && user.icon.src){
+                user.icon.src = PubFunction.rebuildImgUrl(user.icon.src);
+            }
             resolve({success: true, result: user});
         })
     })
@@ -47,6 +50,11 @@ const getUsersByCondition = function (customOptions) {
                     if(err){
                         reject(err);
                     }
+                    users.forEach(user => {
+                        if(user.icon && user.icon.src){
+                            user.icon.src = PubFunction.rebuildImgUrl(user.icon.src);
+                        }
+                    });
                     resolve({
                         success: true,
                         result: users,
@@ -85,6 +93,12 @@ const saveOrUpdateUser = async function (_user) {
 
     //保存用户到数据库
     return new Promise(function(resolve, reject){
+        if(inputUser.icon && inputUser.icon.src){
+            let parseResult = PubFunction.parseUrl(inputUser.icon.src);
+            if(parseResult){
+                inputUser.icon.src = parseResult.path;
+            }
+        }
         inputUser.save(function (err, user) {
             if(err){
                 logger.error('保存用户时发生错误');

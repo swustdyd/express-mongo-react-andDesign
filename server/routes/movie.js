@@ -2,11 +2,8 @@
  * Created by Aaron on 2018/1/6.
  */
 import express from 'express'
-import path from 'path'
-import fs from 'fs'
 import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
-import BaseConfig from '../../baseConfig'
 import BusinessException from '../common/businessException'
 
 const router = express.Router();
@@ -47,12 +44,6 @@ router.get('/getMovies', async function (req, res, next) {
             condition: newCondition,
             pageIndex: pageIndex,
             pageSize: pageSize
-        });
-        let result = resData.result;
-        result.forEach(item => {
-            if(item.poster && item.poster.src){
-                item.poster.src = `${BaseConfig.serverHost}:${BaseConfig.serverPort}/${item.poster.src}`;
-            }
         });
         res.json(resData);
     }catch(e) {
@@ -99,51 +90,13 @@ router.post('/uploadPoster', async function (req, res, next) {
             fileFilter: ['.png', '.jpg']
         });
         if(files){
-            files.forEach(item => item.url = `uploads/movie/poster/temp/${item.filename}`);
+            files.forEach(item => item.url = PublicFunc.rebuildImgUrl(`uploads/movie/poster/temp/${item.filename}`));
             res.json({success: true, message: '上传成功', result: files});
         }else{
             next(new BusinessException('上传文件为空'));
         }
     }catch (e){
         next(err);
-    }
-});
-
-router.post('/cutPoster', async function (req, res, next) {
-    try {
-        let { file, cutArea, resizeWidth, resizeHeight } = req.body;
-        let inputPath = path.resolve(BaseConfig.root, `public/${file.url}`);
-
-        //创建同级目录
-        let lastDir = path.dirname(file.url).substr(0, path.dirname(file.url).lastIndexOf('/'));
-        let saveDirectory = `${lastDir}/resize/`;
-        //logger.debug(path.dirname(file.url), lastDir, fs.existsSync(`public/${saveDirectory}`));
-        if(!fs.existsSync(`public/${saveDirectory}`)){
-            PublicFunc.mkdirsSync(`public/${saveDirectory}`)
-        }
-        let savePath = `${saveDirectory}/${file.filename}`;
-        let outputPath = path.resolve(BaseConfig.root, `public/${savePath}`);
-        await PublicFunc.cutAndResizeImg(
-            inputPath,
-            outputPath,
-            {
-                left: cutArea.x,
-                top: cutArea.y,
-                width: cutArea.width,
-                height: cutArea.height
-            },
-            resizeWidth,
-            resizeHeight
-        );
-        //删除原图
-        fs.unlinkSync(inputPath);
-        res.json({
-            success: true,
-            message: '裁剪成功',
-            result: Object.assign(file, {url: savePath})
-        });
-    }catch (e){
-        next(e);
     }
 });
 

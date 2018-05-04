@@ -18,9 +18,7 @@ router.use('/comment', CommentRoute);
 
 router.get('/', (request, response, next) => {
     try {
-        response.render('pages/index', {
-            title: BaseConfig.indexPageTitle
-        })
+        response.redirect('/dist/index.html');
     }catch (e){
         next(e)
     }
@@ -33,14 +31,15 @@ router.post('/cutImg', async (req, res, next) => {
     //next(new BusinessException('裁剪方法尚未实现'));
     try {
         let { file, cutArea, resizeWidth, resizeHeight } = req.body;
-        let inputPath = path.resolve(BaseConfig.root, `public/${file.url}`);
+        let filePath = PubFunction.parseUrl(file.url).path;
+        let inputPath = path.resolve(BaseConfig.root, `public/${filePath}`);
 
         //创建同级目录
-        let lastDir = path.dirname(file.url).substr(0, path.dirname(file.url).lastIndexOf('/'));
-        let saveDirectory = `${lastDir}/resize/`;
+        let lastDir = path.dirname(filePath).substr(0, path.dirname(filePath).lastIndexOf('/'));
+        let saveDirectory = `${lastDir}/resize`;
         //logger.debug(path.dirname(file.url), lastDir, fs.existsSync(`public/${saveDirectory}`));
-        if(!fs.existsSync(`public/${saveDirectory}`)){
-            PubFunction.mkdirsSync(`public/${saveDirectory}`)
+        if(!fs.existsSync(path.join(BaseConfig.root, `public/${saveDirectory}`))){
+            PubFunction.mkdirsSync(path.join(BaseConfig.root, `public/${saveDirectory}`))
         }
         let savePath = `${saveDirectory}/${file.filename}`;
         let outputPath = path.resolve(BaseConfig.root, `public/${savePath}`);
@@ -57,11 +56,11 @@ router.post('/cutImg', async (req, res, next) => {
             resizeHeight
         );
         //删除原图
-        fs.unlinkSync(inputPath);
+        //fs.unlinkSync(inputPath);
         res.json({
             success: true,
             message: '裁剪成功',
-            result: Object.assign(file, {url: savePath})
+            result: Object.assign(file, {url:  PubFunction.rebuildImgUrl(savePath)})
         });
     }catch (e){
         next(e);

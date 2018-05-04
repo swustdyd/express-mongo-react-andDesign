@@ -121,7 +121,7 @@ class MovieList extends React.Component{
         const { getFieldDecorator } = this.props.form;
         let columns = [
             {
-                title: '序号',
+                title: '000序号',
                 key: 'index',
                 render: (text, record, index) => pageIndex * pageSize + index + 1
             },

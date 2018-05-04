@@ -4,6 +4,7 @@
 import Movie from '../models/movie'
 import Promise from 'promise'
 import _ from 'underscore'
+import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
 
@@ -29,6 +30,11 @@ const getMoviesByCondition = function (customOptions) {
                     if(err){
                         reject(err);
                     }
+                    movies.forEach(movie => {
+                        if(movie.poster && movie.poster.src){
+                            movie.poster.src = PubFunction.rebuildImgUrl(movie.poster.src);
+                        }
+                    });
                     resolve({
                         success: true,
                         result: movies,
@@ -53,6 +59,9 @@ const getMovieById = function (id) {
         Movie.findOne({_id: id}, function (err, movie) {
             if(err){
                 reject(err);
+            }
+            if(movie.poster && movie.poster.src){
+                movie.poster.src = PubFunction.rebuildImgUrl(movie.poster.src);
             }
             resolve({success: true, result: movie});
         })
@@ -86,6 +95,13 @@ const saveOrUpdateMovie = async function (movie) {
         originMovie.meta.createAt = originMovie.meta.updateAt = Date.now();
     }
     return new Promise(function (resolve, reject) {
+        if(originMovie.poster && originMovie.poster.src){
+            let parseResult = PubFunction.parseUrl(originMovie.poster.src);
+            console.log(parseResult);
+            if(parseResult){
+                originMovie.poster.src = parseResult.path;
+            }
+        }
         originMovie.save(function (err, movie) {
             if(err){
                 reject(err);
