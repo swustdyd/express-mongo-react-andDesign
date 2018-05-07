@@ -2,7 +2,6 @@
  * Created by Aaron on 2018/5/3.
  */
 import baseConfig from '../../../baseConfig'
-console.log('set server api');
 let api = {
     checkLogin: 'user/checkLogin',
     getMovies: 'movie/getMovies',

@@ -63,8 +63,6 @@ const config = {
             filename: 'index.html',
             template: './src/index.html'
         }),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
         new ExtractTextPlugin({
             filename: 'stylesheet/[name].css',
             allChunks: true
@@ -141,6 +139,11 @@ if(!isDev){
                 dry: false
             }
         )
+    );
+}else{
+    config.plugins.push(
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
     );
 }
 

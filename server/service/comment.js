@@ -4,8 +4,10 @@
 import Comment from '../models/comment'
 import Promise from 'promise'
 import _ from 'underscore'
+import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
+import logger from '../common/logger'
 
 const queryDefaultOptions = QueryDefaultOptions;
 
@@ -27,6 +29,9 @@ const getCommentById = function (id) {
             ]).exec(function (err, comment) {
                 if(err){
                     reject(err)
+                }
+                if(comment.from && comment.from.icon && comment.from.icon.src){
+                    comment.from.icon.src = PubFunction.rebuildImgUrl(comment.from.icon.src);
                 }
                 resolve({success: true, result: comment});
             })
@@ -116,6 +121,19 @@ const getCommentsByMovieId = async function (id, customOptions) {
                     if(err){
                         reject(err)
                     }
+                    let fromHasChanged = {};
+                    comments.forEach(comment => {
+                        //返回的from是个对象，已经修改过from的src，不再修改，避免重复修改
+                        if(fromHasChanged[comment.from._id]){
+                            return false;
+                        }else {
+                            fromHasChanged[comment.from._id] = 1;
+                            let srcExist = comment.from && comment.from.icon && comment.from.icon.src;
+                            if(srcExist){
+                                comment.from.icon.src = PubFunction.rebuildImgUrl(comment.from.icon.src);
+                            }
+                        }
+                    });
                     resolve({
                         success: true,
                         result: comments,
