@@ -54,6 +54,15 @@ router.get('/js', (req, res, next) => {
     }
 });
 
-var index = 2;
+/**
+ * 
+ * @param {*} a 
+ * @param {*} b 
+ */
+const test = (a: number, b: string) => {
+    return 1;
+}
+
+test()
 
 export default router;

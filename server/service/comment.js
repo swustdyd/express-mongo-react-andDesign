@@ -2,21 +2,26 @@
  * Created by Aaron on 2018/1/19.
  */
 import Comment from '../models/comment'
-import Promise from 'promise'
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
 import logger from '../common/logger'
+import { SingleReturnType, PageReturnType } from '../common/type';
 
 const queryDefaultOptions = QueryDefaultOptions;
 
-const getCommentById = function (id) {
+/**
+ * 根据id获取评论
+ * @param id ObjectId-评论id
+ * @returns {Promise.<SingleReturnType>}
+ */
+function getCommentById(id: string) {
     return new Promise(function (resolve, reject) {
         if(!id){
             reject(new BusinessException('评论id不能为空'))
         }
-        Comment.findOne({_id: id}, )
+        Comment.findOne({_id: id})
             .populate([
                 {
                     path: 'from',
@@ -36,14 +41,15 @@ const getCommentById = function (id) {
                 resolve({success: true, result: comment});
             })
     });
-};
+}
+
 
 /**
  * 根据条件查询评论
- * @param {Object} options
- * @return {Promise}
+ * @param options object-查询的条件
+ * @return {Promise.<PageReturnType>}
  */
-const getCommentsByCondition = function (options) {
+function getCommentsByCondition(options: object) {
     return new Promise(function (resolve, reject) {
         options = _.extend({}, queryDefaultOptions, options);
         Comment.count(options.condition, function (err, count) {
@@ -68,13 +74,14 @@ const getCommentsByCondition = function (options) {
                 });
         });
     });
-};
+}
 
 /**
  * 根据电影id统计其所有的评论
- * @returns {Promise.<void>}
+ * @param id ObjectId-电影id
+ * @returns {Promise.<{success: boolean, count: number}>}
  */
-const countCommentsByMovieId = function(id){
+function countCommentsByMovieId(id: string){
     return new Promise(function (resolve, reject) {
         if (!id) {
             reject(new BusinessException('电影id不能为空'))
@@ -83,21 +90,20 @@ const countCommentsByMovieId = function(id){
             if (err) {
                 reject(err);
             }
-            resolve({success: true, result: count});
+            resolve({success: true, count: count});
         });
     });
-};
+}
 
 
 /**
  * 根绝电影id获取其下的评论
- * @param {ObjectId} id 电影id
- * @param {Object} customOptions 查询的配置
- * @return {Promise}
+ * @param id ObjectId-电影id
+ * @param customOptions object-查询的配置
+ * @return {Promise.<PageReturnType>}
  */
-const getCommentsByMovieId = async function (id, customOptions) {
+const getCommentsByMovieId = async function (id: string, customOptions: object) {
     let options = _.extend({}, queryDefaultOptions, customOptions);
-    let totalComments = await countCommentsByMovieId(id);
     return new Promise(function (resolve, reject) {
         if(!id){
             reject(new BusinessException('电影id不能为空'))
@@ -123,7 +129,7 @@ const getCommentsByMovieId = async function (id, customOptions) {
                     }
                     let fromHasChanged = {};
                     comments.forEach(comment => {
-                        //返回的from是个对象，已经修改过from的src，不再修改，避免重复修改
+                        //关联查询返回的from是个对象，已经修改过from的src，不再修改，避免重复修改
                         if(fromHasChanged[comment.from._id]){
                             return false;
                         }else {
@@ -139,15 +145,19 @@ const getCommentsByMovieId = async function (id, customOptions) {
                         result: comments,
                         total: count,
                         pageIndex: options.pageIndex,
-                        pageSize: options.pageSize,
-                        totalComments
+                        pageSize: options.pageSize
                     });
                 });
         });
     });
 };
 
-const saveOrUpdateComment = async function (comment) {
+/**
+ * 保存或者更新评论
+ * @param {*} comment Comment-评论的详细信息
+ * @returns {Promise.<SingleReturnType>}
+ */
+async function saveOrUpdateComment(comment: object) {
     let originComment = '';
     if(comment._id){
         let resData = await getCommentById(comment._id);
@@ -169,12 +179,17 @@ const saveOrUpdateComment = async function (comment) {
             });
         })
     });
-};
+}
 
-export default {
+/**
+ * 评论模块service
+ */
+const commentService = {
     getCommentById,
     getCommentsByCondition,
     getCommentsByMovieId,
     countCommentsByMovieId,
     saveOrUpdateComment
 };
+
+export default commentService;
