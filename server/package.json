@@ -1,4 +1,6 @@
 {
+  "name": "demo",
+  "version": "1.0.0",
   "author": "aaron",
   "main": "app.js",
   "scripts": {
