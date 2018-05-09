@@ -48,10 +48,12 @@ router.get('/js', (req, res, next) => {
         for(let i = 0; i < 10; i++){
             let j = i + 100;
         }
-        res.json([]);
+        res.error({message: 'test'});
     }catch (e){
         next(e)
     }
 });
+
+var index = 2;
 
 export default router;

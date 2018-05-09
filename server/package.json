@@ -48,9 +48,8 @@
     "eslint-plugin-react": "^7.7.0",
     "fast-levenshtein": "^2.0.6",
     "flow-bin": "^0.71.0",
-    "nodemon": "^1.17.3",
-    "esrecurse": "^4.2.1",
     "levn": "^0.3.0",
+    "nodemon": "^1.17.3",
     "type-check": "^0.3.2"
   }
 }
