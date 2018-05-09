@@ -2,20 +2,19 @@
  * Created by Aaron on 2018/1/17.
  */
 import Movie from '../models/movie'
-import Promise from 'promise'
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
+import { PageReturnType, QueryOptionsType, ObjectId, SingleReturnType, MovieType } from '../common/type';
 
 const queryDefaultOptions = QueryDefaultOptions;
 
 /**
  * 根据条件查询电影
- * @param {Object} customOptions
- * @return {Promise}
+ * @param customOptions 查询条件
  */
-const getMoviesByCondition = function (customOptions) {
+function getMoviesByCondition(customOptions: QueryOptionsType) : Promise<PageReturnType> {
     let options = _.extend({}, queryDefaultOptions, customOptions);
     return new Promise(function (resolve, reject) {
         Movie.count(options.condition, function (err, count) {
@@ -45,14 +44,14 @@ const getMoviesByCondition = function (customOptions) {
                 });
         });
     });
-};
+}
 
 /**
  * 根据id 获取电影
- * @param {ObjectId} id
+ * @param id 电影id
  */
-const getMovieById = function (id) {
-    return new Promise(function (resolve, reject) {
+function getMovieById(id: ObjectId) : Promise<SingleReturnType> {
+    return new Promise(function (resolve, reject){
         if(!id){
             reject(new BusinessException('电影id不能为空'))
         }
@@ -66,9 +65,13 @@ const getMovieById = function (id) {
             resolve({success: true, result: movie});
         })
     });
-};
+}
 
-const deleteMovieById = function (id) {
+/**
+ * 根据电影id删除电影
+ * @param id 电影id
+ */
+function deleteMovieById(id: ObjectId) : Promise<{success: boolean}> {
     return new Promise(function (resolve, reject) {
         if(!id){
             reject(new BusinessException('电影id不能为空'))
@@ -80,9 +83,13 @@ const deleteMovieById = function (id) {
             resolve({success: true});
         });
     });
-};
+}
 
-const saveOrUpdateMovie = async function (movie) {
+/**
+ * 保存或者修改电影
+ * @param movie 电影信息
+ */
+async function saveOrUpdateMovie(movie: MovieType) : Promise<SingleReturnType> {
     let originMovie = '';
     //修改
     if(movie._id){
@@ -109,9 +116,14 @@ const saveOrUpdateMovie = async function (movie) {
             resolve({success: true, result: movie});
         })
     });
-};
+}
 
-const getMoviesByGroup = (groupArray, match) => {
+/**
+ * 根据分组信息返回对应的数据
+ * @param groupArray
+ * @param match 
+ */
+function getMoviesByGroup(groupArray: [], match: {}) : Promise<SingleReturnType> {
     return new Promise((resolve, reject) => {
         let group = {};
         groupArray = groupArray || [];
@@ -129,12 +141,17 @@ const getMoviesByGroup = (groupArray, match) => {
             resolve({success: true, result: data});
         })
     });
-};
+}
 
-export default {
+/**
+ * 电影模块service
+ */
+const movieService = {
     getMoviesByGroup,
     getMovieById,
     getMoviesByCondition,
     saveOrUpdateMovie,
     deleteMovieById
 };
+
+export default movieService;

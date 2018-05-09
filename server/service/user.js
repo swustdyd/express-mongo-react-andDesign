@@ -3,20 +3,19 @@
  */
 import User from '../models/user'
 import logger from '../common/logger'
-import Promise from 'promise'
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
+import { ObjectId, SingleReturnType, QueryOptionsType, PageReturnType, UserType } from '../common/type';
 
 const queryDefaultOptions = QueryDefaultOptions;
 
 /**
  * 根据用户id 获取用户
- * @param id
- * @return {*}
+ * @param id 用户id
  */
-const getUserById = function (id) {
+function getUserById(id: ObjectId) : Promise<SingleReturnType> {
     return new Promise(function (resolve, reject) {
         if(!id){
             reject(new BusinessException('用户id不能为空'))
@@ -31,14 +30,13 @@ const getUserById = function (id) {
             resolve({success: true, result: user});
         })
     })
-};
+}
 
 /**
  * 根据查询条件查询用户
- * @param customOptions
- * @return {*}
+ * @param customOptions 查询条件
  */
-const getUsersByCondition = function (customOptions) {
+function getUsersByCondition(customOptions: QueryOptionsType) : Promise<PageReturnType> {
     let options = _.extend({}, queryDefaultOptions, customOptions);
     return new Promise(function (resolve, reject) {
         User.count(options.condition, function (err, count) {
@@ -65,14 +63,13 @@ const getUsersByCondition = function (customOptions) {
                 })
         });
     });
-};
+}
 
 /**
  * 保存或者更新用户
  * @param _user 用户信息
- * @return {*}
  */
-const saveOrUpdateUser = async function (_user) {
+async function saveOrUpdateUser(_user: UserType) : Promise<SingleReturnType> {
     let inputUser = _user;
     if(inputUser.password){
         //加密用户密码
@@ -107,9 +104,14 @@ const saveOrUpdateUser = async function (_user) {
             resolve({success: true, result: user});
         });
     });
-};
+}
 
-const deleteUserById = function (id) {
+
+/**
+ * 根据id删除用户
+ * @param id 用户id
+ */
+function deleteUserById(id: ObjectId) : Promise<{success: boolean, message: string}>  {
     return new Promise(function (resolve, reject) {
         if(!id){
             reject(new BusinessException('id不能为空'))
@@ -121,11 +123,16 @@ const deleteUserById = function (id) {
             resolve({success: true, message: '删除成功'});
         })
     });
-};
+}
 
-export default {
+/**
+ * 用户模块service
+ */
+const userService = {
     getUserById,
     getUsersByCondition,
     saveOrUpdateUser,
     deleteUserById
 };
+
+export default userService;

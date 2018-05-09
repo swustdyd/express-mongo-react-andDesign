@@ -11,7 +11,7 @@ export type APIResponseType = {
 export type PageReturnType = {
     success: boolean,
     message: string,
-    result: Array,
+    result: [],
     pageIndex: number,
     pageSzie: number,
     total: number
@@ -19,12 +19,26 @@ export type PageReturnType = {
 
 export type SingleReturnType = {
     success: boolean, 
-    result: object,
+    result: {},
     message: string
 }
 
 export type MultipleReturnType = {
     success: boolean, 
     message: string,
-    result: Array
+    result: []
 } 
+
+export type ObjectId = {};
+
+export type QueryOptionsType = {
+    condition: {},
+    sort: {},
+    pageSize: number,
+    pageIndex: number
+};
+
+// MongoDB Model Type
+export type CommentType = {};
+export type UserType = {};
+export type MovieType = {};

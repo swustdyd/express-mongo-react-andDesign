@@ -7,16 +7,15 @@ import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
 import logger from '../common/logger'
-import { SingleReturnType, PageReturnType } from '../common/type';
+import { SingleReturnType, PageReturnType, ObjectId, QueryOptionsType, CommentType } from '../common/type';
 
 const queryDefaultOptions = QueryDefaultOptions;
 
 /**
  * 根据id获取评论
- * @param id ObjectId-评论id
- * @returns {Promise.<SingleReturnType>}
+ * @param id 评论id
  */
-function getCommentById(id: string) {
+function getCommentById(id: ObjectId) : Promise<SingleReturnType> {
     return new Promise(function (resolve, reject) {
         if(!id){
             reject(new BusinessException('评论id不能为空'))
@@ -46,10 +45,9 @@ function getCommentById(id: string) {
 
 /**
  * 根据条件查询评论
- * @param options object-查询的条件
- * @return {Promise.<PageReturnType>}
+ * @param options 查询的条件
  */
-function getCommentsByCondition(options: object) {
+function getCommentsByCondition(options: QueryOptionsType) : Promise<PageReturnType> {
     return new Promise(function (resolve, reject) {
         options = _.extend({}, queryDefaultOptions, options);
         Comment.count(options.condition, function (err, count) {
@@ -78,10 +76,9 @@ function getCommentsByCondition(options: object) {
 
 /**
  * 根据电影id统计其所有的评论
- * @param id ObjectId-电影id
- * @returns {Promise.<{success: boolean, count: number}>}
+ * @param id 电影id
  */
-function countCommentsByMovieId(id: string){
+function countCommentsByMovieId(id: ObjectId) : Promise<{success: boolean, count: number}>{
     return new Promise(function (resolve, reject) {
         if (!id) {
             reject(new BusinessException('电影id不能为空'))
@@ -98,11 +95,10 @@ function countCommentsByMovieId(id: string){
 
 /**
  * 根绝电影id获取其下的评论
- * @param id ObjectId-电影id
- * @param customOptions object-查询的配置
- * @return {Promise.<PageReturnType>}
+ * @param id 电影id
+ * @param customOptions 查询的配置
  */
-const getCommentsByMovieId = async function (id: string, customOptions: object) {
+async function getCommentsByMovieId(id: ObjectId, customOptions: QueryOptionsType) : Promise<PageReturnType> {
     let options = _.extend({}, queryDefaultOptions, customOptions);
     return new Promise(function (resolve, reject) {
         if(!id){
@@ -150,14 +146,13 @@ const getCommentsByMovieId = async function (id: string, customOptions: object) 
                 });
         });
     });
-};
+}
 
 /**
  * 保存或者更新评论
- * @param {*} comment Comment-评论的详细信息
- * @returns {Promise.<SingleReturnType>}
+ * @param comment 评论的详细信息
  */
-async function saveOrUpdateComment(comment: object) {
+async function saveOrUpdateComment(comment: CommentType) : Promise<SingleReturnType> {
     let originComment = '';
     if(comment._id){
         let resData = await getCommentById(comment._id);

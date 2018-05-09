@@ -55,14 +55,19 @@ router.get('/js', (req, res, next) => {
 });
 
 /**
- * 
- * @param {*} a 
- * @param {*} b 
+ * 测试类
  */
-const test = (a: number, b: string) => {
-    return 1;
+class Test {
+    /**
+     * 
+     * @param {*} a 
+     * @param {*} b 
+     */
+    testMethod(a: number, b: string) : string {
+        return 1;
+    }
 }
 
-test()
+let test = new Test();
 
 export default router;
