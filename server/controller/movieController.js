@@ -1,3 +1,9 @@
+/*
+ * @Author: yedong.deng 
+ * @Date: 2018-05-10 17:24:23 
+ * @Last Modified by:   aaron.deng 
+ * @Last Modified time: 2018-05-10 17:24:23 
+ */
 import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'

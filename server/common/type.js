@@ -1,3 +1,9 @@
+/*
+ * @Author: yedong.deng 
+ * @Date: 2018-05-10 17:22:49 
+ * @Last Modified by: aaron.deng
+ * @Last Modified time: 2018-05-10 17:23:39
+ */
 export type APIResponseType = {
     success: boolean,
     message: string,

@@ -1,3 +1,9 @@
+/*
+ * @Author: yedong.deng 
+ * @Date: 2018-05-10 17:24:17 
+ * @Last Modified by:   aaron.deng 
+ * @Last Modified time: 2018-05-10 17:24:17 
+ */
 import Authority from '../common/authority'
 import CommentService from '../service/comment'
 import BaseController from './baseController'
