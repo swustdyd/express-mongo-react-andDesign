@@ -13,8 +13,8 @@ import session from 'express-session'
 import connectMongo from 'connect-mongo'
 import filter from './common/filter'
 import BaseConfig from '../baseConfig'
-import Route from './routes'
-import ExpandResponse from './common/expandResponse'
+import router from './routes'
+import expandResponse from './common/expandResponse'
 
 const MongoStore = connectMongo(session);
 const isDev = process.env.NODE_ENV !== 'production';
@@ -72,10 +72,10 @@ app.use(function (req, res, next) {
 });
 
 //扩展response的方法
-app.use(ExpandResponse);
+app.use(expandResponse);
 
 //设置路由
-app.use(Route);
+app.use(router);
 
 app.listen(serverPort, function () {
     console.log(`Demo(production) is running on port ${serverPort}`);

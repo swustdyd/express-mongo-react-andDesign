@@ -1,4 +1,4 @@
-{
+module.exports = {
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 7,
@@ -39,8 +39,27 @@
     // 圈复杂度
     "complexity": [2, 12],
     // 以方括号取对象属性时，[ 后面和 ] 前面是否需要空格, 可选参数 never, always
-    "computed-property-spacing": [2, "never"]
+    "computed-property-spacing": [2, "never"],
     // TODO 关闭 强制方法必须返回值，TypeScript强类型，不配置
     // "consistent-return": 0
+    //要求 Switch 语句中有 Default 分支 (default-case)
+    "default-case": 2,
+    //禁止使用魔术数字 (no-magic-numbers)
+    //"no-magic-numbers": [2, { "ignoreArrayIndexes": true }],
+    //要求使用 Error 对象作为 Promise 拒绝的原因 (prefer-promise-reject-errors)
+    "prefer-promise-reject-errors": 2,
+    //禁止使用不带 await 表达式的 async 函数 (require-await)
+    "require-await": 2,
+    //要求箭头函数的参数使用圆括号 (arrow-parens)
+    "arrow-parens": [2, "always"],
+    //要求箭头函数体使用大括号 (arrow-body-style)
+    "arrow-body-style": ["error", "always"],
+    //要求箭头函数的箭头之前或之后有空格
+    "arrow-spacing": "error",
+    //建议使用const (prefer-const)
+    "prefer-const": "error",
+    "no-const-assign": "error",
+    //只强制对象解构，不强制数组解构
+    "prefer-destructuring": [2, {"object": true, "array": false}, {"enforceForRenamedProperties": false}]
   }
 }

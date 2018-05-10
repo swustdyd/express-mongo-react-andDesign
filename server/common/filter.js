@@ -11,7 +11,7 @@ const DefaultPageSize = QueryDefaultOptions.pageSize;
  * @param res
  * @param next
  */
-export default (req, res, next) => {
+function filter(req, res, next){
     //初始化url中的分页信息
     if (req.query.pageIndex) {
         req.query.pageIndex = /^[0-9]+$/.test(req.query.pageIndex) ? parseInt(req.query.pageIndex) : 0;
@@ -37,4 +37,5 @@ export default (req, res, next) => {
         req.body.pageSize = DefaultPageSize;
     }
     next();
-};
+}
+export default filter;

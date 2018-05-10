@@ -7,7 +7,7 @@ let api = {
     getMovies: 'movie/getMovies',
     postComment: 'comment/commit',
     getComment: 'comment/getComment',
-    cutImg: 'cutImg',
+    cutImg: 'util/cutImg',
     newOrUpdateMovie: 'movie/newOrUpdate',
     deleteMovie: 'movie/delete',
     uploadPoster: 'movie/uploadPoster',

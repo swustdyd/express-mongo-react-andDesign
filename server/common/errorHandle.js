@@ -5,8 +5,10 @@
 import logger from './logger'
 import BusinessException from './businessException'
 
-// error handler
-export default (err, req, res, next) => {
+/**
+ * 统一自定义异常处理
+ */
+function errorHandle(err, req, res, next) {
     // set locals, only providing error in development
     if(err instanceof BusinessException){
         res.json({
@@ -27,3 +29,4 @@ export default (err, req, res, next) => {
     }
     res.end();
 }
+export default errorHandle;

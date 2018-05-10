@@ -10,29 +10,52 @@ const role = {
     superAdmin: 50
 };
 
-export default {
-    requestSignin: function (req, res, next) {
-        let user = req.session.user;
+/**
+ * 权限验证
+ */
+export default class Authroity{
+    /**
+     * 需要用户登录
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    static requestSignin(req, res, next) {
+        const {user} = req.session;
         if(!user){
             next(new BusinessException('请登录', errorCode.requestSignin));
         }else{
             next();
         }
-    },
-    requestAdmin: function (req, res, next) {
-        let user = req.session.user;
+    }
+
+    /**
+     * 需要普通管理员权限
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    static requestAdmin(req, res, next) {
+        const {user} = req.session;
         if(!user || user.role < role['admin']){
             next(new BusinessException('需要管理员权限', errorCode.requestAdmin));
         }else{
             next();
         }
-    },
-    requestSuperAdmin: function (req, res, next) {
-        let user = req.session.user;
+    }
+
+    /**
+     * 需要超级管理员权限
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    static requestSuperAdmin(req, res, next) {
+        const {user} = req.session;
         if(!user || user.role < role['superAdmin']){
             next(new BusinessException('需要超级管理员权限', errorCode.requestSuperAdmin));
         }else{
             next();
         }
     }
-};
+}
