@@ -1,13 +1,21 @@
+/*
+ * @Author: dyd 
+ * @Date: 2018-05-10 20:37:51 
+ * @Last Modified by: dyd
+ * @Last Modified time: 2018-05-10 20:42:10
+ */
 import express from 'express'
 import MovieController from './controller/movieController'
 import UserController from './controller/userController'
 import CommentController from './controller/commentController'
 import UtilController from './controller/utilController'
+import TestController from './controller/testController'
 
 const movieController = new MovieController();
 const userController = new UserController();
 const commentController = new CommentController();
 const utilController = new UtilController();
+const testController = new TestController();
 
 /**
  * app路由配置
@@ -45,5 +53,8 @@ router.get('/comment/getComment/:id', commentController.getCommentByMovieId.bind
 
 //util模块路由配置
 router.post('/util/cutImg', utilController.cutImg.bind(utilController));
+
+//test模块路由配置
+router.get('/test/js', testController.testJS.bind(testController));
 
 export default router;
