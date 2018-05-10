@@ -42,6 +42,7 @@ jspm_packages
 
 # IDE
 .idea
+.vscode
 
 # Static files
 public/
