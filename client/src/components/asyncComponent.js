@@ -2,8 +2,8 @@
  * Created by Aaron on 2018/3/16.
  */
 import React from 'react'
-export const asyncComponent = loadComponent => (
-    class AsyncComponent extends React.Component {
+export const asyncComponent = (loadComponent) => {
+    return class AsyncComponent extends React.Component {
         constructor(){
             super();
             this.state = {
@@ -16,7 +16,7 @@ export const asyncComponent = loadComponent => (
             }
 
             loadComponent()
-                .then(module => module.default)
+                .then((module) => { return module.default })
                 .then((Component) => {
                     this.setState({ Component });
                 })
@@ -35,4 +35,4 @@ export const asyncComponent = loadComponent => (
             return (Component) ? <Component {...this.props} /> : null;
         }
     }
-);
+}

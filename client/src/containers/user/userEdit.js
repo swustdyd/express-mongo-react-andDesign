@@ -12,9 +12,9 @@ const FormItem = Form.Item;
 class UserEdit extends React.Component{
     constructor(props){
         super(props);
+        const iconList = [];
         let { initData } = props;
         initData = initData || {};
-        let iconList = [];
         if(initData.icon){
             iconList.push(initData.icon)
         }
@@ -28,9 +28,9 @@ class UserEdit extends React.Component{
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
-                let userInput = this.props.form.getFieldsValue();
+                const userInput = this.props.form.getFieldsValue();
                 userInput._id = this.state.initData._id;
-                let { iconList } = this.state;
+                const { iconList } = this.state;
                 if(iconList.length > 0){
                     userInput.icon = {
                         displayName: iconList[0].name,
@@ -47,22 +47,23 @@ class UserEdit extends React.Component{
                     //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
                     credentials: 'include',
                     body: JSON.stringify({user: userInput})
-                }).then(res => res.json())
-                    .then(data => {
-                        if(data.success){
-                            message.success(data.message);
-                            if(this.props.onSubmitSuccess){
-                                this.props.onSubmitSuccess();
-                            }
-                        }else {
-                            message.error(data.message);
-                            if(this.props.onSubmitFail){
-                                this.props.onSubmitFail();
-                            }
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    if(data.success){
+                        message.success(data.message);
+                        if(this.props.onSubmitSuccess){
+                            this.props.onSubmitSuccess();
                         }
-                    }).catch(err => {
-                        message.error(err.message);
-                    });
+                    }else {
+                        message.error(data.message);
+                        if(this.props.onSubmitFail){
+                            this.props.onSubmitFail();
+                        }
+                    }
+                }).catch((err) => {
+                    message.error(err.message);
+                });
             }
         });
     }
@@ -74,8 +75,8 @@ class UserEdit extends React.Component{
     }
 
     render(){
-        let {getFieldDecorator} = this.props.form;
-        let { initData, iconList } = this.state;
+        const {getFieldDecorator} = this.props.form;
+        const { initData, iconList } = this.state;
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
@@ -161,7 +162,7 @@ class UserEdit extends React.Component{
                             cutHeight={250}
                             maxLength={1}
                             defaultFileList={iconList}
-                            onChange={list => this.handleIconUploadChange(list)}
+                            onChange={(list) => {this.handleIconUploadChange(list)}}
                         />
                     </FormItem>
                     <FormItem {...tailFormItemLayout}>

@@ -59,7 +59,7 @@ class LoginControl extends React.Component{
         }
     }
     render(){
-        let { loginState } = this.props;
+        const { loginState } = this.props;
         return(
             <div className="login-control">
                 {
@@ -92,13 +92,17 @@ class LoginControl extends React.Component{
     }
 }
 
-const mapStateToPros = state => ({
-    loginState: state.common.login
-});
+const mapStateToPros = (state) => {
+    return {
+        loginState: state.common.login
+    }
+};
 
-const mapDispatchToProps = dispatch => ({
-    loginControlAction: bindActionCreators(LoginControlAction, dispatch),
-    modalAction:  bindActionCreators(ModalAction, dispatch)
-});
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loginControlAction: bindActionCreators(LoginControlAction, dispatch),
+        modalAction:  bindActionCreators(ModalAction, dispatch)
+    }
+};
 
 export default connect(mapStateToPros, mapDispatchToProps)(LoginControl);

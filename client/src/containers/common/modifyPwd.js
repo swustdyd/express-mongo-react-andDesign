@@ -14,21 +14,21 @@ class ModifyPwd extends React.Component{
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
-                let userInput = this.props.form.getFieldsValue();
+                const userInput = this.props.form.getFieldsValue();
                 this.props.loginControlAction.modifyPwd(userInput.originPwd, userInput.newPwd);
             }
         });
     }
     checkNewPwd(rule, value, callback){
-        const form = this.props.form;
-        let confirmPwd = form.getFieldValue('confirmPwd')
+        const {form} = this.props;
+        const confirmPwd = form.getFieldValue('confirmPwd')
         if (value && confirmPwd) {
             form.validateFields(['confirmPwd'], { force: true });
         }
         callback();
     }
     checkConfirmPwd(rule, value, callback){
-        const form = this.props.form;
+        const {form} = this.props;
         if (value && value !== form.getFieldValue('newPwd')) {
             callback('确认密码与原密码不一致');
         } else {
@@ -36,7 +36,7 @@ class ModifyPwd extends React.Component{
         }
     }
     render(){
-        let {getFieldDecorator} = this.props.form;
+        const {getFieldDecorator} = this.props.form;
         return (
             <Form onSubmit={this.handleModifyClick.bind(this)} className="modifyPwd-form">
                 <FormItem>
@@ -89,12 +89,16 @@ class ModifyPwd extends React.Component{
     }
 }
 
-const mapStateToPros = state => ({
-    loginState: state.common.login
-});
+const mapStateToPros = (state) => {
+    return {
+        loginState: state.common.login
+    }
+};
 
-const mapDispatchToProps = dispatch => ({
-    loginControlAction: bindActionCreators(LoginControlAction, dispatch)
-});
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loginControlAction: bindActionCreators(LoginControlAction, dispatch)
+    }
+};
 
 export default connect(mapStateToPros, mapDispatchToProps)(Form.create()(ModifyPwd));

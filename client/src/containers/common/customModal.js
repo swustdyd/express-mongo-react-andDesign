@@ -11,7 +11,7 @@ import './customModal.scss'
 
 class CustomModal extends React.Component{
     render(){
-        let { modalState } = this.props;
+        const { modalState } = this.props;
         /*console.log(modalState);
         console.log('modal render');*/
         return(
@@ -30,11 +30,15 @@ class CustomModal extends React.Component{
         );
     }
 }
-const mapStateToPros = state => ({
-    modalState: state.common.modal
-});
-const mapDispatchToProps = dispatch => ({
-    modalAction: bindActionCreators(ModalAction, dispatch)
-});
+const mapStateToPros = (state) => {
+    return {
+        modalState: state.common.modal
+    }
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        modalAction: bindActionCreators(ModalAction, dispatch)
+    }
+};
 
 export default connect(mapStateToPros, mapDispatchToProps)(CustomModal);

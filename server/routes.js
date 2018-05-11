@@ -10,6 +10,7 @@ import UserController from './controller/userController'
 import CommentController from './controller/commentController'
 import UtilController from './controller/utilController'
 import TestController from './controller/testController'
+import Authroity from './common/authority';
 
 const movieController = new MovieController();
 const userController = new UserController();
@@ -40,7 +41,7 @@ router.get('/movie/getMoviesByGroup', movieController.getMoviesByGroup.bind(movi
 router.post('/user/signup', userController.signup.bind(userController));
 router.post('/user/signin', userController.signin.bind(userController));
 router.get('/user/logout', userController.logout.bind(userController));
-router.get('/user/getUsers', userController.getUsers.bind(userController));
+router.get('/user/getUsers', Authroity.requestSignin, Authroity.requestSuperAdmin, userController.getUsers.bind(userController));
 router.get('/user/checkLogin', userController.checkLogin.bind(userController));
 router.post('/user/updatePwd', userController.updatePwd.bind(userController));
 router.get('/user/delete', userController.delete.bind(userController));

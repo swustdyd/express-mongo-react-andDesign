@@ -13,13 +13,13 @@ class Login extends React.Component{
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
-                let userInput = this.props.form.getFieldsValue();
+                const userInput = this.props.form.getFieldsValue();
                 this.props.loginControlAction.login(userInput.name, userInput.password, userInput.sevenDay);
             }
         });
     }
     render(){
-        let {getFieldDecorator} = this.props.form;
+        const {getFieldDecorator} = this.props.form;
         return (
             <Form onSubmit={this.handleLoginClick.bind(this)} className="login-form">
                 <FormItem>
@@ -64,13 +64,17 @@ class Login extends React.Component{
         )
     }
 }
-const mapStateToPros = state => ({
-    loginState: state.common.login
-});
+const mapStateToPros = (state) => {
+    return {
+        loginState: state.common.login
+    }
+};
 
-const mapDispatchToProps = dispatch => ({
-    loginControlAction: bindActionCreators(LoginControlAction, dispatch)
-});
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loginControlAction: bindActionCreators(LoginControlAction, dispatch)
+    }
+};
 
 export default connect(mapStateToPros, mapDispatchToProps)(Form.create()(Login));
 

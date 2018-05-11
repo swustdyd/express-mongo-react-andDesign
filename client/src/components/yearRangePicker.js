@@ -5,7 +5,7 @@
 import React from 'react'
 import { Select, message} from 'antd';
 
-const Option = Select.Option;
+const {Option} = Select;
 
 class YearRangePicker extends React.Component {
     constructor(props){
@@ -21,7 +21,7 @@ class YearRangePicker extends React.Component {
     }
 
     handleFirstChange(value){
-        let nextState = Object.assign({}, this.state);
+        const nextState = Object.assign({}, this.state);
         if(!value){
             nextState.startOfSecond = this.state.startOfFirst;
         }
@@ -45,14 +45,14 @@ class YearRangePicker extends React.Component {
     }
 
     onChange(value){
-        const onChange = this.props.onChange;
+        const {onChange} = this.props;
         if (onChange) {
             onChange(value);
         }
     }
 
     getOptions(start, end){
-        let options = [];
+        const options = [];
         for(let i = start; i <= end; i++){
             options.push(<Option key={i} value={i}>{i}</Option>)
         }

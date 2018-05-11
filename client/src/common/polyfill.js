@@ -5,12 +5,12 @@ import 'babel-polyfill';
 import 'fetch-polyfill';
 
 String.prototype.endWith = function(str) {
-    let reg = new RegExp(str + '$');
+    const reg = new RegExp(str + '$');
     return reg.test(this);
 }
 
 String.prototype.startsWith = function(str) {
-    let reg = new RegExp(str + '^');
+    const reg = new RegExp(str + '^');
     return reg.test(this);
 }
 

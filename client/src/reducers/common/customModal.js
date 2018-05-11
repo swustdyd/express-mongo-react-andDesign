@@ -2,7 +2,7 @@
  * Created by Aaron on 2018/3/10.
  */
 
-let initState = {
+const initState = {
     title: '',
     visible: false,
     footer: null,

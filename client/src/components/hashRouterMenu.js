@@ -20,7 +20,7 @@ class HashRouterMenu extends React.Component{
     }
 
     componentWillUpdate(nextProps, nextState){
-        let currentKey = Common.getCurrentMenuKey(nextProps);
+        const currentKey = Common.getCurrentMenuKey(nextProps);
         Object.assign(nextState, {currentKey: currentKey});
     }
 

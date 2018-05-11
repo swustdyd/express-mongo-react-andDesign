@@ -1,4 +1,4 @@
-let initState ={
+const initState ={
     total: 0,
     pageIndex: 0,
     pageSize: 0,

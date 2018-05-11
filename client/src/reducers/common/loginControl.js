@@ -1,4 +1,4 @@
-let initState = {
+const initState = {
     hasLogin: false,
     user: '',
     message: '',

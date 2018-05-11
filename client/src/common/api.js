@@ -2,7 +2,8 @@
  * Created by Aaron on 2018/5/3.
  */
 import baseConfig from '../../../baseConfig'
-let api = {
+
+const api = {
     checkLogin: 'user/checkLogin',
     getMovies: 'movie/getMovies',
     postComment: 'comment/commit',
@@ -22,7 +23,7 @@ let api = {
     uploadIcon: 'user/uploadIcon'
 };
 
-for(let key in api){
+for(const key in api){
     api[key] = `${baseConfig.serverHost}:${baseConfig.serverPort}/${api[key]}`;
 }
 
