@@ -1,6 +1,6 @@
 {
     "eslint.options": {
-        "configFile": "D:/Users/Aaron/WebstormProjects/express-webpack-full-live-reload-example/server/.eslintrc.js"
+        "configFile": "../server/.eslintrc.js"
     },
     "eslint.workingDirectories": ["./client", "./server"],
     "javascript.validate.enable": false,
