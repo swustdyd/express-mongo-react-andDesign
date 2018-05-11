@@ -1,2 +1,15 @@
 {
+    "eslint.options": {
+        "configFile": "D:/Users/Aaron/WebstormProjects/express-webpack-full-live-reload-example/server/.eslintrc.js"
+    },
+    "javascript.validate.enable": false,
+    "editor.minimap.enabled": true,
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "workbench.iconTheme": "vscode-icons",
+    "gitlens.advanced.messages": {
+        "suppressShowKeyBindingsNotice": true
+    },
+    "gitlens.defaultDateFormat": "MMMM Do, YYYY-MM-DD hh:mm:ss",
+    "gitlens.historyExplorer.enabled": true,
+    "gitlens.gitExplorer.files.layout": "tree"
 }
