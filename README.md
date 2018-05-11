@@ -9,8 +9,8 @@ The explaining post could be found [here](https://github.com/swustdyd/express-mo
 
 2. Install dependencies.
 
-        cd client && npm install
-        cd server && npm install
+        open client directory then `npm install`
+        open server directory then `npm install`
 
 3. Try these out on development.
 
