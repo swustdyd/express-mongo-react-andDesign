@@ -9,14 +9,23 @@ The explaining post could be found [here](http://acgtofe.com/posts/2016/02/full-
 
 2. Install dependencies.
 
-        npm install
-        npm install supervisor -g
+        cd client && npm install
+        cd server && npm install
 
-3. Try these out.
+3. Try these out on development.
 
-    * `npm start` to develop with full live reload.
-    * `npm run browsersync` is a alternative for development. It may be faster when modifying the express views
-    (templates) only.
-    * `npm run production` to emit outputs and run the express for production.
-    * `npm run build` if you care about what is hold in memory for development...
+    * open `client` directory
+    * `npm run dll` to build dll file on client/dist.
+    * copy `client/dist/vendor.dll.js` to `server/dist/dll/vendor.dll.js`
+    * `npm run dev` to start client project
+    * open `server` directory
+    * `npm run start:dev` to start server project
 
+4. Try these out on production.
+
+    * open `client` directory
+    * `npm run dll` to build dll file on client/dist.
+    * copy `client/dist/vendor.dll.js` to `server/dist/dll/vendor.dll.js`
+    * `npm run build` to build file
+    * open `server` directory
+    * `npm run start:pro` to start server project
