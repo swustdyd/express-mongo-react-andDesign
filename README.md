@@ -1,7 +1,7 @@
 # express-mongo-react-andDesign
-A workflow with full live reload for webpack&express application.
+A demo with full live reload for webpack&express application.
 
-The explaining post could be found [here](http://acgtofe.com/posts/2016/02/full-live-reload-for-express-with-webpack).
+The explaining post could be found [here](https://github.com/swustdyd/express-mongo-react-andDesign.git).
 
 ## Start
 

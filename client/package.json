@@ -1,4 +1,6 @@
 {
+  "name": "demo",
+  "version": "1.0.0",
   "main": "app.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --watch webpack.config.js --exec webpack-dev-server",
