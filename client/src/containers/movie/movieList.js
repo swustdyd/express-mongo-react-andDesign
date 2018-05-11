@@ -28,8 +28,8 @@ class MovieList extends React.Component{
         this.handleSearchClick = this.handleSearchClick.bind(this);
     }
     getSearchCondition(){
-        let condition = {};
-        let { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();
+        const condition = {};
+        const { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();
         condition.searchYear = searchYear;
         if(searchTitle){
             condition.title = searchTitle;
@@ -54,7 +54,7 @@ class MovieList extends React.Component{
         });
     }
     handleEditClick(id){
-        let condition = {
+        const condition = {
             _id: id
         };
         this.props.movieListAction.searchMovies(condition, 0, (err, data) => {
@@ -117,13 +117,13 @@ class MovieList extends React.Component{
         });
     }
     render(){
-        let {total, pageIndex, pageSize, movies } = this.props.movieListState;
+        const {total, pageIndex, pageSize, movies } = this.props.movieListState;
         const { getFieldDecorator } = this.props.form;
-        let columns = [
+        const columns = [
             {
                 title: '序号',
                 key: 'index',
-                render: (text, record, index) => pageIndex * pageSize + index + 1
+                render: (text, record, index) => { return pageIndex * pageSize + index + 1}
             },
             {
                 title: '电影名',
@@ -149,22 +149,21 @@ class MovieList extends React.Component{
                 title: '最后更新时间',
                 dataIndex: 'meta',
                 key: 'update',
-                render: (text) => momont(text.updateAt).format('YYYY-MM-DD HH:mm:ss')
+                render: (text) => { return momont(text.updateAt).format('YYYY-MM-DD HH:mm:ss')}
             },
             {
                 title: '评论',
                 dataIndex: '_id',
                 key: 'comment',
-                render: id => <Link to={`/moviePage/comment/${id}`} >查看评论</Link>
+                render: (id) => { return <Link to={`/moviePage/comment/${id}`} >查看评论</Link>}
             },
             {
                 title: '编辑',
                 dataIndex: '_id',
                 key: 'edit',
-                render: (id) =>
-                    <Button type="primary" size="small" onClick={() => this.handleEditClick(id)}>
-                        编辑
-                    </Button>
+                render: (id) => {
+                    return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
+                }
             },
             {
                 title: '删除',
@@ -176,7 +175,7 @@ class MovieList extends React.Component{
                             title={`确认删除“${record.title}”？`}
                             cancelText="取消"
                             okText="确认"
-                            onConfirm={() => this.handleDeleteClick(text)}
+                            onConfirm={() => {this.handleDeleteClick(text)}}
                         >
                             <Button type="danger" size="small">删除</Button>
                         </Popconfirm>
@@ -184,7 +183,7 @@ class MovieList extends React.Component{
                 }
             }
         ];
-        let pagination = {
+        const pagination = {
             total: total,
             pageSize: pageSize,
             current: pageIndex + 1,
@@ -237,7 +236,7 @@ class MovieList extends React.Component{
                 <Row>
                     <Button type="primary" htmlType="submit" icon="search">搜索</Button>
                     &emsp;
-                    <Button type="primary" icon="plus-circle-o" onClick={() => this.handleNewClick()}>新增电影</Button>
+                    <Button type="primary" icon="plus-circle-o" onClick={() => {this.handleNewClick()}}>新增电影</Button>
                 </Row>
                 <Divider />
                 <Table
@@ -249,14 +248,18 @@ class MovieList extends React.Component{
         );
     }
 }
-const mapStateToPros = state => ({
-    movieListState: state.movie.movieList
-});
+const mapStateToPros = (state) => {
+    return {
+        movieListState: state.movie.movieList
+    }
+}
 
-const mapDispatchToProps = dispatch => ({
-    movieListAction: bindActionCreators(MovieListAction, dispatch),
-    modalAction: bindActionCreators(ModalAction, dispatch)
-});
+const mapDispatchToProps = (dispatch) => {
+    return {
+        movieListAction: bindActionCreators(MovieListAction, dispatch),
+        modalAction: bindActionCreators(ModalAction, dispatch)
+    }
+};
 
 export default connect(mapStateToPros, mapDispatchToProps)(Form.create()(MovieList));
 //export default Form.create()(MovieList);

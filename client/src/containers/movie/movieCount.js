@@ -24,11 +24,11 @@ class MovieCount extends React.Component{
         data.sort((a, b) => {
             return a._id.year - b._id.year;
         });
-        let newData = {
+        const newData = {
             year: [],
             count: []
         };
-        data.forEach( item => {
+        data.forEach( (item) => {
             newData.year.push(item._id.year);
             newData.count.push(item.count);
         });
@@ -36,7 +36,7 @@ class MovieCount extends React.Component{
     }
 
     rebuildMoviesDataByLanguage(data){
-        let newData = [];
+        const newData = [];
         data.forEach((item) => {
             /*if(item._id.language === '英语'){
                 newData.push({
@@ -53,11 +53,12 @@ class MovieCount extends React.Component{
     }
 
     getMoviesGroupByYear(){
-        let _this = this;
-        let groupArray = ['year'];
+        const _this = this;
+        const groupArray = ['year'];
         fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => {
+                return res.json()
+            }).then((data) => {
                 if(data.success){
                     data = _this.rebuildMoviesDataByYear(data.result);
                     this.setState({
@@ -70,11 +71,12 @@ class MovieCount extends React.Component{
     }
 
     getMoviesGroupByLanguage(){
-        let _this = this;
-        let groupArray = ['language'];
+        const _this = this;
+        const groupArray = ['language'];
         fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => {
+                return res.json()
+            }).then((data) => {
                 if(data.success){
                     data = _this.rebuildMoviesDataByLanguage(data.result);
                     this.setState({
@@ -87,8 +89,8 @@ class MovieCount extends React.Component{
     }
 
     render(){
-        let { moviesOfEachYear, moviesOfEachLanguage } = this.state;
-        let lineConfig = {
+        const { moviesOfEachYear, moviesOfEachLanguage } = this.state;
+        const lineConfig = {
             title: {
                 text: '每年电影产量'
             },
@@ -114,7 +116,7 @@ class MovieCount extends React.Component{
                 data: moviesOfEachYear.count
             }]
         };
-        let pieConfig = {
+        const pieConfig = {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,

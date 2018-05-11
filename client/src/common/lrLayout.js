@@ -25,7 +25,7 @@ class LRLayout extends React.Component{
         })
     }
     render() {
-        let { collapsed, fullScreen} = this.state;
+        const { collapsed, fullScreen} = this.state;
         return (
             <Layout className="lr-layout">
                 <Sider
@@ -36,7 +36,7 @@ class LRLayout extends React.Component{
                     <Icon
                         className="menu-icon"
                         type={collapsed ? 'menu-unfold' : 'menu-fold' }
-                        onClick={() => this.handleMenuIconClick()}
+                        onClick={() => {this.handleMenuIconClick()}}
                     />
                     {this.props.left}
                 </Sider>
@@ -44,7 +44,7 @@ class LRLayout extends React.Component{
                     <Icon
                         className="full-screen-icon"
                         type={fullScreen ? 'shrink' : 'arrows-alt'}
-                        onClick={() => this.handleFullScreenIconClick()}
+                        onClick={() => {this.handleFullScreenIconClick()}}
                     />
                     <Content>
                         {this.props.right}

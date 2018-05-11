@@ -10,8 +10,10 @@ export default combineReducers({
     movie: MovieReducer,
     common: CommonReducer,
     user: UserReducer,
-    style: () =>({
-        headerHeight: 60,
-        footerHeight: 50
-    })
+    style: () => {
+        return {
+            headerHeight: 60,
+            footerHeight: 50
+        }
+    }
 });

@@ -33,10 +33,11 @@ class CommentPage extends  React.Component{
     }
 
     componentDidMount(){
-        let { movie, pageIndex, pageSize } = this.state;
+        const { movie, pageIndex, pageSize } = this.state;
         fetch(`${API.getMovies}?condition=${JSON.stringify({_id: movie._id})}`)
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => {
+                return res.json()
+            }).then((data) => {
                 this.setState({
                     movie: data.result[0]
                 });
@@ -45,12 +46,13 @@ class CommentPage extends  React.Component{
     }
 
     getComments(pageIndex, pageSize){
-        let { movie, comments, latestCommentMap} = this.state;
+        const { movie, comments, latestCommentMap} = this.state;
         fetch(`${API.getComment}/${movie._id}/?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=1`)
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => {
+                return res.json()
+            }).then((data) => {
                 data.result.forEach((item, index) => {
-                    let obj = latestCommentMap[item._id];
+                    const obj = latestCommentMap[item._id];
                     if(obj){
                         data.result.splice(index, 1);
                     }
@@ -65,7 +67,7 @@ class CommentPage extends  React.Component{
                     totalComments: data.totalComments
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 message.error(err.message);
                 this.setState({
                     loaded: true
@@ -77,7 +79,7 @@ class CommentPage extends  React.Component{
     }
 
     showMovieDetail(movie){
-        let results = [];
+        const results = [];
         results.push(
             <div key="title" style={{ wordBreak: 'break-all'}}>
                 <b>名称:</b> {movie.title}
@@ -102,9 +104,9 @@ class CommentPage extends  React.Component{
     }
 
     handleCommentCommitClick(){
-        let { inputComment, movie, pageIndex, pageSize, comments, latestCommentMap} = this.state;
+        const { inputComment, movie, pageIndex, pageSize, comments, latestCommentMap} = this.state;
         if(inputComment){
-            let comment = {
+            const comment = {
                 movie: movie._id,
                 content: inputComment,
                 level: 1
@@ -119,30 +121,30 @@ class CommentPage extends  React.Component{
                 body: JSON.stringify({
                     comment: comment
                 })
-            }).then(res => res.json())
-                .then(data => {
-                    if(data.success){
-                        message.success('评论成功');
-                        comments.push(data.result);
-                        latestCommentMap[data.result._id] = data.result;
-                        this.setState({
-                            inputComment: '',
-                            comments: comments,
-                            total: data.total,
-                            latestCommentMap: latestCommentMap
-                        });
-                    }else {
-                        message.error(data.message);
-                    }
-
-                })
+            }).then((res) => {
+                return res.json()
+            }).then((data) => {
+                if(data.success){
+                    message.success('评论成功');
+                    comments.push(data.result);
+                    latestCommentMap[data.result._id] = data.result;
+                    this.setState({
+                        inputComment: '',
+                        comments: comments,
+                        total: data.total,
+                        latestCommentMap: latestCommentMap
+                    });
+                }else {
+                    message.error(data.message);
+                }
+            })
         }else{
             message.error('请输入评论');
         }
     }
 
     showComments(comments){
-        let results = [];
+        const results = [];
         comments.forEach((item, index) => {
             results.push(<CommentItem key={index} comment={item} level={1}/>);
         });
@@ -150,13 +152,13 @@ class CommentPage extends  React.Component{
     }
 
     getNextPageComment(){
-        let { pageIndex, pageSize} = this.state;
+        let { pageIndex } = this.state;
         pageIndex++;
-        this.getComments(pageIndex, pageSize);
+        this.getComments(pageIndex, this.state.pageSize);
     }
 
     getPageControl(){
-        let { comments, total, loaded} = this.state;
+        const { comments, total, loaded} = this.state;
         const hasNextPage =  total > comments.length;
         return(
             <Spin tip="评论加载中..." spinning={!loaded}>
@@ -165,7 +167,7 @@ class CommentPage extends  React.Component{
                         loaded ?
                             hasNextPage ?
                                 <i>
-                                    <a onClick={() => this.getNextPageComment()}>
+                                    <a onClick={() => {this.getNextPageComment()}}>
                                         点击加载更多（{total - comments.length}）条评论
                                     </a>
                                 </i>
@@ -180,7 +182,7 @@ class CommentPage extends  React.Component{
     }
 
     render(){
-        let { movie, comments, inputComment, total} = this.state;
+        const { movie, comments, inputComment, total} = this.state;
         return(
             <div>
                 { this.showMovieDetail(movie) }

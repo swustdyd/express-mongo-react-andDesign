@@ -26,7 +26,7 @@ class HMFLayout extends React.Component{
     }
 
     componentDidMount(){
-        let _this = this;
+        const _this = this;
         window.addEventListener('resize', () => {
             _this.setState(_this.getWindowInnerArea());
         });
@@ -39,15 +39,15 @@ class HMFLayout extends React.Component{
     }
 
     render(){
-        let {headerHeight, footerHeight, windowInnerHeight} = this.state;
-        let headerStyle = {
+        const {headerHeight, footerHeight, windowInnerHeight} = this.state;
+        const headerStyle = {
             height: headerHeight,
             lineHeight: `${headerHeight}px`
         };
-        let contentStyle = {
+        const contentStyle = {
             minHeight: windowInnerHeight - headerHeight - footerHeight
         };
-        let footerStyle = {
+        const footerStyle = {
             height: footerHeight,
             lineHeight: `${footerHeight}px`
         };
@@ -67,9 +67,11 @@ class HMFLayout extends React.Component{
         );
     }
 }
-const mapStateToPros = state => ({
-    pageStyle: state.style
-});
+const mapStateToPros = (state) => {
+    return {
+        pageStyle: state.style
+    }
+}
 
 /*const mapDispatchToProps = dispatch => ({
     modalAction: bindActionCreators(modalAction, dispatch)

@@ -18,7 +18,7 @@ import BaseConfig from '../../../../baseConfig'
 
 import './userList.scss'
 
-let FormItem = Form.Item;
+const FormItem = Form.Item;
 
 class UserList extends React.Component{
     constructor(){
@@ -40,7 +40,7 @@ class UserList extends React.Component{
         this.searchAndLoadUsers(0, this.getSearchCondition())
     }
     searchAndLoadUsers(pageIndex, condition){
-        let _this = this;
+        const _this = this;
         _this.props.userListAction.searchUsers(condition, pageIndex, 5, (err, data) => {
             if(err){
                 message.error(err.message)
@@ -58,10 +58,10 @@ class UserList extends React.Component{
     }
     handleEditClick(id){
         console.log(id);
-        let condition = {
+        const condition = {
             _id: id
         };
-        let _this = this;
+        const _this = this;
         _this.props.userListAction.searchUsers(condition, 0, 10, (err, data) => {
             if(err){
                 message.error(err.message);
@@ -85,8 +85,8 @@ class UserList extends React.Component{
         });
     }
     handleDeleteClick(id){
-        let _this = this;
-        _this.props.userListAction.deleteUser(id, (err, data) =>{
+        const _this = this;
+        _this.props.userListAction.deleteUser(id, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -115,20 +115,20 @@ class UserList extends React.Component{
         })
     }
     render(){
-        let {total, pageSize, pageIndex, users} = this.props.userListState;
-        let { getFieldDecorator } = this.props.form;
-        let { showIcon2X, icon2X, icon2XStyle} = this.state;
-        let columns = [
+        const {total, pageSize, pageIndex, users} = this.props.userListState;
+        const { getFieldDecorator } = this.props.form;
+        const { showIcon2X, icon2X, icon2XStyle} = this.state;
+        const columns = [
             {
                 title: '头像',
                 dataIndex: 'icon',
                 key: 'icon',
-                render: icon => {
+                render: (icon) => {
                     icon = (icon && icon.src) ? icon : { src: BaseConfig.userDefaultIcon };
                     return(
                         <img
-                            onMouseEnter={(e) => this.handleIconMouseEnter(icon, e)}
-                            onMouseLeave={(e) => this.handleIconMouseLeave(icon, e)}
+                            onMouseEnter={(e) => {this.handleIconMouseEnter(icon, e)}}
+                            onMouseLeave={(e) => {this.handleIconMouseLeave(icon, e)}}
                             className="list-user-icon" src={icon.src }
                         />
                     )
@@ -158,19 +158,19 @@ class UserList extends React.Component{
                 title: '创建日期',
                 dataIndex: 'meta',
                 key: 'createAt',
-                render: meta => Moment(meta.createAt).format('YYYY-MM-DD HH:mm:ss')
+                render: (meta) => { return Moment(meta.createAt).format('YYYY-MM-DD HH:mm:ss')}
             },
             {
                 title: '更新日期',
                 dataIndex: 'meta',
                 key: 'updateAt',
-                render: meta => Moment(meta.updateAt).format('YYYY-MM-DD HH:mm:ss')
+                render: (meta) => { return Moment(meta.updateAt).format('YYYY-MM-DD HH:mm:ss')}
             },
             {
                 title: '编辑',
                 dataIndex: '_id',
                 key: 'edit',
-                render:  id => <Button type="primary" size="small" onClick={() => this.handleEditClick(id)}>编辑</Button>
+                render:  (id) => { return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}>编辑</Button>}
             },
             {
                 title: '删除',
@@ -182,7 +182,7 @@ class UserList extends React.Component{
                             title={`确认删除“${record.name}”？`}
                             cancelText="取消"
                             okText="确认"
-                            onConfirm={() => this.handleDeleteClick(text)}
+                            onConfirm={() => {this.handleDeleteClick(text)}}
                         >
                             <Button type="danger" size="small">删除</Button>
                         </Popconfirm>
@@ -190,7 +190,7 @@ class UserList extends React.Component{
                 }
             }
         ];
-        let pagination = {
+        const pagination = {
             total: total,
             pageSize: pageSize,
             current: pageIndex + 1,
@@ -242,14 +242,18 @@ class UserList extends React.Component{
         );
     }
 }
-const mapStateToPros = state => ({
-    userListState: state.user.userList
-});
+const mapStateToPros = (state) => {
+    return {
+        userListState: state.user.userList
+    }
+};
 
-const mapDispatchToProps = dispatch => ({
-    userListAction: bindActionCreators(UserListAction, dispatch),
-    modalAction: bindActionCreators(ModalAction, dispatch)
-});
+const mapDispatchToProps = (dispatch) => {
+    return {
+        userListAction: bindActionCreators(UserListAction, dispatch),
+        modalAction: bindActionCreators(ModalAction, dispatch)
+    }
+};
 
 export default connect(mapStateToPros, mapDispatchToProps)(Form.create()(UserList));
 //export default UserList;

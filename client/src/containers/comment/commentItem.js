@@ -9,12 +9,12 @@ import API from '../../common/api'
 
 import './commentItem.scss'
 
-const Search = Input.Search;
+const {Search} = Input;
 
 class CommentItem extends React.Component{
     constructor(props){
         super(props);
-        let { comment } = this.props;
+        const { comment } = this.props;
         this.state = {
             comment: comment,
             subComments: [],
@@ -30,7 +30,7 @@ class CommentItem extends React.Component{
     }
 
     componentDidMount(){
-        let { pageIndex, pageSize } = this.state;
+        const { pageIndex, pageSize } = this.state;
         this.getSubComments(pageIndex, pageSize);
     }
 
@@ -47,9 +47,10 @@ class CommentItem extends React.Component{
     }
 
     handleReplayCommitClick(value){
-        let { comment, pageIndex, pageSize, subComments, latestReplayMap} = this.state;
+        const { comment, pageIndex, pageSize, subComments } = this.state;
+        let {latestReplayMap} = this.state;
         if(value){
-            let replayComment = {
+            const replayComment = {
                 to: comment.from._id,
                 content: value,
                 level: this.props.level + 1,
@@ -67,38 +68,40 @@ class CommentItem extends React.Component{
                 body: JSON.stringify({
                     comment: replayComment
                 })
-            }).then(res => res.json())
-                .then(data => {
-                    if(data.success){
-                        message.success('回复成功');
-                        subComments.push(data.result);
-                        latestReplayMap = latestReplayMap[data.result._id] = data.result;
-                        this.setState({
-                            replayInput: '',
-                            replayShow: false,
-                            subComments: subComments,
-                            total: data.total,
-                            latestReplayMap: latestReplayMap
-                        });
-                    }else {
-                        message.error(data.message);
-                    }
-                })
+            }).then((res) => {
+                return res.json()
+            }).then((data) => {
+                if(data.success){
+                    message.success('回复成功');
+                    subComments.push(data.result);
+                    latestReplayMap = latestReplayMap[data.result._id] = data.result;
+                    this.setState({
+                        replayInput: '',
+                        replayShow: false,
+                        subComments: subComments,
+                        total: data.total,
+                        latestReplayMap: latestReplayMap
+                    });
+                }else {
+                    message.error(data.message);
+                }
+            })
         }else {
             message.error('请输入回复内容');
         }
     }
 
     getSubComments(pageIndex, pageSize){
-        let { comment, subComments, latestReplayMap } = this.state;
-        let condition = {
+        const { comment, subComments, latestReplayMap } = this.state;
+        const condition = {
             replayTo: comment._id
         };
         fetch(`${API.getComment}/${comment.movie}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 10}&level=${this.props.level + 1}&condition=${JSON.stringify(condition)}`)
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => {
+                return res.json()
+            }).then((data) => {
                 data.result.forEach((item, index) => {
-                    let obj = latestReplayMap[item._id];
+                    const obj = latestReplayMap[item._id];
                     if(obj){
                         data.result.splice(index, 1);
                     }
@@ -115,7 +118,7 @@ class CommentItem extends React.Component{
     }
 
     showSubComments(subComments){
-        let results = [];
+        const results = [];
         subComments.forEach((item, index) => {
             results.push(
                 <CommentItem
@@ -129,7 +132,7 @@ class CommentItem extends React.Component{
     }
 
     getPageControl() {
-        let {subComments, total, loaded} = this.state;
+        const {subComments, total, loaded} = this.state;
         const hasNextPage = total > subComments.length;
         return (
             <Spin tip="评论加载中..." spinning={!loaded}>
@@ -138,7 +141,7 @@ class CommentItem extends React.Component{
                         loaded ?
                             hasNextPage ?
                                 <i>
-                                    <a onClick={() => this.getNextPageSubComment()}>
+                                    <a onClick={() => {this.getNextPageSubComment()}}>
                                         点击加载更多（{total - subComments.length}）条回复
                                     </a>
                                 </i>
@@ -153,13 +156,13 @@ class CommentItem extends React.Component{
     }
 
     getNextPageSubComment(){
-        let { pageIndex, pageSize} = this.state;
+        let { pageIndex } = this.state;
         pageIndex++;
-        this.getSubComments(pageIndex, pageSize);
+        this.getSubComments(pageIndex, this.state.pageSize);
     }
 
     render(){
-        let { comment, replayInput, replayShow, subComments} = this.state;
+        const { comment, replayInput, replayShow, subComments} = this.state;
         return(
             <div className="comment-item">
                 {
@@ -189,13 +192,13 @@ class CommentItem extends React.Component{
                         </small>
                     </span>
                     <p className="comment-content">{comment.content}</p>
-                    <a className="replay-btn" onClick={() => this.handleReplayBtnClick()}><Icon type="message" />&nbsp;回复</a>
+                    <a className="replay-btn" onClick={() => {this.handleReplayBtnClick()}}><Icon type="message" />&nbsp;回复</a>
                     {
                         replayShow ?
                             <Search
                                 className="replay-input"
                                 placeholder="输入回复..."
-                                onSearch={ value => this.handleReplayCommitClick(value)}
+                                onSearch={ (value) => {this.handleReplayCommitClick(value)}}
                                 onChange={this.handleReplayInputChange}
                                 enterButton="回复"
                                 value={replayInput}

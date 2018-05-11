@@ -42,8 +42,10 @@ class Nav extends React.Component {
     }
 }
 
-const mapStateToPros = state => ({
-    pageStyle: state.style
-});
+const mapStateToPros = (state) => {
+    return {
+        pageStyle: state.style
+    }
+};
 
 export default connect(mapStateToPros, undefined, undefined, { pure: false })(Nav)

@@ -50,8 +50,8 @@ class PicturesWall extends React.Component {
     }
 
     handleEdit(item){
-        let { cutWidth, cutHeight } = this.state;
-        let currentImage = this.refs[`img${item.uid}`];
+        const { cutWidth, cutHeight } = this.state;
+        const currentImage = this.refs[`img${item.uid}`];
         if(currentImage.naturalWidth < cutWidth || currentImage.naturalHeight < cutHeight){
             message.error(
                 `当前图片大小为${currentImage.naturalWidth}*${currentImage.naturalHeight}，不能剪切为${cutWidth}*${cutHeight}`
@@ -77,36 +77,37 @@ class PicturesWall extends React.Component {
     }
 
     handleBeforeUpload(file){
-        let _this = this;
-        let { fileList } = _this.state;
-        let formData = new FormData();
+        const _this = this;
+        const { fileList } = _this.state;
+        const formData = new FormData();
         formData.append(_this.props.name, file);
         fetch(_this.props.action, {
             method: 'post',
             //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
             credentials: 'include',
             body: formData
-        }).then(res => res.json())
-            .then(data => {
-                if(data.success){
-                    message.success(data.message);
-                    fileList.push(Object.assign(file, {filename: data.result[0].filename, url: data.result[0].url}));
-                    _this.setState({
-                        fileList: fileList
-                    });
-                    this.handleChange(fileList);
-                }else{
-                    message.error(data.message);
-                }
-            }).catch(err => {
-                message.error(err.message);
-            });
+        }).then((res) => {
+            return res.json()
+        }).then((data) => {
+            if(data.success){
+                message.success(data.message);
+                fileList.push(Object.assign(file, {filename: data.result[0].filename, url: data.result[0].url}));
+                _this.setState({
+                    fileList: fileList
+                });
+                this.handleChange(fileList);
+            }else{
+                message.error(data.message);
+            }
+        }).catch((err) => {
+            message.error(err.message);
+        });
         return false;
     }
 
     handleChange(fileList){
-        let newFileList = [];
-        fileList.forEach(item => {
+        const newFileList = [];
+        fileList.forEach((item) => {
             newFileList.push(Object.assign({}, {name: item.name}, item));
         });
         if(this.props.onChange){
@@ -115,7 +116,7 @@ class PicturesWall extends React.Component {
     }
 
     handleRemove(uid){
-        let {fileList} = this.state;
+        const {fileList} = this.state;
         fileList.forEach((item, index) => {
             if(item.uid === uid){
                 fileList.splice(index, 1);
@@ -147,8 +148,8 @@ class PicturesWall extends React.Component {
     }
 
     handlePictureCutSave(file){
-        let {fileList} = this.state;
-        fileList.forEach(item => {
+        const {fileList} = this.state;
+        fileList.forEach((item) => {
             if(item.uid === file.uid){
                 item.url = file.url;
                 return false;
@@ -162,24 +163,24 @@ class PicturesWall extends React.Component {
     }
 
     getPictureList(fileList){
-        let itemList = [];
-        let _this = this;
+        const itemList = [];
+        const _this = this;
         fileList.forEach((item, index) => {
             itemList.push(
                 <div className="picture-item"
                     key={item.uid}
-                    onMouseEnter={ () => this.handlePicItemMouseEnter(item.uid)}
-                    onMouseLeave={() => this.handlePicItemMouseLeave(item.uid)}
-                    onMouseMove={() => this.handlePicItemMouseMove(item.uid)}
+                    onMouseEnter={ () => {this.handlePicItemMouseEnter(item.uid)}}
+                    onMouseLeave={() => {this.handlePicItemMouseLeave(item.uid)}}
+                    onMouseMove={() => {this.handlePicItemMouseMove(item.uid)}}
                 >
                     <div className={`picture-item-drop ${_this.state.activeItem === item.uid ? 'active' : ''}`}>
-                        <Icon type={Operation.Edit} onClick={() => this.handleEdit(item)}/>
-                        <Icon type={Operation.Preview} onClick={() => this.handlePreview(item)}/>
+                        <Icon type={Operation.Edit} onClick={() => {this.handleEdit(item)}}/>
+                        <Icon type={Operation.Preview} onClick={() => {this.handlePreview(item)}}/>
                         <Popconfirm
                             title="确认删除？"
                             cancelText="取消"
                             okText="确认"
-                            onConfirm={() => this.handleRemove(item.uid)}
+                            onConfirm={() => {this.handleRemove(item.uid)}}
                         >
                             <Icon type={Operation.Delete}/>
                         </Popconfirm>
@@ -192,7 +193,8 @@ class PicturesWall extends React.Component {
     }
 
     render() {
-        let { modalVisible, previewImage, fileList, operation, modalWidth, cutWidth, cutHeight, modalTitle } = this.state;
+        const { modalVisible, previewImage, fileList, operation, modalWidth, cutWidth, cutHeight } = this.state;
+        let {modalTitle} = this.state;
         const maxLength = this.props.maxLength || 3;
         const maskClosable = operation !== Operation.Edit;
         const extraClassName = operation !== Operation.Edit ? 'picture-preview' : '';

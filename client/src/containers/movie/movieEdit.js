@@ -16,8 +16,8 @@ import './movieEdit.scss'
 class MovieEdit extends React.Component{
     constructor(props){
         super(props);
-        let { initData } = props;
-        let fileList = initData && initData.poster ? [initData.poster] : [];
+        const { initData } = props;
+        const fileList = initData && initData.poster ? [initData.poster] : [];
         this.state = {
             submiting: false,
             initData: initData || {},
@@ -31,11 +31,11 @@ class MovieEdit extends React.Component{
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, value) => {
             if(!err && !this.state.submiting){
-                let movie = this.props.form.getFieldsValue();
+                const movie = this.props.form.getFieldsValue();
                 this.setState({submiting: true});
                 movie._id = this.state.initData._id;
-                let fileList = this.state.fileList;
-                fileList.forEach(item => {
+                const {fileList} = this.state;
+                fileList.forEach((item) => {
                     item.displayName = item.name;
                     item.src = item.url;
                     item.name = undefined;
@@ -57,25 +57,26 @@ class MovieEdit extends React.Component{
                         movie: movie,
                         fileList: fileList
                     })
-                }).then(res => res.json())
-                    .then(data => {
-                        if(data.success){
-                            message.success(data.message);
-                            //window.location.href = '/#/moviePage/movieList';
-                            if( this.props.onSubmitSuccess){
-                                this.props.onSubmitSuccess();
-                            }
-                        }else{
-                            message.error(data.message);
-                            if( this.props.onSubmitFail){
-                                this.props.onSubmitFail();
-                            }
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    if(data.success){
+                        message.success(data.message);
+                        //window.location.href = '/#/moviePage/movieList';
+                        if( this.props.onSubmitSuccess){
+                            this.props.onSubmitSuccess();
                         }
-                        this.setState({submiting: false});
-                    }).catch(err => {
-                        message.error(err.message);
-                        this.setState({submiting: false});
-                    });
+                    }else{
+                        message.error(data.message);
+                        if( this.props.onSubmitFail){
+                            this.props.onSubmitFail();
+                        }
+                    }
+                    this.setState({submiting: false});
+                }).catch((err) => {
+                    message.error(err.message);
+                    this.setState({submiting: false});
+                });
             }
         });
     }
@@ -110,7 +111,7 @@ class MovieEdit extends React.Component{
                 }
             }
         };
-        let { initData, fileList } = this.state;
+        const { initData, fileList } = this.state;
         fileList.forEach((item, index) => {
             item.uid = index;
             item.name = item.displayName || item.name;

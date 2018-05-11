@@ -28,8 +28,8 @@ class MoviePoster extends React.Component{
         }
     }
     render(){
-        let { movieData } = this.props;
-        let { frontStatus } = this.state;
+        const { movieData } = this.props;
+        const { frontStatus } = this.state;
         let classNameOfFront = '', classNameOfBack = '';
         if( frontStatus){
             classNameOfFront = 'show';
@@ -49,11 +49,13 @@ class MoviePoster extends React.Component{
                         hoverable
                         cover={
                             <a>
-                                <img title={movieData.title} src={movieData.poster.src} onLoad={()=>{
-                                    this.setState({
-                                        loaded: true
-                                    })
-                                }}/>
+                                <img 
+                                    title={movieData.title} 
+                                    src={movieData.poster.src} 
+                                    onLoad={() => {
+                                        this.setState({loaded: true})
+                                    }}
+                                />
                             </a>
                         }
                     >
