@@ -120,7 +120,7 @@ class IndexPage extends React.Component{
                 moviePosters.push(<MoviePoster
                     style={styleMap[item._id]}
                     className={className}
-                    handlePosterClick={() => {this.handlePosterClick(item._id)}}
+                    handlePosterClick={() => { return this.handlePosterClick(item._id)}}
                     movieData={item}
                     key={index}
                     href={`/movie/detail.html/${item._id}`}
