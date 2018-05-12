@@ -2,8 +2,8 @@
  * Created by Aaron on 2018/1/16.
  */
 import mongoose from 'mongoose'
-const Schema = mongoose.Schema;
-const ObjectId = Schema.Types.ObjectId;
+const {Schema} = mongoose;
+const {ObjectId} = Schema.Types;
 
 const CommentSchema = new mongoose.Schema({
     movie: {

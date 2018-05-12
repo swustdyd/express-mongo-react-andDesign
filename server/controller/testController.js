@@ -6,6 +6,7 @@
  */
 import BaseController from './baseController';
 
+const testController = new BaseController();
 
 export default class TestController extends BaseController{
     constructor(){
@@ -20,7 +21,11 @@ export default class TestController extends BaseController{
      */
     testJS(req, res, next){
         try {
-            var i = 1;
+            console.log(`constructor name is '${testController.constructor.name}'`);
+            for(const key in testController){
+                console.log(key)
+            }
+            res.json(i);
         } catch (error) {
             next(error);
         }
