@@ -5,3 +5,4 @@
     3. HTML CSS Suport-自动扫描css,scss文件，并作提示
     4. Markdown All in One-Markdown辅助编写插件
     5. vscode-icons-项目文件图标前缀(美化)
+    6. VS Color Picker-颜色选择插件

@@ -170,7 +170,7 @@ class MovieCount extends React.Component{
             }]
         };
         return(
-            <div>
+            <div className="user-count-container">
                 <ReactHighcharts config={lineConfig}/>
                 <ReactHighcharts config={pieConfig}/>
             </div>

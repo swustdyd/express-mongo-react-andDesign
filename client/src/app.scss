@@ -1,3 +1,7 @@
+/*** 全局变量 start ***/
+$headerHeight: 60px;
+/*** 全局变量 end ***/
+
 /*** 上中下布局 start ***/
 div.content{
   padding: 0 20px;
@@ -25,6 +29,7 @@ div.footer{
     padding: $paddingTop 10px;
     margin-left: 10px;
     position: relative;
+    transition: all 0.3s;
   }
   .right-layout-full{
     position: fixed;
@@ -34,6 +39,10 @@ div.footer{
     left: 0;
     overflow-y: scroll;
     margin-left: 0;
+  }
+  .right-layout-full-position{
+    top: $headerHeight;
+    left: 200px;
   }
 
   .left-layout .menu-icon,

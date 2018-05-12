@@ -11,7 +11,8 @@ class LRLayout extends React.Component{
         super(props);
         this.state = {
             collapsed: false,
-            fullScreen: false
+            fullScreen: false,
+            setFullScreenStartPosition: false 
         }
     }
     handleMenuIconClick(){
@@ -20,12 +21,28 @@ class LRLayout extends React.Component{
         })
     }
     handleFullScreenIconClick(){
+        const {fullScreen} = this.state;
+        if(!fullScreen){
+            setTimeout(() => {
+                this.setState({
+                    setFullScreenStartPosition: false
+                });
+            }, 0);
+        }
         this.setState({
-            fullScreen: !this.state.fullScreen
+            fullScreen: !fullScreen,
+            setFullScreenStartPosition: !fullScreen
         })
     }
     render() {
-        const { collapsed, fullScreen} = this.state;
+        const { collapsed, fullScreen, setFullScreenStartPosition} = this.state;
+        let layoutClassName = 'right-layout';
+        if(fullScreen){
+            layoutClassName += ' right-layout-full';
+        }
+        if(setFullScreenStartPosition){
+            layoutClassName += ' right-layout-full-position';
+        }
         return (
             <Layout className="lr-layout">
                 <Sider
@@ -40,7 +57,7 @@ class LRLayout extends React.Component{
                     />
                     {this.props.left}
                 </Sider>
-                <Layout className={`right-layout ${fullScreen ? 'right-layout-full' : ''}`} >
+                <Layout className={layoutClassName} >
                     <Icon
                         className="full-screen-icon"
                         type={fullScreen ? 'shrink' : 'arrows-alt'}
