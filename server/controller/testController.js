@@ -38,17 +38,23 @@ export default class TestController extends BaseController{
 
     async testCheerio(req, res, next){
         try {
-            const doubanMovieId = req.query.id;
-            if(doubanMovieId){
-                const resData = await HttpsUtil.getAsync(`https://movie.douban.com/subject/${doubanMovieId}/?from=showing`, 'utf-8');
+            //获取列表数据
+            const resData = await HttpsUtil.getAsync('https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0', 'utf-8');
+            const {subjects} = JSON.parse(resData.data);
+            
+            console.log('start parse');
+            //逐个解析，并存到数据库中
+            subjects.forEach(async (item) => {
+                const resData = await HttpsUtil.getAsync(`https://movie.douban.com/subject/${item.id}/?from=showing`, 'utf-8');
                 const doubanDocument = $.load(resData.data);
                 const doubanMovie = this._getDoubanDetail(doubanDocument);
                 const serviceRes = await this._doubanMovieService.saveDoubanMovie(doubanMovie);
-                res.json(serviceRes.result);
-            }else{
-                next({message: 'id不能为空'});
-            }
-            
+                if(serviceRes.success){
+                    console.log(`movie '${serviceRes.result.name}' parse complete`);
+                }
+            })
+            console.log('all parse compelte');
+            res.send('all parse compelte');
         } catch (error) {
             next(error);
         }

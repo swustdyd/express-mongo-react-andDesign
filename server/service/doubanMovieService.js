@@ -11,7 +11,6 @@ export default class DoubanMovieServie extends BaseService{
      */
     saveDoubanMovie(doubanMovie: DoubanMovieType) : Promise<{success: boolean, result: DoubanMovieType}>{
         return new Promise((resolve, reject) => {
-            console.log(doubanMovie);
             doubanMovie = new DoubanMovie(doubanMovie);
             doubanMovie.save((err, movie) => {
                 if(err){
