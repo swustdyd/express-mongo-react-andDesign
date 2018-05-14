@@ -57,5 +57,6 @@ router.post('/util/cutImg', utilController.cutImg.bind(utilController));
 
 //test模块路由配置
 router.get('/test/js', testController.testJS.bind(testController));
+router.get('/test/cheerio', testController.testCheerio.bind(testController));
 
 export default router;

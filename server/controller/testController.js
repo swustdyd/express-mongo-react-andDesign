@@ -4,13 +4,18 @@
  * @Last Modified by: dyd
  * @Last Modified time: 2018-05-10 20:43:32
  */
+import $ from 'cheerio'
+import https from 'https'
+import HttpsUtil from '../common/httpsUtil'
 import BaseController from './baseController';
+import DoubanMovieServie from '../service/doubanMovieService';
 
 const testController = new BaseController();
 
 export default class TestController extends BaseController{
     constructor(){
-        super()
+        super();
+        this._doubanMovieService = new DoubanMovieServie();
     }
 
     /**
@@ -29,5 +34,100 @@ export default class TestController extends BaseController{
         } catch (error) {
             next(error);
         }
+    }
+
+    async testCheerio(req, res, next){
+        try {
+            const doubanMovieId = req.query.id;
+            if(doubanMovieId){
+                const resData = await HttpsUtil.getAsync(`https://movie.douban.com/subject/${doubanMovieId}/?from=showing`, 'utf-8');
+                const doubanDocument = $.load(resData.data);
+                const doubanMovie = this._getDoubanDetail(doubanDocument);
+                const serviceRes = await this._doubanMovieService.saveDoubanMovie(doubanMovie);
+                res.json(serviceRes.result);
+            }else{
+                next({message: 'id不能为空'});
+            }
+            
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    _getDoubanDetail(doubanDetaiDocument: CheerioStatic){
+        const detail = {};
+        //电影名称
+        detail.name = doubanDetaiDocument('#content').find('span[property="v:itemreviewed"]').text();
+        //海报信息
+        detail.mainpic = {
+            href: doubanDetaiDocument('#mainpic').find('img').attr('src'),
+            title: doubanDetaiDocument('#mainpic').find('img').attr('title'),
+            alt: doubanDetaiDocument('#mainpic').find('img').attr('alt')
+        }
+
+        //解析：导演、编剧、主演信息
+        const $firstChildren = doubanDetaiDocument('#info').children('span');
+        const items = []
+        $firstChildren.map((i: number, item: Element) => {
+            const $item = $(item);
+            const $pl = $item.children('.pl');
+            const $attrs = $item.children('.attrs');
+            if($pl && $attrs.length > 0){
+                const attrs = [];
+                const $childrenOf$Attrs = $attrs.children('*');
+                $childrenOf$Attrs.map((i: number, item: Element) => {
+                    attrs.push($(item).text());
+                })
+                items.push({
+                    name: $pl.text(),
+                    value: attrs
+                });
+            }
+        });        
+
+        //解析：类型、官方网站、制片国家/地区、语言、上映日期、片长、又名、IMDb链接
+        const $otherChildren = doubanDetaiDocument('#info').children('.pl');
+        $otherChildren.map((i, item) => {
+            const $item = $(item);
+            const plText = $item.text();
+            const data = {
+                name: plText
+            };
+            switch(plText){
+                case '类型:':
+                    const $type = doubanDetaiDocument('#info').children('span[property="v:genre"]');
+                    const typeArray = [];
+                    $type.map((i, item) => {
+                        typeArray.push($(item).text());
+                    });
+                    data.value = typeArray;
+                    break;
+                case '上映日期:':
+                    const $releaseDate = doubanDetaiDocument('#info').children('span[property="v:initialReleaseDate"]');
+                    const releaseDateArray = [];
+                    $releaseDate.map((i, item) => {
+                        releaseDateArray.push($(item).text());
+                    });
+                    data.value = releaseDateArray;
+                    break;
+                case 'IMDb链接:':
+                    data.value = $item.next().attr('href');
+                    break;
+                default:
+                    if(item.next.type === 'text' && item.next.data && item.next.data.trim()){
+                        data.value = item.next.data.trim();
+                    }else{
+                        data.value = $item.next().text();
+                    }                    
+                    break;
+            }
+            items.push(data);
+        });
+
+        //简介
+        detail.summary = doubanDetaiDocument('#link-report').find('span[property="v:summary"]').text().trim();
+
+        detail.infos = items;
+        return detail;
     }
 }

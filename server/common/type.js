@@ -92,3 +92,4 @@ export type UploadFileType = {
 export type CommentType = {};
 export type UserType = {};
 export type MovieType = {};
+export type DoubanMovieType = {};
