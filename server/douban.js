@@ -42,13 +42,14 @@ async function startGemovieFromDouban(tag = encodeURIComponent('热门'), sort =
         const pageLimit = 20;        
         //先扒200条试试水
         const errorMovieIdArray = [];
-        for(let i = 0; i < 10; i++){
+        for(let i = 10; i < 20; i++){
             const pageStart = i * pageLimit;
             //获取列表数据
-            console.log(`获取列表数据 ${pageStart} 到 ${pageStart + pageLimit} 条`);
+            console.log(`获取列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条`);
             const resData = await HttpsUtil.getAsync(`https://movie.douban.com/j/search_subjects?type=movie&tag=${tag}&sort=${sort}&page_limit=${pageLimit}&page_start=${pageStart}`, 'utf-8');
             const {subjects} = JSON.parse(resData.data);
             if(subjects.length < 1){
+                console.log('已无更多的movie');
                 break;
             }
             for(let j = 0; j < subjects.length; j++){
