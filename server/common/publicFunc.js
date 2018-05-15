@@ -3,7 +3,6 @@
  */
 
 import bcrypt from 'bcrypt'
-import Promise from 'promise'
 import _ from 'underscore'
 import multer from 'multer'
 import  fs from 'fs'
@@ -229,5 +228,17 @@ export default class PublicFunction{
         }else {
             return null;
         }
+    }
+
+    /**
+     * 延时函数
+     * @param {*} millisecond 毫秒数
+     */
+    static delay(millisecond: number = 0) : Promise<void>{
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve();
+            }, millisecond);
+        })
     }
 }

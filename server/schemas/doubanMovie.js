@@ -3,11 +3,20 @@ const {Schema} = mongoose;
 const {Array, String, Mixed, Number} = Schema.Types;
 
 const DoubanMovieSchema = new mongoose.Schema({
-    infos: Mixed,
+    doubanMovieId: Number,
     name: String,
-    summary: String,
     mainpic: Mixed,
-    saveIndex: Number,
+    summary: String,
+    directors: Array,
+    writers: Array,
+    actors: Array,
+    types: Array,
+    countries: Array,
+    languages: Array,
+    pubdates: Array,
+    durations: String,
+    aka: Array,
+    IMBdLink: String,
     meta: {
         createAt:{
             type: Date,

@@ -77,10 +77,10 @@ app.use(expandResponse);
 //设置路由
 app.use(router);
 
+//统一处理异常返回
+app.use(errorHandle);
+
 app.listen(serverPort, function () {
     console.log(`Demo(production) is running on port ${serverPort}`);
 });
-
-//统一处理异常返回
-app.use(errorHandle);
 
