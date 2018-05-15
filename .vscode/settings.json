@@ -13,4 +13,7 @@
     "gitlens.defaultDateFormat": "MMMM Do, YYYY-MM-DD hh:mm:ss",
     "gitlens.historyExplorer.enabled": true,
     "gitlens.gitExplorer.files.layout": "tree",
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
 }

@@ -1,0 +1,56 @@
+$iconWidth: 100px;
+.douban-container{
+    position: relative;
+}
+.douban-content{
+    margin: 0 $iconWidth;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+    transition: all 0.6s;
+    left: 0;
+    opacity: 1;
+}
+
+.douban-content-to-left{
+    left: 100%;
+}
+
+.douban-content-to-right{
+    left: -100%;
+}
+
+.douban-content .poster{
+    position: inherit;
+    display: inline-block;
+    float: none;
+    width: 25%;
+}
+.douban-content .poster:hover *{
+    background-color: #ddd;
+}
+
+.douban-container .last-icon,
+.douban-container .next-icon{
+    width: $iconWidth - 5;
+    height: $iconWidth - 5;
+    position: absolute;
+    top: 50%;
+    color: #ddd;
+}
+.douban-container .last-icon:hover,
+.douban-container .next-icon:hover{
+    color: rgba(0, 0, 0, 0.65);
+    cursor: pointer;
+}
+.douban-container .last-icon>i,
+.douban-container .next-icon>i{
+    width: 100%;
+    height: 100%;
+    font-size: $iconWidth - 5;
+    position: relative;
+    top: -50%;
+}
+.douban-container .next-icon{
+    right: 0;
+}

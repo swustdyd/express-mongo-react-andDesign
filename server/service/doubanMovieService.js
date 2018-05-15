@@ -2,8 +2,9 @@ import $ from 'cheerio'
 import DoubanMovie from '../models/doubanMovie'
 import BusinessException from '../common/businessException';
 import BaseService from './baseService'
-import { DoubanMovieType } from '../common/type';
+import { DoubanMovieType, MultipleReturnType, PageReturnType } from '../common/type';
 import HttpsUtil from '../common/httpsUtil'
+import { QueryDefaultOptions } from '../common/commonSetting';
 
 export default class DoubanMovieServie extends BaseService{
     /**
@@ -20,6 +21,23 @@ export default class DoubanMovieServie extends BaseService{
                 resolve({success: true, result: movie});
             })
         })
+    }
+
+    /**
+     * 获取豆瓣电影信息
+     * @param {*} pageIndex 起始页
+     * @param {*} pageSize 每页大小
+     */
+    async getDoubanMovies(pageIndex: number = QueryDefaultOptions.pageIndex, pageSize: number = QueryDefaultOptions.pageSize) : PageReturnType{
+        const total = await DoubanMovie.count();
+        const result = await DoubanMovie.find().skip(pageIndex * pageSize).limit(pageSize).exec();
+        return {
+            success: true,
+            pageIndex,
+            pageSize,
+            total,
+            result
+        };
     }
 
     /**

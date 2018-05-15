@@ -8,6 +8,16 @@ import './moviePoster.scss'
 
 const { Meta } = Card;
 
+/**
+ * MoviePoster组件，显示为卡片样式，可翻转
+ * props.movieData = {
+ *     title: string,
+ *     poster: {
+ *         src: string
+ *     },
+ *     summary: string  
+ * }
+ */
 class MoviePoster extends React.Component{
     constructor(props){
         super(props);

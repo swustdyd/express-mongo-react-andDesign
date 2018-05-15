@@ -20,7 +20,8 @@ const api = {
     updatePwd: 'user/updatePwd',
     deleteUser: 'user/delete',
     editUser: 'user/edit',
-    uploadIcon: 'user/uploadIcon'
+    uploadIcon: 'user/uploadIcon',
+    getDoubanMovies: 'movie/getDoubanMovies'
 };
 
 for(const key in api){

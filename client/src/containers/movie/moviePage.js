@@ -16,9 +16,13 @@ const MovieList = asyncComponent(() => {
 const MovieCount = asyncComponent(() => {
     return import ('./movieCount')
 })
-/* webpackChunkName: "user" */ 
+/* webpackChunkName: "commentPage" */ 
 const CommentPage = asyncComponent(() => {
     return import ('../comment/commentPage')
+})
+/* webpackChunkName: "commentPage" */ 
+const DoubanMovieList = asyncComponent(() => {
+    return import ('./doubanMovieList')
 })
 
 class MoviePage extends React.Component{
@@ -37,6 +41,7 @@ class MoviePage extends React.Component{
                     >
                         <Menu.Item key="movieList"><Link to="/moviePage/movieList" >电影列表</Link></Menu.Item>
                         <Menu.Item key="movieCount"><Link to="/moviePage/movieCount" >统计</Link></Menu.Item>
+                        <Menu.Item key="doubanMovieList"><Link to="/moviePage/doubanMovieList" >豆瓣电影列表</Link></Menu.Item>
                     </HashRouterMenu>
                 }
                 right={
@@ -44,6 +49,7 @@ class MoviePage extends React.Component{
                         <Route path="/moviePage/movieList" component={MovieList}/>
                         <Route path="/moviePage/movieCount" component={MovieCount}/>
                         <Route path="/moviePage/comment/:movieId" component={CommentPage}/>
+                        <Route path="/moviePage/doubanMovieList" component={DoubanMovieList}/>
                     </div>
                 }
             />

@@ -8,11 +8,13 @@ import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
+import DoubanMovieServie from '../service/doubanMovieService';
 
 export default class MovieController extends BaseController{
     constructor(){
         super();
-        this.movieService = new MovieService();
+        this._movieService = new MovieService();
+        this._doubanMovieServie = new DoubanMovieServie();
     }
 
     /**
@@ -48,7 +50,7 @@ export default class MovieController extends BaseController{
                 newCondition.language = condition.language;
             }
 
-            const resData = await this.movieService.getMoviesByCondition({
+            const resData = await this._movieService.getMoviesByCondition({
                 condition: newCondition,
                 pageIndex: pageIndex,
                 pageSize: pageSize
@@ -68,7 +70,7 @@ export default class MovieController extends BaseController{
     async newOrUpdate(request, response, next) {
         try {
             const {movie} = request.body;
-            const resData = await this.movieService.saveOrUpdateMovie(movie);
+            const resData = await this._movieService.saveOrUpdateMovie(movie);
             const message = movie._id ? '修改成功' : '新增成功';
             if(resData.success){
                 resData.message = message;
@@ -89,7 +91,7 @@ export default class MovieController extends BaseController{
     async delete(request, response, next) {
         try {
             const {id} = request.query;
-            const resData = await this.movieService.deleteMovieById(id);
+            const resData = await this._movieService.deleteMovieById(id);
             resData.message = '删除成功';
             response.json(resData);
         }catch (e){
@@ -132,10 +134,19 @@ export default class MovieController extends BaseController{
         try {
             const groupArray = JSON.parse(req.query.groupArray || '[]');
             const match = JSON.parse(req.query.match || '{}');
-            const resData = await this.movieService.getMoviesByGroup(groupArray, match);
+            const resData = await this._movieService.getMoviesByGroup(groupArray, match);
             res.json(resData);
         }catch (e){
             next(e);
+        }
+    }
+
+    async getDoubanMovie(req, res, next){
+        try {
+            const {pageIndex, pageSize} = req.query;
+            res.json(await this._doubanMovieServie.getDoubanMovies(pageIndex, pageSize));
+        } catch (error) {
+            next(error);
         }
     }
 }
