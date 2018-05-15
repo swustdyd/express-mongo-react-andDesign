@@ -1,31 +1,42 @@
 $iconWidth: 100px;
 .douban-container{
     position: relative;
+    height: 750px;
 }
 .douban-content{
-    margin: 0 $iconWidth;
+    padding: 0 $iconWidth;
     overflow: hidden;
     text-align: center;
-    position: relative;
+    position: absolute;
     transition: all 0.6s;
     left: 0;
-    opacity: 1;
+    width: 100%;
 }
 
-.douban-content-to-left{
-    left: 100%;
+.douban-content-left,
+.douban-content-right{
+    top: 0;
 }
 
-.douban-content-to-right{
+.douban-content-left{
     left: -100%;
 }
 
-.douban-content .poster{
-    position: inherit;
-    display: inline-block;
-    float: none;
-    width: 25%;
+.douban-content-right{
+    left: 100%;
 }
+
+.douban-content-hide{
+    display: none;
+}
+
+.douban-content .poster{
+    position: relative;
+    display: inline-block;
+    width: 25%;
+    min-width: 250px;
+}
+
 .douban-content .poster:hover *{
     background-color: #ddd;
 }

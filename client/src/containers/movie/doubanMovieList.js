@@ -5,30 +5,60 @@ import MoviePoster from '../../components/moviePoster'
 
 import './doubanMovieList.scss'
 
+const AnimationState = {
+    preparing: 1,
+    start: 2,
+    stop: 3
+}
+
+
 export default class DoubanMovieList extends React.Component{
     constructor(props){
         super();
         this.state = {
+            lastPageIndex: -1,
             pageIndex: 0,
-            pageSize: 8,
+            pageSize: 12,
             total: 0,
             dataList: [],
-            removeLeft: true,
-            removeRight: true
+            lastClick: false,
+            nextClick: false,
+            animationStart: false,
+            animationDurations: 600,
+            animationState: AnimationState.stop
         }
     }
 
-    getDoubanMovies(pageIndex, pageSize){
-        fetch(`${API.getDoubanMovies}?pageIndex=${pageIndex}&pageSize=${pageSize}`)
+    getDoubanMovies(nextPageIndex, pageSize){
+        const {dataList, animationDurations, pageIndex: currentPageIndex} = this.state;
+        //伪造数据，使要显示的content能初始化
+        dataList[nextPageIndex] = [];
+        this.setState({
+            dataList: dataList,
+            lastClick: nextPageIndex < currentPageIndex,
+            nextClick: nextPageIndex > currentPageIndex,
+            animationState: AnimationState.preparing,                    
+            lastPageIndex: currentPageIndex,
+            pageIndex: nextPageIndex
+        });
+        fetch(`${API.getDoubanMovies}?pageIndex=${nextPageIndex}&pageSize=${pageSize}`)
             .then((res) => {return res.json()})
             .then((data) => {
                 if(data.success){
+                    //构造成一个二维数组
+                    dataList[nextPageIndex] = data.result;
+                    //初始化页面，通知开始动画
                     this.setState({
-                        dataList: data.result,
-                        pageIndex: data.pageIndex,
-                        pageSize: pageSize,
-                        total: data.total
+                        dataList: dataList,
+                        total: data.total,
+                        animationState: AnimationState.start  
                     })
+                    //通知动画结束
+                    setTimeout(() => {
+                        this.setState({
+                            animationState: AnimationState.stop
+                        })
+                    }, animationDurations);
                 }else{
                     message.error(data.message);
                 }
@@ -61,42 +91,55 @@ export default class DoubanMovieList extends React.Component{
         return list;
     }
 
+    getContentList(dataList = []){
+        const {lastPageIndex, pageIndex, pageSize, lastClick, nextClick, animationState} = this.state;
+        const contentList = [];
+        dataList.forEach((item, index) => {
+            let className = '';
+            if(pageIndex === index){
+                //要显示的content
+                if(animationState === AnimationState.preparing){
+                    className += lastClick ? ' douban-content-left' : '';
+                    className += nextClick ? ' douban-content-right' : '';
+                }
+            }else if(lastPageIndex === index){
+                //当前显示的content 
+                if(animationState === AnimationState.start){
+                    className += lastClick ? ' douban-content-right' : '';
+                    className += nextClick ? ' douban-content-left' : '';
+                }else if(animationState === AnimationState.stop){
+                    className += ' douban-content-hide';
+                }
+            }else{
+                //不相关的content
+                className += ' douban-content-hide';
+            }
+            contentList.push(
+                <div className={`douban-content ${className}`}>
+                    {this.getMoviePoster(item)}
+                </div>
+            )
+        });
+        return contentList;
+    }
+
     handleNextClick(){
-        const {pageIndex, pageSize} = this.state;
+        const {pageIndex, pageSize, animationDurations} = this.state;
         this.getDoubanMovies(pageIndex + 1, pageSize);
-        this.setState({
-            removeRight: false
-        })
-        setTimeout(() => {
-            this.setState({
-                removeRight: true  
-            })
-        }, 600);
     }
 
     handleLastClick(){
-        const {pageIndex, pageSize} = this.state;
+        const {pageIndex, pageSize, animationDurations} = this.state;
         this.getDoubanMovies(pageIndex - 1, pageSize);
-        this.setState({
-            removeLeft: false
-        })
-        setTimeout(() => {
-            this.setState({
-                removeLeft: true  
-            })
-        }, 600);
     }
 
     render(){
-        const {pageIndex, pageSize, total, dataList, removeLeft, removeRight} = this.state;
+        const {pageIndex, pageSize, total, dataList} = this.state;
         const hasNext = pageIndex * pageSize + dataList.length < total;
-        const hasLast = pageIndex > 0; 
+        const hasLast = pageIndex > 0;
         return(
             <div className="douban-container">
-                <div className={`douban-content ${removeLeft ? '' : 'douban-content-to-left'} ${removeRight ? '' : 'douban-content-to-right'}`}>
-                    {this.getMoviePoster(dataList)}
-                </div>
-                <div style={{display: 'none'}} className={`${removeLeft ? 'douban-content-to-right' : ''} ${removeRight ? 'douban-content-to-left' : ''}`}></div> 
+                {this.getContentList(dataList)}
                 {
                     hasLast ?                    
                         <div className="last-icon">
