@@ -93,3 +93,4 @@ export type CommentType = {};
 export type UserType = {};
 export type MovieType = {};
 export type DoubanMovieType = {};
+export type DoubanMovieAndTagType = {}

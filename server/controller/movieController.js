@@ -141,10 +141,33 @@ export default class MovieController extends BaseController{
         }
     }
 
+    /**
+     * 获取豆瓣电影信息
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     async getDoubanMovie(req, res, next){
         try {
             const {pageIndex, pageSize} = req.query;
             res.json(await this._doubanMovieServie.getDoubanMovies(pageIndex, pageSize));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * 获取豆瓣电影分组信息
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    async getGroupInfoOfDouban(req, res, next){
+        try {
+            res.json({
+                year: await this._doubanMovieServie.getGroupInfoByYear(),
+                tag: await this._doubanMovieServie.getGroupInfoByTag()
+            })
         } catch (error) {
             next(error);
         }

@@ -1,8 +1,9 @@
 import $ from 'cheerio'
 import DoubanMovie from '../models/doubanMovie'
+import DoubanMovieAndTag from '../models/doubanMovieAndTag'
 import BusinessException from '../common/businessException';
 import BaseService from './baseService'
-import { DoubanMovieType, MultipleReturnType, PageReturnType } from '../common/type';
+import { DoubanMovieType, MultipleReturnType, PageReturnType, DoubanMovieAndTagType, QueryOptionsType } from '../common/type';
 import HttpsUtil from '../common/httpsUtil'
 import { QueryDefaultOptions } from '../common/commonSetting';
 
@@ -24,6 +25,23 @@ export default class DoubanMovieServie extends BaseService{
     }
 
     /**
+     * 根据豆瓣电影id获取豆瓣电影
+     * @param {*} doubanMovieId 豆瓣电影id
+     */
+    async getDoubanMoviesByDoubanid(doubanMovieId: string) : Promise<DoubanMovieType>{
+        return await DoubanMovie.findOne({doubanMovieId});
+    }
+
+    /**
+     * 保存豆瓣电影的分类信息
+     * @param {*} doubanMovieAndTag 
+     */
+    async saveDoubanMovieAndTag(doubanMovieAndTag: DoubanMovieAndTagType) : Promise<DoubanMovieAndTagType>{
+        doubanMovieAndTag = new DoubanMovieAndTag(doubanMovieAndTag);
+        return await doubanMovieAndTag.save()
+    }
+
+    /**
      * 获取豆瓣电影信息
      * @param {*} pageIndex 起始页
      * @param {*} pageSize 每页大小
@@ -41,23 +59,43 @@ export default class DoubanMovieServie extends BaseService{
     }
 
     /**
+     * 查询豆瓣电影以及其分类信息
+     * @param {*} option 
+     */
+    async getDoubanMoviesAndTagByOption(option: QueryOptionsType){
+        option = Object.assign({}, QueryDefaultOptions, option);
+        const total = await DoubanMovieAndTag.count();
+        const result = await DoubanMovieAndTag.find(option.condition)
+            .skip(option.pageIndex * option.pageSize)
+            .limit(option.pageSize)
+            .exec();
+        return {
+            success: true,
+            pageIndex: option.pageIndex,
+            pageSize: option.pageSize,
+            total,
+            result
+        }
+    }
+
+    /**
      * 根据id，解析豆瓣电影
      * @param {*} doubanMovieId 豆瓣电影id
      * @param {*} index 解析的顺序号，只会输出到console
      */
-    async parseAndSaveDoubanMovie(doubanMovieId: string, index = 0){
-        const resData = await HttpsUtil.getAsync(`https://movie.douban.com/subject/${doubanMovieId}/?from=showing`, 'utf-8');
-        const doubanDocument = $.load(resData.data);
-        const doubanMovie = this._getDoubanDetail(doubanDocument);
-        //豆瓣电影id
-        doubanMovie.doubanMovieId = doubanMovieId;
-        const serviceRes = await this.saveDoubanMovie(doubanMovie);
-        console.log(`movie ${index} '${serviceRes.result.name}' parse complete`);
-        return serviceRes.result;
-    }
+    // async parseAndSaveDoubanMovie(doubanMovieId: string, index = 0){
+    //     const resData = await HttpsUtil.getAsync(`https://movie.douban.com/subject/${doubanMovieId}/?from=showing`, 'utf-8');
+    //     const doubanDocument = $.load(resData.data);
+    //     const doubanMovie = this.getDoubanDetail(doubanDocument);
+    //     //豆瓣电影id
+    //     doubanMovie.doubanMovieId = doubanMovieId;
+    //     const serviceRes = await this.saveDoubanMovie(doubanMovie);
+    //     console.log(`第${index}部电影 “${doubanMovieId}——${serviceRes.result.name}” 解析成功`);
+    //     return serviceRes.result;
+    // }
 
 
-    _getDoubanDetail(doubanDetaiDocument: CheerioStatic){
+    getDoubanDetail(doubanDetaiDocument: CheerioStatic){
         const detail = {};
         //电影名称
         detail.name = doubanDetaiDocument('#content').find('span[property="v:itemreviewed"]').text();
@@ -67,6 +105,11 @@ export default class DoubanMovieServie extends BaseService{
             title: doubanDetaiDocument('#mainpic').find('img').attr('title'),
             alt: doubanDetaiDocument('#mainpic').find('img').attr('alt')
         }
+        //年代
+        const yearStr = doubanDetaiDocument('#content').find('h1>.year').text();
+        detail.year = yearStr.match(/\d+/)[0];
+        //评分
+        detail.average = doubanDetaiDocument('#interest_sectl').find('strong[property="v:average"]').text();
 
         //解析：导演、编剧、主演信息
         const $firstChildren = doubanDetaiDocument('#info').children('span');
@@ -147,5 +190,23 @@ export default class DoubanMovieServie extends BaseService{
 
         detail.infos = undefined;
         return detail;
+    }
+
+    /**
+     * 获取年份的分组信息
+     */
+    async getGroupInfoByYear(){
+        return await DoubanMovie.aggregate([
+            {$group: {_id: '$year', count: { $sum: 1}}}
+        ]).exec();
+    }
+
+    /**
+     * 获取类型(tag)的分组信息
+     */
+    async getGroupInfoByTag(){
+        return await DoubanMovieAndTag.aggregate([
+            {$group: {_id: '$tagIndex', count: { $sum: 1}}}
+        ]).exec();
     }
 }

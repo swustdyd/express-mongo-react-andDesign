@@ -3,8 +3,10 @@ const {Schema} = mongoose;
 const {Array, String, Mixed, Number} = Schema.Types;
 
 const DoubanMovieSchema = new mongoose.Schema({
-    doubanMovieId: Number,
+    doubanMovieId: String,
     name: String,
+    year: Number,
+    average: Number,
     mainpic: Mixed,
     summary: String,
     directors: Array,

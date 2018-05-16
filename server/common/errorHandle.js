@@ -20,10 +20,13 @@ function errorHandle(err, req, res, next) {
         let message = err.message || err.toString();
         if(res.app.get('env') !== 'dev'){
             message =  '系统错误，请联系管理员';
+            /** 将错误信息存储 **/
+            logger.error(err);
+        }else if(err instanceof Error){
+            console.log(err);
+        }else{
+            console.log(message);
         }
-        /** 将错误信息存储 **/
-        logger.error(err);
-        res.locals.message = message;
         res.status(err.status || 500);
         res.json({message: message, success: false, errorCode: err.status || 500});
     }
