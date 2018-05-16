@@ -79,36 +79,30 @@ async function startGemovieFromDouban(tagIndex: number, sort: string){
     if(tagIndex === undefined || !sort){
         console.log('/***** tagIndex, sort不能为空 *****/');
         return;
-    }
-    try {       
-        const errorMovieIdArray = [];
-        for(let i = pageStartIndex; i <= pageEndIndex; i++){
-            const pageStart = i * pageLimit;
-            const subjects = await getDoubanList(i, tagIndex);
-            if(subjects.length < 1){
-                console.log(`“${tags[tagIndex]}”已无更多的电影`);
-                break;
+    }      
+    const errorMovieIdArray = [];
+    for(let i = pageStartIndex; i <= pageEndIndex; i++){
+        const pageStart = i * pageLimit;
+        const subjects = await getDoubanList(i, tagIndex);
+        if(subjects.length < 1){
+            console.log(`“${tags[tagIndex]}”已无更多的电影`);
+            break;
+        }
+        for(let j = 0; j < subjects.length; j++){
+            const item = subjects[j];
+            try{
+                await parseAndSaveMovieWithTag(item.id, item.title, tagIndex, i * pageLimit + j + 1)
+            }catch(e){
+                console.log(`/***** 电影 “${item.id}——${item.title}” 爬取出错 *****/`, e)
+                logger.error(`电影 “${item.id}——${item.title}” 爬取出错`, e);
+                errorMovieIdArray.push(item.id);
             }
-            for(let j = 0; j < subjects.length; j++){
-                const item = subjects[j];
-                try{
-                    await parseAndSaveMovieWithTag(item.id, item.title, tagIndex, i * pageLimit + j + 1)
-                }catch(e){
-                    console.log(`/***** 电影 “${item.id}——${item.title}” 爬取出错 *****/`, e)
-                    logger.error(`电影 “${item.id}——${item.title}” 爬取出错`, e);
-                    errorMovieIdArray.push(item.id);
-                }
-            }              
-        }
-        if(errorMovieIdArray.length < 1){
-            console.log(`“${tags[tagIndex]}” 爬取完毕`);
-        }else{
-            logger.error(`“${tags[tagIndex]}” 爬取过程中出错，出错的电影id列表为：${JSON.stringify(errorMovieIdArray)}`);
-        }
-        
-    } catch (error) {
-        console.log(`/***** “${tags[tagIndex]}” 爬取过程中，获取列表数据出错，爬取服务已停止  *****/`);
-        logger.error(`“${tags[tagIndex]}” 爬取过程中，获取列表数据出错，爬取服务已停止`, error);
+        }              
+    }
+    if(errorMovieIdArray.length < 1){
+        console.log(`“${tags[tagIndex]}” 爬取完毕`);
+    }else{
+        logger.error(`“${tags[tagIndex]}” 爬取过程中出错，出错的电影id列表为：${JSON.stringify(errorMovieIdArray)}`);
     }
 }
 
@@ -167,7 +161,8 @@ async function parseAndSaveMovieWithTag(doubanMovieId: string, doubanMovieTitle:
 async function getDoubanList(pageIndex: number, tagIndex: number){
     const pageStart = pageIndex * pageLimit;
     let subjects = [];
-    for(let tryStartIndex = 1; tryStartIndex <= 10; tryStartIndex++){
+    const maxTryTimes = 10;
+    for(let tryStartIndex = 1; tryStartIndex <= maxTryTimes; tryStartIndex++){
         try {                    
             //获取列表数据
             console.log(`获取“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条`);
@@ -186,10 +181,12 @@ async function getDoubanList(pageIndex: number, tagIndex: number){
             }else{
                 console.log(`/***** 请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错，statusCode：${statusCode} *****/`);
                 logger.error(`请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错，statusCode：${statusCode} `, resData.data);
+                if(tryStartIndex === maxTryTimes){
+                    return Promise.reject(new Error(`尝试了${maxTryTimes}次，仍然失败`));
+                }                
             }
         } catch (error) {
-            logger.error(`获取“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错`, error);
-            break;
+            return Promise.reject(error);
         }
     }
     return subjects;
@@ -199,8 +196,12 @@ async function getDoubanList(pageIndex: number, tagIndex: number){
  * 获取随机cookie
  */
 function getRadomCookie() {
-    const bid = Math.ceil(Math.random() * 10000);
-    return `bid=${bid}; ll="${bid}"; _vwo_uuid_v2=268A153A3B0C643D147E31481E0895A1|0a1395ad6b587e425cf1f4bd99fad90b; ct=y; __utmc=30149280; __utma=30149280.1991939520.1484715813.1526445050.1526450039.22; __utmz=30149280.1526450039.22.19.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; _ga=GA1.2.1991939520.1484715813; _gid=GA1.2.25358410.1526450489; dbcl2="178675845:ANpI/2A51zQ"; ck=nJu3; push_noty_num=0; push_doumail_num=0; __utmv=30149280.17867; __utmb=30149280.7.10.1526450039; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1526450505%2C%22https%3A%2F%2Fwww.douban.com%2F%22%5D; _pk_ses.100001.4cf6=*; __utma=223695111.782172476.1501562695.1526438955.1526450505.11; __utmb=223695111.0.10.1526450505; __utmc=223695111; __utmz=223695111.1526450505.11.6.utmcsr=douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_id.100001.4cf6=2b9398a388e83bef.1501562694.11.1526450517.1526440137.`
+    const bid = [];
+    for(let i = 0; i < 4; i++){
+        bid.push(Math.ceil(Math.random() * 9));
+    }
+
+    return `bid=${bid.join()}; ll="${bid.join()}68"; _vwo_uuid_v2=268A153A3B0C643D147E31481E0895A0|0a1395ad6b587e425cf1f4bd99fad91b; ct=y; __utmc=30149280; __utma=30149280.1991939520.1484715813.1526445050.1526450039.22; __utmz=30149280.1526450039.22.19.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; _ga=GA1.2.1991939520.1484715813; _gid=GA1.2.25358410.1526450489; dbcl2="178675845:ANpI/2A51zQ"; ck=nJu3; push_noty_num=0; push_doumail_num=0; __utmv=30149280.17867; __utmb=30149280.7.10.1526450039; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1526450505%2C%22https%3A%2F%2Fwww.douban.com%2F%22%5D; _pk_ses.100001.4cf6=*; __utma=223695111.782172476.1501562695.1526438955.1526450505.11; __utmb=223695111.0.10.1526450505; __utmc=223695111; __utmz=223695111.1526450505.11.6.utmcsr=douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_id.100001.4cf6=2b9398a388e83bef.1501562694.11.1526450517.1526440137.`
 }
 
 /**
