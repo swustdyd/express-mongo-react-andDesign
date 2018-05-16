@@ -1,5 +1,5 @@
 import React from 'react'
-import {message, Icon} from 'antd'
+import {message, Icon, Spin} from 'antd'
 import API from '../../common/api'
 import MoviePoster from '../../components/moviePoster'
 
@@ -24,13 +24,17 @@ export default class DoubanMovieList extends React.Component{
             lastClick: false,
             nextClick: false,
             animationStart: false,
-            animationDurations: 600,
-            animationState: AnimationState.stop
+            animationDurations: 1000,
+            animationState: AnimationState.stop,
+            loading: false
         }
     }
 
     getDoubanMovies(nextPageIndex, pageSize){
-        const {dataList, animationDurations, pageIndex: currentPageIndex} = this.state;
+        const {dataList, animationDurations, pageIndex: currentPageIndex, loading} = this.state;        
+        if(loading){
+            return;
+        }
         //伪造数据，使要显示的content能初始化
         dataList[nextPageIndex] = [];
         this.setState({
@@ -39,7 +43,8 @@ export default class DoubanMovieList extends React.Component{
             nextClick: nextPageIndex > currentPageIndex,
             animationState: AnimationState.preparing,                    
             lastPageIndex: currentPageIndex,
-            pageIndex: nextPageIndex
+            pageIndex: nextPageIndex,
+            loading: true
         });
         fetch(`${API.getDoubanMovies}?pageIndex=${nextPageIndex}&pageSize=${pageSize}`)
             .then((res) => {return res.json()})
@@ -51,7 +56,8 @@ export default class DoubanMovieList extends React.Component{
                     this.setState({
                         dataList: dataList,
                         total: data.total,
-                        animationState: AnimationState.start  
+                        animationState: AnimationState.start,                        
+                        loading: false
                     })
                     //通知动画结束
                     setTimeout(() => {
@@ -64,6 +70,9 @@ export default class DoubanMovieList extends React.Component{
                 }
             })
             .catch((e) => {
+                this.setState({                       
+                    loading: false
+                })
                 message.error(e.message);
             })
     }
@@ -124,37 +133,40 @@ export default class DoubanMovieList extends React.Component{
     }
 
     handleNextClick(){
-        const {pageIndex, pageSize, animationDurations} = this.state;
+        const {pageIndex, pageSize, loading} = this.state;
         this.getDoubanMovies(pageIndex + 1, pageSize);
     }
 
     handleLastClick(){
-        const {pageIndex, pageSize, animationDurations} = this.state;
+        const {pageIndex, pageSize, loading} = this.state;
         this.getDoubanMovies(pageIndex - 1, pageSize);
     }
 
     render(){
-        const {pageIndex, pageSize, total, dataList} = this.state;
+        const {pageIndex, pageSize, total, dataList, loading} = this.state;
         const hasNext = pageIndex * pageSize + dataList.length < total;
         const hasLast = pageIndex > 0;
         return(
-            <div className="douban-container">
-                {this.getContentList(dataList)}
-                {
-                    hasLast ?                    
-                        <div className="last-icon">
-                            <Icon type="left" onClick={() => {this.handleLastClick()}}/>
-                        </div>
-                        : ''
-                }
-                {
-                    hasNext ?
-                        <div className="next-icon">
-                            <Icon type="right" onClick={() => {this.handleNextClick()}}/>
-                        </div>
-                        : ''
-                }
-            </div>
+            <Spin tip="加载中..." spinning={loading}>
+                <div className="douban-container">
+                    {this.getContentList(dataList)}
+                    {
+                        hasLast ?                    
+                            <div className="last-icon">
+                                <Icon type="left" onClick={() => {this.handleLastClick()}}/>
+                            </div>
+                            : ''
+                    }
+                    {
+                        hasNext ?
+                            <div className="next-icon">
+                                <Icon type="right" onClick={() => {this.handleNextClick()}}/>
+                            </div>
+                            : ''
+                    }
+                </div>
+            </Spin>
+            
         );
     }
 }
