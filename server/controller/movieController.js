@@ -9,6 +9,7 @@ import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
 import DoubanMovieServie from '../service/doubanMovieService';
+import {tags} from '../doubanTags'
 
 export default class MovieController extends BaseController{
     constructor(){
@@ -164,10 +165,15 @@ export default class MovieController extends BaseController{
      */
     async getGroupInfoOfDouban(req, res, next){
         try {
-            res.json({
-                year: await this._doubanMovieServie.getGroupInfoByYear(),
-                tag: await this._doubanMovieServie.getGroupInfoByTag()
+            const tag = await this._doubanMovieServie.getGroupInfoByTag();
+            tag.map((item, index) => {
+                item._id = tags[item._id]
             })
+            const result = {
+                year: await this._doubanMovieServie.getGroupInfoByYear(),
+                tag
+            }
+            res.json({success: true, result});
         } catch (error) {
             next(error);
         }

@@ -5,16 +5,10 @@ import HttpsUtil from './common/httpsUtil'
 import logger from './common/logger'
 import PublicFunction from './common/publicFunc'
 import BaseConfig from '../baseConfig'
-import { getHashes } from 'crypto';
+import {tags} from './doubanTags'
 
 mongoose.connect(BaseConfig.dbConnectString);
 const doubanMovieService = new DoubanMovieService();
-
-export const tags = [
-    '热门',  '最新',  '经典',  '可播放',  '豆瓣高分',  
-    '冷门佳片',  '华语',  '欧美',  '韩国',  '日本',  
-    '动作', '喜剧',  '爱情',  '科幻',  '悬疑',  '恐怖',  '动画'
-]
 
 /**
  * 分类起始下标

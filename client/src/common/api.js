@@ -21,7 +21,8 @@ const api = {
     deleteUser: 'user/delete',
     editUser: 'user/edit',
     uploadIcon: 'user/uploadIcon',
-    getDoubanMovies: 'movie/getDoubanMovies'
+    getDoubanMovies: 'movie/getDoubanMovies',
+    getGroupInfoOfDouban: 'movie/getGroupInfoOfDouban'
 };
 
 for(const key in api){
