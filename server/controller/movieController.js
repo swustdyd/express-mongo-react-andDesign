@@ -165,13 +165,17 @@ export default class MovieController extends BaseController{
      */
     async getGroupInfoOfDouban(req, res, next){
         try {
-            const tag = await this._doubanMovieServie.getGroupInfoByTag();
-            tag.map((item, index) => {
-                item._id = tags[item._id]
-            })
+            const dataList = await Promise.all([
+                this._doubanMovieServie.getGroupInfoByYear(),
+                this._doubanMovieServie.getGroupInfoByTypes(),
+                this._doubanMovieServie.getGroupInfoByLanguages(),
+                this._doubanMovieServie.getGroupInfoByCountries()
+            ]);
             const result = {
-                year: await this._doubanMovieServie.getGroupInfoByYear(),
-                tag
+                year: dataList[0],
+                types: dataList[1],
+                languages: dataList[2],
+                countries: dataList[3]
             }
             res.json({success: true, result});
         } catch (error) {

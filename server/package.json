@@ -6,7 +6,8 @@
   "scripts": {
     "start:dev": "cross-env NODE_ENV=dev nodemon --ignore node_modules --ext node,js,jade --exec  babel-node app",
     "start:pro": "cross-env NODE_ENV=production nodemon --ignore node_modules --ext node,js,jade --exec babel-node app.js",
-    "douban": "babel-node douban.js",
+    "dbs": "babel-node doubanSpider.js",
+    "cmt": "babel-node doubanMovieType.js",
     "eslint": "eslint **/*.js",
     "eslint:fix": "eslint **/*.js --fix",
     "flow": "flow init"

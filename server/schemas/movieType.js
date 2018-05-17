@@ -2,10 +2,11 @@ import mongoose from 'mongoose'
 const {Schema} = mongoose;
 const {ObjectId} = Schema.Types;
 
-const DoubanMovieAndTagSchema = new mongoose.Schema({
+const DoubanTypeSchema = new mongoose.Schema({
     doubanMovieId: String,
     mongoObjectId: ObjectId,
-    tagIndex: Number,
+    typeKey: String,
+    typeValue: String,
     meta: {
         createAt:{
             type: Date,
@@ -18,4 +19,4 @@ const DoubanMovieAndTagSchema = new mongoose.Schema({
     }
 });
 
-export default DoubanMovieAndTagSchema;
+export default DoubanTypeSchema;

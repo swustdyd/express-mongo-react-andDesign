@@ -1,6 +1,6 @@
 import $ from 'cheerio'
 import DoubanMovie from '../models/doubanMovie'
-import DoubanMovieAndTag from '../models/doubanMovieAndTag'
+import MovieType from '../models/movieType'
 import BusinessException from '../common/businessException';
 import BaseService from './baseService'
 import { DoubanMovieType, MultipleReturnType, PageReturnType, DoubanMovieAndTagType, QueryOptionsType } from '../common/type';
@@ -9,19 +9,21 @@ import { QueryDefaultOptions } from '../common/commonSetting';
 
 export default class DoubanMovieServie extends BaseService{
     /**
-     * 保存豆瓣电影信息
+     * 保存或者更新豆瓣电影信息
      * @param {*} doubanMovie 
      */
-    saveDoubanMovie(doubanMovie: DoubanMovieType) : Promise<{success: boolean, result: DoubanMovieType}>{
-        return new Promise((resolve, reject) => {
+    async saveOrUpdateDoubanMovie(doubanMovie: DoubanMovieType) : Promise<{success: boolean, result: DoubanMovieType}>{
+        if(doubanMovie._id){
+            //更新
+            const origin = await this.getDoubanMoviesBybjectid(doubanMovie._id);
+            Object.assign(origin, doubanMovie);
+            origin.meta.updateAt = Date.now();
+            return await origin.save();
+        }else{
+            //新增
             doubanMovie = new DoubanMovie(doubanMovie);
-            doubanMovie.save((err, movie) => {
-                if(err){
-                    reject(err);
-                }
-                resolve({success: true, result: movie});
-            })
-        })
+            return await doubanMovie.save();
+        }
     }
 
     /**
@@ -33,12 +35,29 @@ export default class DoubanMovieServie extends BaseService{
     }
 
     /**
+     * 根据objectid获取豆瓣电影
+     * @param {*} objectid 豆瓣电影id
+     */
+    async getDoubanMoviesBybjectid(objectid: string) : Promise<DoubanMovieType>{
+        return await DoubanMovie.findOne({_id: objectid});
+    }
+
+    /**
      * 保存豆瓣电影的分类信息
      * @param {*} doubanMovieAndTag 
      */
     async saveDoubanMovieAndTag(doubanMovieAndTag: DoubanMovieAndTagType) : Promise<DoubanMovieAndTagType>{
         doubanMovieAndTag = new DoubanMovieAndTag(doubanMovieAndTag);
         return await doubanMovieAndTag.save()
+    }
+
+    /**
+     * 保存电影的划分类型
+     * @param {*} movieType
+     */
+    async saveMovieAndType(movieType){
+        movieType = new MovieType(movieType);
+        return await movieType.save()
     }
 
     /**
@@ -59,13 +78,33 @@ export default class DoubanMovieServie extends BaseService{
     }
 
     /**
-     * 查询豆瓣电影以及其分类信息
+     * 查询豆瓣电影
      * @param {*} option 
      */
     async getDoubanMoviesAndTagByOption(option: QueryOptionsType){
         option = Object.assign({}, QueryDefaultOptions, option);
-        const total = await DoubanMovieAndTag.count();
+        const total = await DoubanMovieAndTag.count(option.condition);
         const result = await DoubanMovieAndTag.find(option.condition)
+            .skip(option.pageIndex * option.pageSize)
+            .limit(option.pageSize)
+            .exec();
+        return {
+            success: true,
+            pageIndex: option.pageIndex,
+            pageSize: option.pageSize,
+            total,
+            result
+        }
+    }
+
+    /**
+     * 查询豆瓣电影类型划分， option.condition={typeKey: '', typeValue: '', ...}
+     * @param {*} option 
+     */
+    async getMovieTypeByOption(option: QueryOptionsType){
+        option = Object.assign({}, QueryDefaultOptions, option);
+        const total = await MovieType.count(option.condition);
+        const result = await MovieType.find(option.condition)
             .skip(option.pageIndex * option.pageSize)
             .limit(option.pageSize)
             .exec();
@@ -95,6 +134,9 @@ export default class DoubanMovieServie extends BaseService{
     // }
 
 
+    /**
+     * 解析豆瓣电影网页
+     */
     getDoubanDetail(doubanDetaiDocument: CheerioStatic){
         const detail = {};
         //电影名称
@@ -107,7 +149,7 @@ export default class DoubanMovieServie extends BaseService{
         }
         //年代
         const yearStr = doubanDetaiDocument('#content').find('h1>.year').text();
-        detail.year = yearStr.match(/\d+/)[0];
+        detail.year = yearStr.match(/\d+/) ? yearStr.match(/\d+/)[0] : '';
         //评分
         detail.average = doubanDetaiDocument('#interest_sectl').find('strong[property="v:average"]').text();
 
@@ -193,7 +235,7 @@ export default class DoubanMovieServie extends BaseService{
     }
 
     /**
-     * 获取年份的分组信息
+     * 获取类型(year)的分组信息
      */
     async getGroupInfoByYear(){
         return await DoubanMovie.aggregate([
@@ -202,11 +244,32 @@ export default class DoubanMovieServie extends BaseService{
     }
 
     /**
-     * 获取类型(tag)的分组信息
+     * 获取类型(types)的分组信息
      */
-    async getGroupInfoByTag(){
-        return await DoubanMovieAndTag.aggregate([
-            {$group: {_id: '$tagIndex', count: { $sum: 1}}}
+    async getGroupInfoByTypes(){
+        return await MovieType.aggregate([
+            {$match: {typeKey: 'types'}},
+            {$group: {_id: '$typeValue', count: { $sum: 1}}}
+        ]).exec();
+    }
+
+    /**
+     * 获取类型(languages)的分组信息
+     */
+    async getGroupInfoByLanguages(){
+        return await MovieType.aggregate([
+            {$match: {typeKey: 'languages'}},
+            {$group: {_id: '$typeValue', count: { $sum: 1}}}
+        ]).exec();
+    }
+
+    /**
+     * 获取类型(countries)的分组信息
+     */
+    async getGroupInfoByCountries(){
+        return await MovieType.aggregate([
+            {$match: {typeKey: 'countries'}},
+            {$group: {_id: '$typeValue', count: { $sum: 1}}}
         ]).exec();
     }
 }

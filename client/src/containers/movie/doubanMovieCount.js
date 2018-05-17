@@ -15,7 +15,9 @@ class DoubanMovieCount extends React.Component{
                     name: [],
                     value: []
                 },
-                tag: []
+                types: [],
+                languages: [],
+                countries: []
             }
         }
     }
@@ -30,19 +32,31 @@ class DoubanMovieCount extends React.Component{
                 name: [],
                 value: []
             },
-            tag: []
+            types: [],
+            languages: [],
+            countries: []
         };
         data.year.sort((a, b) => {
             return a._id - b._id;
         });
+
         data.year.forEach((item) => {
             newData.year.name.push(item._id);
             newData.year.value.push(item.count);
         });
-        data.tag.forEach((item) => {
-            newData.tag.push([item._id, item.count]);
+
+        data.types.forEach((item) => {
+            newData.types.push([item._id, item.count]);
         });
-        console.log(newData)
+
+        data.languages.forEach((item) => {
+            newData.languages.push([item._id, item.count]);
+        });
+
+        data.countries.forEach((item) => {
+            newData.countries.push([item._id, item.count]);
+        });
+
         return newData;
     }
 
@@ -53,9 +67,7 @@ class DoubanMovieCount extends React.Component{
             }).then((data) => {
                 if(data.success){
                     const groupData = this.rebuildMoviesData(data.result);
-                    this.setState({
-                        groupData
-                    });
+                    this.setState({groupData});
                 }else{
                     message.error(data.message);
                 }
@@ -64,7 +76,7 @@ class DoubanMovieCount extends React.Component{
 
     render(){
         const { groupData } = this.state;
-        const lineConfig = {
+        const yearConfig = {
             title: {
                 text: '每年电影产量'
             },
@@ -90,7 +102,8 @@ class DoubanMovieCount extends React.Component{
                 data: groupData.year.value
             }]
         };
-        const pieConfig = {
+
+        const typesConfig = {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -109,7 +122,61 @@ class DoubanMovieCount extends React.Component{
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: true,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        format: '<b>{point.name}</b>: {point.percentage:.3f} %'
+                    },
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    },
+                    // 突出间距
+                    slicedOffset: 20,
+                    point: {
+                        // 每个扇区是数据点对象，所以事件应该写在 point 下面
+                        events: {
+                            // 鼠标滑过是，突出当前扇区
+                            mouseOver: function() {
+                                this.slice();
+                            },
+                            // 鼠标移出时，收回突出显示
+                            mouseOut: function() {
+                                this.slice();
+                            },
+                            // 默认是点击突出，这里屏蔽掉
+                            click: function() {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: '分类',
+                data: groupData.types
+            }]
+        };
+
+        const languagesConfig = {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: '电影语种占比'
+            },
+            tooltip: {
+                headerFormat: '<b>{point.key}</b><br>',
+                pointFormat: '<b>百分比: <i>{point.percentage:.1f}%</i></b><br><b>数\u3000量：</b>{point.y}部'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.3f} %'
                     },
                     states: {
                         hover: {
@@ -140,13 +207,70 @@ class DoubanMovieCount extends React.Component{
             series: [{
                 type: 'pie',
                 name: '语种',
-                data: groupData.tag
+                data: groupData.languages
             }]
         };
+
+        const countriesConfig = {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: '电影产地占比'
+            },
+            tooltip: {
+                headerFormat: '<b>{point.key}</b><br>',
+                pointFormat: '<b>百分比: <i>{point.percentage:.1f}%</i></b><br><b>数\u3000量：</b>{point.y}部'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.3f} %'
+                    },
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    },
+                    // 突出间距
+                    slicedOffset: 20,
+                    point: {
+                        // 每个扇区是数据点对象，所以事件应该写在 point 下面
+                        events: {
+                            // 鼠标滑过是，突出当前扇区
+                            mouseOver: function() {
+                                this.slice();
+                            },
+                            // 鼠标移出时，收回突出显示
+                            mouseOut: function() {
+                                this.slice();
+                            },
+                            // 默认是点击突出，这里屏蔽掉
+                            click: function() {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: '产地',
+                data: groupData.countries
+            }]
+        };
+
         return(
             <div className="user-count-container">
-                <ReactHighcharts config={lineConfig}/>
-                <ReactHighcharts config={pieConfig}/>
+                <ReactHighcharts config={yearConfig}/>
+                <ReactHighcharts config={typesConfig}/>
+                <ReactHighcharts config={languagesConfig}/>
+                <ReactHighcharts config={countriesConfig}/>
             </div>
         );
     }
