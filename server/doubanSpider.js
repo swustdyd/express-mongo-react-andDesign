@@ -40,14 +40,15 @@ const pageEndIndex = Number.MAX_SAFE_INTEGER;
  * 热度：recommend, 时间：time, 评论：rank
  */
 const sort = 'recommend';
-/**
- * 随机cookie
- */
-//let radomCookie = getRadomCookie();
+// /**
+//  * 随机cookie
+//  */
+// let radomCookie = getRadomCookie();
+
 /**
  * 随机headers
  */
-//let radomHeaders = getRadomHeaders();
+let radomHeaders = getRadomHeaders();
 
 process.on('uncaughtException', (err) => {
     console.log('/***** uncaughtException *****/', err);
@@ -135,7 +136,7 @@ async function parseAndSaveMovieWithTag(doubanMovieId: string, doubanMovieTitle:
         const resData = await HttpsUtil.getAsync({
             hostname: 'movie.douban.com',
             path: `/subject/${doubanMovieId}/?from=showing`,
-            headers: getRadomHeaders()
+            headers: radomHeaders
         }, 'utf-8');
         
         //延时，免得被豆瓣封ip
@@ -167,7 +168,7 @@ async function getDoubanList(pageIndex: number, tagIndex: number){
             const resData = await HttpsUtil.getAsync({
                 hostname: 'movie.douban.com',
                 path: `/j/search_subjects?type=movie&tag=${encodeURIComponent(tags[tagIndex])}&sort=${sort}&page_limit=${pageLimit}&page_start=${pageStart}`,
-                headers: getRadomHeaders()
+                headers: radomHeaders
             }, 'utf-8');            
             //延时，免得被豆瓣封ip
             await PublicFunction.delay(2000);
@@ -182,7 +183,8 @@ async function getDoubanList(pageIndex: number, tagIndex: number){
                 logger.error(`请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错，statusCode：${statusCode} `, resData.data);
                 if(tryStartIndex === maxTryTimes){
                     return Promise.reject(new Error(`尝试了${maxTryTimes}次，仍然失败`));
-                }                
+                }
+                radomHeaders = getRadomHeaders();                
             }
         } catch (error) {
             return Promise.reject(error);
@@ -207,9 +209,11 @@ function getRadomCookie() {
  * 获取随机的headers
  */
 function getRadomHeaders(){
+    const radomIndex = Math.floor(Math.random() * DoubanCookies.length );
+    console.log(`radomIndex is ${radomIndex}`);
     const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-        'Cookie': DoubanCookies[DoubanCookies.length -1]
+        'Cookie': DoubanCookies[radomIndex]
     }
     return headers;
 }
