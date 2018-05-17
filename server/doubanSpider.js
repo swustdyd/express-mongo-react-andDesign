@@ -7,6 +7,7 @@ import logger from './common/logger'
 import PublicFunction from './common/publicFunc'
 import BaseConfig from '../baseConfig'
 import {tags} from './doubanTags'
+import DoubanCookies from './doubanCookies'
 
 mongoose.connect(BaseConfig.dbConnectString);
 const doubanMovieService = new DoubanMovieService();
@@ -208,7 +209,7 @@ function getRadomCookie() {
 function getRadomHeaders(){
     const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-        'Cookie': 'll="118318"; _vwo_uuid_v2=268A153A3B0C643D147E31481E0895A1|0a1395ad6b587e425cf1f4bd99fad90b; bid=fkXI8qz-GAc; ct=y; _ga=GA1.2.1991939520.1484715813; _gid=GA1.2.25358410.1526450489; push_noty_num=0; push_doumail_num=0; __utmc=30149280; ps=y; __utmc=223695111; __utmv=30149280.17867; __utma=30149280.1991939520.1484715813.1526536367.1526542648.5; __utmz=30149280.1526542648.5.5.utmcsr=accounts.douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/safety/unlock_sms/resetpassword; __utmt=1; dbcl2="178675845:SCWwIdusqZQ"; ck=TDwN; __utmb=30149280.3.10.1526542648; __utma=223695111.782172476.1501562695.1526536459.1526542669.14; __utmb=223695111.0.10.1526542669; __utmz=223695111.1526542669.14.9.utmcsr=douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1526542669%2C%22https%3A%2F%2Fwww.douban.com%2F%22%5D; _pk_ses.100001.4cf6=*; _pk_id.100001.4cf6=2b9398a388e83bef.1501562694.14.1526542823.1526536472.'
+        'Cookie': DoubanCookies[DoubanCookies.length -1]
     }
     return headers;
 }
