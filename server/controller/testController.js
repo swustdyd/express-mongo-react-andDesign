@@ -33,7 +33,7 @@ export default class TestController extends BaseController{
                 method: 'GET',
                 url: 'https://movie.douban.com//subject/24773958/?from=showing',
                 resolveWithFullResponse: true,
-                proxy: 'http://118.125.28.13:61202',
+                proxy: 'http://163.125.70.185:9999',
                 timeout: 5000
             })
             res.json(body);
