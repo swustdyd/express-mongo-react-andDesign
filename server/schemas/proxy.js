@@ -1,9 +1,12 @@
 import mongoose from 'mongoose'
 
-const SpiderInfoSchema = new mongoose.Schema({
-    tagIndex: Number,
-    httpsSuccessCount: Number,
-    parseSuccessCount: Number,
+const ProxySchema = new mongoose.Schema({
+    country: String,
+    ip: String,
+    port: Number,
+    protocol: String,
+    speed: Number,
+    connectTime: Number,
     meta: {
         createAt:{
             type: Date,
@@ -16,4 +19,4 @@ const SpiderInfoSchema = new mongoose.Schema({
     }
 });
 
-export default SpiderInfoSchema;
+export default ProxySchema;

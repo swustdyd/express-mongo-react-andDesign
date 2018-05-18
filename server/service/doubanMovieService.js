@@ -239,6 +239,7 @@ export default class DoubanMovieServie extends BaseService{
      */
     async getGroupInfoByYear(){
         return await DoubanMovie.aggregate([
+            // {$match: {year: {$gte: 2000}}},
             {$group: {_id: '$year', count: { $sum: 1}}}
         ]).exec();
     }

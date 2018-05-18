@@ -1,8 +1,7 @@
 import mongoose from 'mongoose'
-import DoubanMovieService from './service/doubanMovieService'
-import logger from './common/logger'
-import BaseConfig from '../baseConfig'
-import {tags} from './doubanTags'
+import DoubanMovieService from '../service/doubanMovieService'
+import logger from '../common/logger'
+import BaseConfig from '../../baseConfig'
 
 mongoose.connect(BaseConfig.dbConnectString);
 const doubanMovieService = new DoubanMovieService();
