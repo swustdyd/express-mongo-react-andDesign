@@ -65,6 +65,11 @@ const sorts = ['recommend', 'time', 'rank'];
 let radomHeaders = getRadomHeaders();
 
 /**
+ * 请求延时：毫秒
+ */
+const delayTime = 1000;
+
+/**
  * 开始从豆瓣网获取movie
  * @param {*} tag 分类信息下标
  * @param {*} sort 排序
@@ -119,7 +124,7 @@ async function parseAndSaveMovieWithTag(doubanMovieId: string, doubanMovieTitle:
         }, 'utf-8');
         
         //延时，免得被豆瓣封ip
-        await PublicFunction.delay(2000);
+        await PublicFunction.delay(delayTime);
         const {statusCode} = resData;
         if(statusCode === 200){
             httpsSuccessCount++;
@@ -151,7 +156,7 @@ async function getDoubanList(pageIndex: number, tagIndex: number, sort: string){
                 headers: radomHeaders
             }, 'utf-8');            
             //延时，免得被豆瓣封ip
-            await PublicFunction.delay(2000);
+            await PublicFunction.delay(delayTime);
             const {statusCode} = resData;
             if(statusCode === 200){
                 httpsSuccessCount++;
