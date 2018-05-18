@@ -45,7 +45,7 @@ const tagEndIndex = tags.length - 1;
 /**
  * 单个分类下，获取列表大小限制
  */
-const pageLimit = 20;
+const pageLimit = 100;
 /**
  * 单个分类下，从第几个列表开始获取
  */
