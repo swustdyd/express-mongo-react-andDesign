@@ -12,6 +12,7 @@ import BaseController from './baseController';
 import DoubanMovieServie from '../service/doubanMovieService';
 import PublicFunction from '../common/publicFunc'
 import Proxy from '../models/proxy'
+import crypto from 'crypto'
 
 const testController = new BaseController();
 
@@ -29,15 +30,31 @@ export default class TestController extends BaseController{
      */
     async testJS(req, res, next){
         try {
-            const {statusCode, body} = await request({
+            const timestamp = parseInt(new Date().getTime() / 1000);
+            const orderno = 'ZF2017971234567';
+            const secret = 'cb65091847ad412345678910';
+            const plantext = `orderno=${orderno},secret=${secret},timestamp=${timestamp}`;
+            const md5 = crypto.createHash('md5');
+            md5.update(plantext);
+            let sign = md5.digest('hex');
+            sign = sign.toUpperCase();
+            const resData = await request({
                 method: 'GET',
-                url: 'https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0',
+                // https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0
+                url: 'https://www.baidu.com',
                 resolveWithFullResponse: true,
-                proxy: 'https:/122.72.18.35:80',
-                timeout: 5000
+                rejectUnauthorized: false,
+                followRedirect: false,
+                proxy: 'http://forward.xdaili.cn:80',
+                timeout: 5000,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36 OPR/26.0.1656.60',
+                    'Proxy-Authorization':`sign=${sign}&orderno=${orderno}&timestamp=${timestamp}`
+                }
             })
-            const data = JSON.parse(body);
-            res.json(data);
+            // console.log(statusCode);
+            // const data = JSON.parse(body);
+            res.send(resData);
         } catch (error) {
             next(error);
         }
