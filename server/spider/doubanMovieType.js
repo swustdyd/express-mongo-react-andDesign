@@ -11,7 +11,7 @@ doUpdate();
 async function doUpdate() {
     try {
         const {total} = await doubanMovieService.getDoubanMovies();
-        const pageSize = 50;
+        const pageSize = 20;
         const pageEndIndex = Math.ceil(total / pageSize);
         console.log(`电影总数为：${total}, pageEndIndex: ${pageEndIndex}, pageSize: ${pageSize}`);
         for(let pageIndex = 0; pageIndex < pageEndIndex; pageIndex++){

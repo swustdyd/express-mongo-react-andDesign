@@ -1,4 +1,5 @@
 import $ from 'cheerio'
+import request from 'request-promise-native'
 import SpiderInfo from '../models/spiderInfo'
 import DoubanMovieService from '../service/doubanMovieService'
 import HttpsUtil from '../common/httpsUtil'
@@ -73,12 +74,34 @@ const sorts = ['recommend', 'time', 'rank'];
 /**
  * 随机headers
  */
-let radomHeader = getRadomHeaders();
+//let radomHeader = getRadomHeaders();
 
 /**
  * 请求延时：毫秒
  */
-const delayTime = 2000;
+const delayTime = 500;
+
+/**
+ * 每100次更换一次ip proxy
+ */
+const times = 100;
+
+/**
+ * 可用的代理ip
+ */
+const proxys = [
+    'http://39.135.35.19:80',
+    'http://118.114.77.47:8080'
+]
+/**
+ * 当前的proxy index
+ */
+let currentProxysIndex = 0;
+
+/**
+ * 当前使用的代理
+ */
+let currentProxy = getNextProxy();
 
 /**
  * 开始从豆瓣网获取movie
@@ -128,27 +151,35 @@ async function parseAndSaveMovieWithTag(doubanMovieId: string, doubanMovieTitle:
     if(doubanMovie){
         console.log(`电影 “${doubanMovieId}——${doubanMovieTitle}” 已被解析过`);
     }else{                        
-        const resData = await HttpsUtil.getAsync({
-            hostname: 'movie.douban.com',
-            path: `/subject/${doubanMovieId}/?from=showing`,
-            headers: radomHeader
-        }, 'utf-8');
+        // const resData = await HttpsUtil.getAsync({
+        //     hostname: 'movie.douban.com',
+        //     path: `/subject/${doubanMovieId}/?from=showing`,
+        //     headers: radomHeader
+        // }, 'utf-8');
+
+        const {statusCode, body} = await request({
+            method: 'GET',
+            url: `https://movie.douban.com/subject/${doubanMovieId}/?from=showing`,
+            resolveWithFullResponse: true,
+            proxy: currentProxy,
+            headers: getRadomHeaders()
+        })
         
         //延时，免得被豆瓣封ip
         await PublicFunction.delay(delayTime);
-        const {statusCode} = resData;
+        //const {statusCode} = resData;
         if(statusCode === 200){
             httpsSuccessCount++;
-            const doubanDocument = $.load(resData.data);
+            const doubanDocument = $.load(body);
             doubanMovie = doubanMovieService.getDoubanDetail(doubanDocument);
             //存放豆瓣电影id
             doubanMovie.doubanMovieId = doubanMovieId;
             const saveResult = await doubanMovieService.saveOrUpdateDoubanMovie(doubanMovie);
             parseSuccessCount++;
             console.log(`第${parseSuccessCount}部电影 “${saveResult.doubanMovieId}——${saveResult.name}” 解析成功`);
-            //20次请求换一次header
-            if(httpsSuccessCount % 20 === 0){
-                radomHeader = getRadomHeaders();
+            //100次请求换一次proxy
+            if(httpsSuccessCount % times === 0){
+                currentProxy = getNextProxy();
             }
         }else{
             console.log(`/***** 第${parseIndex}部电影 “${doubanMovieId}——${doubanMovieTitle}” 解析失败, statusCode：${statusCode} *****/`);
@@ -165,33 +196,36 @@ async function getDoubanList(pageIndex: number, tagIndex: number, sort: string){
         try {                    
             //获取列表数据
             console.log(`获取“${tags[tagIndex]}-${sort}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条`);
-            const resData = await HttpsUtil.getAsync({
-                hostname: 'movie.douban.com',
-                path: `/j/search_subjects?type=movie&tag=${encodeURIComponent(tags[tagIndex])}&sort=${sort}&page_limit=${pageLimit}&page_start=${pageStart}`,
-                headers: radomHeader
-            }, 'utf-8');            
+            // const resData = await HttpsUtil.getAsync({
+            //     hostname: 'movie.douban.com',
+            //     path: `/j/search_subjects?type=movie&tag=${encodeURIComponent(tags[tagIndex])}&sort=${sort}&page_limit=${pageLimit}&page_start=${pageStart}`,
+            //     headers: radomHeader
+            // }, 'utf-8'); 
+            const {statusCode, body} = await request({
+                method: 'GET',
+                url: `https://movie.douban.com/j/search_subjects?type=movie&tag=${encodeURIComponent(tags[tagIndex])}&sort=${sort}&page_limit=${pageLimit}&page_start=${pageStart}`,
+                resolveWithFullResponse: true,
+                proxy: currentProxy,
+                headers: getRadomHeaders()
+            })
             //延时，免得被豆瓣封ip
             await PublicFunction.delay(delayTime);
-            const {statusCode} = resData;
             if(statusCode === 200){
                 httpsSuccessCount++;
-                const {subjects: tempList} = JSON.parse(resData.data);
-                subjects = tempList;
-                //20次请求换一次header
-                if(httpsSuccessCount % 20 === 0){
-                    radomHeader = getRadomHeaders();
+                subjects = JSON.parse(body);
+                //100次请求换一次proxy
+                if(httpsSuccessCount % times === 0){
+                    currentProxy = getNextProxy();
                 }
                 break;
-            }else{
-                console.log(`/***** 请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错，statusCode：${statusCode} *****/`);
-                logger.error(`请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错，statusCode：${statusCode} `, resData.data);
-                if(tryStartIndex === maxTryTimes){
-                    return Promise.reject(new Error(`尝试了${maxTryTimes}次，仍然失败`));
-                }
-                radomHeader = getRadomHeaders();                
             }
         } catch (error) {
-            return Promise.reject(error);
+            console.log(`/***** 请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错 *****/`);
+            logger.error(`请求“${tags[tagIndex]}”的列表数据 ${pageStart + 1} 到 ${pageStart + pageLimit} 条出错`, error);
+            if(tryStartIndex === maxTryTimes){
+                return Promise.reject(new Error(`尝试了${maxTryTimes}次，仍然失败`));
+            }
+            currentProxy = getNextProxy();
         }
     }
     return subjects;
@@ -213,16 +247,22 @@ function getRadomCookie() {
  * 获取随机的headers
  */
 function getRadomHeaders(){
-    const radomCookieIndex = Math.floor(Math.random() * doubanCookies.length );
+    //const radomCookieIndex = Math.floor(Math.random() * doubanCookies.length );
     const radomUserAgentIndex = Math.floor(Math.random() * doubanCookies.length );
-    console.log(`radomCookieIndex is ${radomCookieIndex}, radomUserAgentIndex is ${radomUserAgentIndex}`);
     const headers = {
-        'User-Agent': userAgents[radomUserAgentIndex],
-        'Cookie': doubanCookies[5]
+        'User-Agent': userAgents[radomUserAgentIndex]
+        //'Cookie': doubanCookies[5]
     }
     return headers;
 }
 
+/**
+ * 更换代理
+ */
+function getNextProxy(){
+    currentProxysIndex++;
+    return proxys[currentProxysIndex % proxys.length];
+}
 
 /**
  * 豆瓣爬虫

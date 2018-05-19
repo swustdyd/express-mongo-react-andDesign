@@ -31,12 +31,13 @@ export default class TestController extends BaseController{
         try {
             const {statusCode, body} = await request({
                 method: 'GET',
-                url: 'https://movie.douban.com//subject/24773958/?from=showing',
+                url: 'https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0',
                 resolveWithFullResponse: true,
-                proxy: 'http://163.125.70.185:9999',
+                proxy: 'https:/122.72.18.35:80',
                 timeout: 5000
             })
-            res.json(body);
+            const data = JSON.parse(body);
+            res.json(data);
         } catch (error) {
             next(error);
         }
