@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
 
 const SpiderInfoSchema = new mongoose.Schema({
-    tagIndex: Number,
-    httpsSuccessCount: Number,
-    parseSuccessCount: Number,
+    offset: Number,
+    requestCount: Number,
+    successCount: Number,
     meta: {
         createAt:{
             type: Date,

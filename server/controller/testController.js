@@ -13,6 +13,8 @@ import DoubanMovieServie from '../service/doubanMovieService';
 import PublicFunction from '../common/publicFunc'
 import Proxy from '../models/proxy'
 import crypto from 'crypto'
+import HttpsProxyAgent from 'https-proxy-agent'
+import Url from 'url'
 
 const testController = new BaseController();
 
@@ -31,22 +33,40 @@ export default class TestController extends BaseController{
     async testJS(req, res, next){
         try {
             const timestamp = parseInt(new Date().getTime() / 1000);
-            const orderno = 'ZF2017971234567';
-            const secret = 'cb65091847ad412345678910';
+            const orderno = 'ZF20185198833KDe2RM';
+            const secret = 'd9709e1cd99b4d978dc840c315d568b4';
             const plantext = `orderno=${orderno},secret=${secret},timestamp=${timestamp}`;
             const md5 = crypto.createHash('md5');
             md5.update(plantext);
             let sign = md5.digest('hex');
             sign = sign.toUpperCase();
+            // // HTTP/HTTPS proxy to connect to
+            // const proxy = process.env.http_proxy || 'http://forward.xdaili.cn:80';
+            // console.log('using proxy server %j', proxy);
+
+            // // HTTPS endpoint for the proxy to connect to
+            // const endpoint = process.argv[2] || 'https://www.baidu.com';
+            // console.log('attempting to GET %j', endpoint);
+            // const options = Url.parse('https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0');
+            // options.headers = {
+            //     'Proxy-Authorization':'sign='+sign+'&orderno='+orderno+'&timestamp='+timestamp
+            // }
+            // options.rejectUnauthorized = false
+
+            // // create an instance of the `HttpsProxyAgent` class with the proxy server information
+            // const agent = new HttpsProxyAgent(proxy);
+            // options.agent = agent;
+
+            // https.get(options, function (httpsRes) {
+            //     console.log('"response" event!', res.headers);
+            //     httpsRes.pipe(res);
+            // });
             const resData = await request({
                 method: 'GET',
-                // https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0
-                url: 'https://www.baidu.com',
+                url: 'https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0',
                 resolveWithFullResponse: true,
                 rejectUnauthorized: false,
-                followRedirect: false,
-                proxy: 'http://forward.xdaili.cn:80',
-                timeout: 5000,
+                agent: new HttpsProxyAgent('http://forward.xdaili.cn:80'),
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36 OPR/26.0.1656.60',
                     'Proxy-Authorization':`sign=${sign}&orderno=${orderno}&timestamp=${timestamp}`

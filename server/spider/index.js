@@ -6,8 +6,9 @@ import BaseConfig from '../../baseConfig'
 mongoose.connect(BaseConfig.dbConnectString);
 
 process.nextTick(async () => {
-    try {        
-        await DoubanSpider.start();
+    try {
+        const doubanSpider = new DoubanSpider();    
+        await doubanSpider.start();
     } catch (error) {
         logger.error(error);
     }
