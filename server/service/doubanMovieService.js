@@ -236,40 +236,44 @@ export default class DoubanMovieServie extends BaseService{
 
     /**
      * 获取类型(year)的分组信息
+     * @param {*} match
      */
-    async getGroupInfoByYear(){
+    async getGroupInfoByYear(match: {}){
         return await DoubanMovie.aggregate([
-            // {$match: {year: {$gte: 2000}}},
+            {$match: match},
             {$group: {_id: '$year', count: { $sum: 1}}}
         ]).exec();
     }
 
     /**
      * 获取类型(types)的分组信息
+     * @param {*} match
      */
-    async getGroupInfoByTypes(){
+    async getGroupInfoByTypes(match: {}){
         return await MovieType.aggregate([
-            {$match: {typeKey: 'types'}},
+            {$match: {typeKey: 'types', ...match}},
             {$group: {_id: '$typeValue', count: { $sum: 1}}}
         ]).exec();
     }
 
     /**
      * 获取类型(languages)的分组信息
+     * @param {*} match
      */
-    async getGroupInfoByLanguages(){
+    async getGroupInfoByLanguages(match: {}){
         return await MovieType.aggregate([
-            {$match: {typeKey: 'languages'}},
+            {$match: {typeKey: 'languages', ...match}},
             {$group: {_id: '$typeValue', count: { $sum: 1}}}
         ]).exec();
     }
 
     /**
      * 获取类型(countries)的分组信息
+     * @param {*} match
      */
-    async getGroupInfoByCountries(){
+    async getGroupInfoByCountries(match: {}){
         return await MovieType.aggregate([
-            {$match: {typeKey: 'countries'}},
+            {$match: {typeKey: 'countries', ...match}},
             {$group: {_id: '$typeValue', count: { $sum: 1}}}
         ]).exec();
     }

@@ -165,17 +165,50 @@ export default class MovieController extends BaseController{
     async getGroupInfoOfDouban(req, res, next){
         try {
             const dataList = await Promise.all([
-                this._doubanMovieServie.getGroupInfoByYear(),
+                this._doubanMovieServie.getGroupInfoByYear({year: {$gte: 2000}}),
                 this._doubanMovieServie.getGroupInfoByTypes(),
                 this._doubanMovieServie.getGroupInfoByLanguages(),
                 this._doubanMovieServie.getGroupInfoByCountries()
             ]);
+            // const result = {
+            //     year: dataList[0],
+            //     types: dataList[1],
+            //     languages: dataList[2],
+            //     countries: dataList[3]
+            // }
             const result = {
                 year: dataList[0],
-                types: dataList[1],
-                languages: dataList[2],
-                countries: dataList[3]
+                types: [],
+                languages: [],
+                countries: []
             }
+            dataList.forEach((items, index) => {
+                switch (index) {
+                    case 1:
+                        items.forEach((item) => {
+                            if(item.count >= 100){                                         
+                                result.types.push(item)
+                            }                   
+                        })
+                        break;
+                    case 2:
+                        items.forEach((item) => {
+                            if(item.count >= 100){                                         
+                                result.languages.push(item)
+                            }                   
+                        })
+                        break;
+                    case 3:
+                        items.forEach((item) => {
+                            if(item.count >= 100){                                         
+                                result.countries.push(item)
+                            }                   
+                        })
+                        break;
+                    default:
+                        break;
+                }
+            })
             res.json({success: true, result});
         } catch (error) {
             next(error);

@@ -154,42 +154,45 @@ export default class DoubanSpider{
         if(doubanMovie){
             console.log(`parsed id: '${doubanMovieId}' title: '${doubanMovieTitle}'`);
         }else{
-            while(tryTimes < maxTimes){                
-                tryTimes++;
-                this.state.requestCount++;                    
-                //解析并保存到数据库
-                const time = new Date().getTime();
-                console.log(`parsing id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(time).format('HH:mm:ss.SSS')}`);
-                const {statusCode, body} = await request({
-                    url: `https://movie.douban.com/subject/${doubanMovieId}/?from=showing`,
-                    resolveWithFullResponse: true,
-                    rejectUnauthorized: false,
-                    agent: new HttpsProxyAgent(this.setting.proxy),
-                    headers: this.getRadomHeaders()
-                }).catch((error) => {
+            while(tryTimes < maxTimes){
+                try {
+                    tryTimes++;
+                    this.state.requestCount++;                    
+                    //解析并保存到数据库
+                    const time = new Date().getTime();
+                    console.log(`parsing id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(time).format('HH:mm:ss.SSS')}`);
+                    const {statusCode, body} = await request({
+                        url: `https://movie.douban.com/subject/${doubanMovieId}/?from=showing`,
+                        resolveWithFullResponse: true,
+                        rejectUnauthorized: false,
+                        agent: new HttpsProxyAgent(this.setting.proxy),
+                        headers: this.getRadomHeaders()
+                    })
+                    if(statusCode === 200){
+                        try {
+                            //检测代理是否正常
+                            const {msg} = JSON.parse(body);
+                            return Promise.reject(new Error(msg));
+                        } catch (e) {
+                            //返回的不是json数据，表示正常
+                        }
+                        const doubanDocument = $.load(body);
+                        doubanMovie = this._doubanMovieService.getDoubanDetail(doubanDocument);
+                        //添加豆瓣电影id
+                        doubanMovie.doubanMovieId = doubanMovieId;
+                        await this._doubanMovieService.saveOrUpdateDoubanMovie(doubanMovie);
+                        this.state.successCount++;                      
+                        console.log(`success id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(new Date()).format('HH:mm:ss.SSS')}, cast: ${(new Date().getTime() - time)} ms`);
+                        break;
+                    }else{
+                        logger.error(`parsing request status code error: '${statusCode}'`, body);
+                    }               
+                } catch (error) {
                     const message = `error on parsing id: '${doubanMovieId}' title: '${doubanMovieTitle}', statusCode is '${error.statusCode}'`;
                     console.log(message);
                     logger.error(message, error.message);
-                })
-                if(statusCode === 200){
-                    try {
-                        //检测代理是否正常
-                        const {msg} = JSON.parse(body);
-                        return Promise.reject(new Error(msg));
-                    } catch (e) {
-                        //返回的不是json数据，表示正常
-                    }
-                    const doubanDocument = $.load(body);
-                    doubanMovie = this._doubanMovieService.getDoubanDetail(doubanDocument);
-                    //添加豆瓣电影id
-                    doubanMovie.doubanMovieId = doubanMovieId;
-                    await this._doubanMovieService.saveOrUpdateDoubanMovie(doubanMovie);
-                    this.state.successCount++;                      
-                    console.log(`success id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(new Date()).format('HH:mm:ss.SSS')}, cast: ${(new Date().getTime() - time)} ms`);
-                    break;
-                }else{
-                    logger.error(`parsing request status code error: '${statusCode}'`, body);
-                }               
+                }              
+                
                 console.log('begin to try again');
             }
         }
