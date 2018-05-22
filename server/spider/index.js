@@ -4,10 +4,10 @@ import DoubanSpider from './doubanSpider'
 import BaseConfig from '../../baseConfig'
 
 mongoose.connect(BaseConfig.dbConnectString);
+const doubanSpider = new DoubanSpider();    
 
 process.nextTick(async () => {
     try {
-        const doubanSpider = new DoubanSpider();    
         await doubanSpider.start();
     } catch (error) {
         logger.error(error);

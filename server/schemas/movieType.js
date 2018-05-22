@@ -4,7 +4,10 @@ const {ObjectId} = Schema.Types;
 
 const DoubanTypeSchema = new mongoose.Schema({
     doubanMovieId: String,
-    mongoObjectId: ObjectId,
+    mongoObjectId: {
+        type: ObjectId,
+        ref: 'DoubanMovie'
+    },
     typeKey: String,
     typeValue: String,
     meta: {

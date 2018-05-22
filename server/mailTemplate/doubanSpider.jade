@@ -1,0 +1,38 @@
+doctype
+style.
+    #errorList{
+        border-collapse: collapse;
+        width: 100%;
+    }
+    #errorList td, 
+    #errorList tr{
+        border: 1px solid #000;
+    }
+    #errorList td{
+        padding: 5px;
+    }
+    #errorList .index,
+    #errorList .id,
+    #errorList .title{
+        font-weight: bold;
+        background-color: #ddd;
+    }
+    i.time{
+        text-decoration: underline;
+    }
+p Douban spider has stoped, because of #[strong #{reason}],
+p The count of total request is #[strong #{requestCount}], 
+    | The count of success request is #[strong #{successCount}], 
+    | from #[i.time #{startTime}] to #[i.time #{endTime}]
+p !{errorTip}
+if errorMovies.length > 0
+    table#errorList
+        tr
+            td.index index
+            td.id id
+            td.title title
+        each item,index in errorMovies
+            tr
+                td.index #{index + 1}
+                td #{item.id}
+                td #{item.title}

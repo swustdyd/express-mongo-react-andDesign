@@ -15,6 +15,10 @@ import Proxy from '../models/proxy'
 import crypto from 'crypto'
 import HttpsProxyAgent from 'https-proxy-agent'
 import Url from 'url'
+import jade from 'jade'
+import EmailUtil from '../common/emailUtil'
+import path from 'path'
+import BaseConfig from '../../baseConfig'
 
 const testController = new BaseController();
 
@@ -32,49 +36,41 @@ export default class TestController extends BaseController{
      */
     async testJS(req, res, next){
         try {
-            const timestamp = parseInt(new Date().getTime() / 1000);
-            const orderno = 'ZF20185198833KDe2RM';
-            const secret = 'd9709e1cd99b4d978dc840c315d568b4';
-            const plantext = `orderno=${orderno},secret=${secret},timestamp=${timestamp}`;
-            const md5 = crypto.createHash('md5');
-            md5.update(plantext);
-            let sign = md5.digest('hex');
-            sign = sign.toUpperCase();
-            // // HTTP/HTTPS proxy to connect to
-            // const proxy = process.env.http_proxy || 'http://forward.xdaili.cn:80';
-            // console.log('using proxy server %j', proxy);
-
-            // // HTTPS endpoint for the proxy to connect to
-            // const endpoint = process.argv[2] || 'https://www.baidu.com';
-            // console.log('attempting to GET %j', endpoint);
-            // const options = Url.parse('https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0');
-            // options.headers = {
-            //     'Proxy-Authorization':'sign='+sign+'&orderno='+orderno+'&timestamp='+timestamp
-            // }
-            // options.rejectUnauthorized = false
-
-            // // create an instance of the `HttpsProxyAgent` class with the proxy server information
-            // const agent = new HttpsProxyAgent(proxy);
-            // options.agent = agent;
-
-            // https.get(options, function (httpsRes) {
-            //     console.log('"response" event!', res.headers);
-            //     httpsRes.pipe(res);
-            // });
-            const resData = await request({
-                method: 'GET',
-                url: 'https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0',
-                resolveWithFullResponse: true,
-                rejectUnauthorized: false,
-                agent: new HttpsProxyAgent('http://forward.xdaili.cn:80'),
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36 OPR/26.0.1656.60',
-                    'Proxy-Authorization':`sign=${sign}&orderno=${orderno}&timestamp=${timestamp}`
+            const errorMovies = [
+                {
+                    id: '1',
+                    title: 'test1'
+                },
+                {
+                    id: '1',
+                    title: 'test1'
+                },
+                {
+                    id: '1',
+                    title: 'test1'
                 }
+            ]
+            const html = jade.renderFile(path.join(BaseConfig.root, './server/mailTemplate/doubanSpider.jade'), {
+                reason: 'no reason',
+                requestCount: 100,
+                successCount: 100,
+                errorTip: 'The count of error movie is <strong>3</strong>',
+                startTime: '2018-5-21 15:50:32',
+                endTime: '2018-5-21 15:50:32',
+                errorMovies: errorMovies
             })
-            // console.log(statusCode);
-            // const data = JSON.parse(body);
-            res.send(resData);
+            const info = await EmailUtil.sendEmail({
+                to: '1562044678@qq.com',
+                subject: 'Test NodeMailer',
+                html: html,
+                attachments: [
+                    {   // utf-8 string as an attachment
+                        filename: 'error-movies.json',
+                        content: JSON.stringify(errorMovies)
+                    }
+                ]
+            });
+            res.send(html);
         } catch (error) {
             next(error);
         }
@@ -82,32 +78,28 @@ export default class TestController extends BaseController{
 
     async testCheerio(req, res, next){
         try {
-            const proxys = await Proxy.find();
-            const activeProxys = [];
-            for (let i = 0; i < proxys.length; i++) {
-                const proxy = proxys[i];
-                let active = true;
-                try {
-                    const {statusCode} = await request({
-                        method: 'GET',
-                        url: 'https://movie.douban.com//subject/24773958/?from=showing',
-                        resolveWithFullResponse: true,
-                        proxy: `${proxy.protocol}://${proxy.ip}:${proxy.port}`,
-                        timeout: 5000
-                    })
-                    active = statusCode === 200;
-                } catch (error) {
-                    console.log(error);
-                    active = false;
-                }
-                
-                if(!active){ 
-                    await Proxy.remove({ip: proxy.ip});
-                }else{
-                    activeProxys.push(proxy);
-                }
-            }            
-            res.send(activeProxys);
+            const proxy = 'http://forward.xdaili.cn:80';
+            const orderno = 'ZF20185198833KDe2RM';
+            const secret = 'd9709e1cd99b4d978dc840c315d568b4';
+            const timestamp = parseInt(new Date().getTime() / 1000);
+            const plantext = `orderno=${orderno},secret=${secret},timestamp=${timestamp}`;
+            const md5 = crypto.createHash('md5');
+            md5.update(plantext);
+            let sign = md5.digest('hex');
+            sign = sign.toUpperCase();
+            const proxyAuthorization = `sign=${sign}&orderno=${orderno}&timestamp=${timestamp}`;
+            const headers = {
+                'Proxy-Authorization': proxyAuthorization
+            }
+            const resData = await HttpsUtil.getAsync({
+                host: 'movie.douban.com',
+                path: '/subject/3149755/?from=showing',
+                headers: headers,
+                rejectUnauthorized: false,
+                agent: new HttpsProxyAgent(proxy),
+                timeout: 5000
+            }, 'utf-8')
+            res.send(resData);
         } catch (error) {
             next(error);
         }

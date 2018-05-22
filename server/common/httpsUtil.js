@@ -9,7 +9,7 @@ export default class HttpsUtil {
      * @param {*} options 请求的配置
      * @param {*} resEncoding 对response的编码，不设置则返回buffer
      */
-    static getAsync(options: {}|string|URL, resEncoding?: string) : Promise<{statusCode: number, headers: {}, data: string|Buffer}>{
+    static getAsync(options: {}|string|URL, resEncoding?: string) : Promise<{statusCode: number, headers: {}, body: string|Buffer}>{
         //options = Object.assign({}, options, { method: 'GET'});
         return new Promise((resolve, reject) => {
             const req = https.request(options, (res) => {
@@ -26,13 +26,13 @@ export default class HttpsUtil {
                     dataList.push(data);
                 });
                 res.on('end', () => {
-                    let data = '';
+                    let body = '';
                     if(resEncoding){
-                        data = dataList.join('');
+                        body = dataList.join('');
                     }else{
-                        data = Buffer.concat(dataList);
+                        body = Buffer.concat(dataList);
                     }
-                    resolve({data, ...resData});
+                    resolve({body, ...resData});
                 })
             });
             req.on('error', (e) => {

@@ -1,11 +1,16 @@
 import $ from 'cheerio'
-import request from 'request-promise-native'
+import request from 'request'
 import SpiderInfo from '../models/spiderInfo'
 import DoubanMovieService from '../service/doubanMovieService'
 import logger from '../common/logger'
 import crypto from 'crypto'
 import HttpsProxyAgent from 'https-proxy-agent'
 import moment from 'moment'
+import jade from 'jade'
+import EmailUtil from '../common/emailUtil'
+import BaseConfig from '../../baseConfig'
+import path from 'path'
+import HttpsUtil from '../common/httpsUtil'
 
 /**
  * 常用 User-Agent
@@ -27,18 +32,23 @@ export default class DoubanSpider{
     constructor(){
         this.setting = {
             proxy: 'http://forward.xdaili.cn:80',
-            timeout: 5000,
+            timeout: 3000,
             maxTryTimes: 30,
             orderno: 'ZF20185198833KDe2RM',
             secret: 'd9709e1cd99b4d978dc840c315d568b4',
-            pageLimit: 20
+            pageLimit: 20,
+            noResponsTimeOut: 1 * 60 *1000 //1分钟无反应，停止spider
         };
 
         this.state = {
             requestCount: 0,
             successCount: 0,
             lastOffset: 0,
-            currentOffset: 0
+            currentOffset: 0,
+            errorMovies: [],
+            stopReason: '',
+            constraintStop: false,
+            startTime: new Date()
         }
 
         this._doubanMovieService = new DoubanMovieService();
@@ -48,8 +58,9 @@ export default class DoubanSpider{
      * 开始豆瓣爬虫
      */
     async start(){
+        const {startTime, constraintStop} = this.state;
         try {
-            console.log('douban spider start')
+            console.log(`douban spider start at ${moment(startTime).format('YYYY-MM-DD HH:mm:ss.SSS')}`);
             const latestSpiderInfos = await SpiderInfo.find().limit(1).sort({'meta.updateAt': 'desc'}).exec();
             if(latestSpiderInfos && latestSpiderInfos.length > 0){
                 this.state.currentOffset = this.state.lastOffset = latestSpiderInfos[0].offset;
@@ -59,39 +70,115 @@ export default class DoubanSpider{
             let subjects = [];
             do {
                 const {currentOffset} = this.state;
-                subjects = await this.getDoubanList(currentOffset);
-                if(subjects.length > 0){
-                    // //并发解析列表的数据，但是容易出现代理错误：Concurrent number exceeds limit
-                    // const promiseList = [];
-                    // subjects.forEach((item) => {
-                    //     promiseList.push(this.parseAndSaveMovie(item.id, item.title));
-                    // })
-                    // await Promise.all(promiseList);                     
-                    // this.state.currentOffset += subjects.length;
-                    
-                    //顺序解析，减少并发次数
-                    for (let i = 0; i < subjects.length; i++) {
-                        const item = subjects[i];
-                        await this.parseAndSaveMovie(item.id, item.title);
-                        this.state.currentOffset++;
-                    }                     
+                const {maxTryTimes, pageLimit, noResponsTimeOut} = this.setting;                
+                let tryTimes = 0;
+                while(tryTimes < maxTryTimes){ 
+                    tryTimes++;
+                    // //监听是否阻塞不运行
+                    // const checkTimer = setTimeout(() => {
+                    //     this.state.constraintStop = true;
+                    //     this.state.stopReason = `spider no respond for ${(new Date().getTime() - requestStartTime.getTime()) / 1000}s, at get list from '${currentOffset + 1}' to '${currentOffset + pageLimit}'`;                         
+                    // }, noResponsTimeOut);
+                    try {
+                        const requestStartTime = new Date();
+                        console.log(`get list from '${currentOffset + 1}' to '${currentOffset + pageLimit}', at ${moment(requestStartTime).format('YYYY-MM-DD HH:mm:ss.SSS')}`);
+                        this.state.requestCount++;                     
+                        subjects = await this.getDoubanList(currentOffset);
+                        // clearTimeout(checkTimer);
+                        break;
+                    } catch (error) {
+                        const message = `error on get list from '${currentOffset + 1}' to '${currentOffset + pageLimit}', becsuse of '${error.message}'`;
+                        console.log(message);
+                        logger.error(message);
+                        if(tryTimes >= maxTryTimes){
+                            throw new Error(`try to get list for '${tryTimes}' times, but is still not success`);
+                        }
+                        // clearTimeout(checkTimer);
+                    }                    
+                    console.log('begin to get list again');
                 }
+                                
+                //顺序解析，减少并发次数
+                for (let i = 0; i < subjects.length; i++) {
+                    const item = subjects[i];
+                    const requestStartTime = new Date();
+                    // //监听是否阻塞不运行
+                    // const checkTimer = setTimeout(() => {
+                    //     this.state.constraintStop = true;
+                    //     this.state.stopReason = `spider no respond for ${(new Date().getTime() - requestStartTime.getTime()) / 1000}s, at parsing movie: ${item.title}`;                        
+                    // }, noResponsTimeOut);
+                    const success = await this.parseAndSaveMovie(item.id, item.title);
+                    // clearTimeout(checkTimer);
+                    if(!success){
+                        this.state.errorMovies.push({id: item.id, title: item.title});
+                    }
+                    this.state.currentOffset++;
+                }                    
+                
 
-            } while (subjects.length > 0);
-            
-            console.log('all data has been parsed');
+            } while (subjects.length > 0 && !this.state.constraintStop);            
+            if(!this.state.constraintStop){                
+                this.state.stopReason = 'all data has been parsed';
+                console.log(this.state.stopReason);
+            }
         } catch (error) {
-            const {currentOffset, requestCount, successCount} = this.state;
-            const spiderInfo = new SpiderInfo({
-                offset: currentOffset,
-                requestCount: requestCount,
-                successCount: successCount
-            });
-            await spiderInfo.save();
-            console.log(`douban spider stop, because of '${error.message}'`);
-            console.log(`requestCount is ${requestCount}, successCount: '${successCount}'`);
+            this.state.stopReason = error.message;           
             logger.error('douban spider stop', error);
         }
+        await this.handleSpiderStop();
+    }
+
+    async handleSpiderStop(){
+        const endTime = new Date();
+        const {currentOffset, requestCount, successCount, errorMovies, startTime, stopReason} = this.state;
+        const spiderInfo = new SpiderInfo({
+            offset: currentOffset,
+            requestCount: requestCount,
+            successCount: successCount,
+            errorMovies: errorMovies,
+            startTime: startTime,
+            endTime: endTime
+        });        
+        await spiderInfo.save();
+        const startTimeStr = moment(startTime).format('YYYY-MM-DD HH:mm:ss.SSS');
+        const endTimeStr = moment(endTime).format('YYYY-MM-DD HH:mm:ss.SSS');
+        console.log(`requestCount is ${requestCount}, successCount: '${successCount}', from ${startTimeStr} to ${endTimeStr}`);
+
+        const jadeOption = {
+            reason: stopReason,
+            requestCount: requestCount,
+            successCount: successCount,
+            errorCount: errorMovies.length,
+            errorTip: 'The count of error movie is <strong>3</strong>',
+            startTime: startTimeStr,
+            endTime: endTimeStr,
+            errorMovies: errorMovies
+        }
+
+        const attachments = [];
+        if(errorMovies.length >= 50){
+            jadeOption.errorTip = `The count of error movie is <strong>${errorMovies.length}</strong>, detail is on the attachments: <strong>error-movies.json</strong> `
+            attachments.push(
+                {   // utf-8 string as an attachment
+                    filename: 'error-movies.json',
+                    content: JSON.stringify(errorMovies)
+                }
+            );
+        }else{
+            jadeOption.errorTip = `The count of error movie is <strong>${errorMovies.length}</strong>`
+            jadeOption.errorMovies = errorMovies;
+        }
+
+        const html = jade.renderFile(path.join(BaseConfig.root, './server/mailTemplate/doubanSpider.jade'), jadeOption);
+
+        await EmailUtil.sendEmail({
+            to: '1562044678@qq.com',
+            subject: 'Douban Spider Stop',
+            html: html,
+            attachments: attachments
+        });
+        console.log(`douban spider stop, because of '${stopReason}'`); 
+        process.exit();
     }
 
     /**
@@ -99,47 +186,61 @@ export default class DoubanSpider{
      * @param {*} offset 
      */
     async getDoubanList(offset: number){
-        let subjects = [];
-        let tryTimes = 0;
-        while(tryTimes < this.setting.maxTryTimes){                
-            tryTimes++;
-            try {
-                this.state.requestCount++;                    
-                //获取列表数据
-                console.log(`get list from '${offset + 1}' to '${offset + this.setting.pageLimit}'`);
-                const {statusCode, body} = await request({
-                    url: `https://movie.douban.com/j/new_search_subjects?tag=${encodeURIComponent('电影')}&sort=T&range=0,10&start=${offset}`,
-                    resolveWithFullResponse: true,
-                    rejectUnauthorized: false,
-                    agent: new HttpsProxyAgent(this.setting.proxy),
-                    headers: this.getRadomHeaders(),                
-                    timeout: this.setting.timeout
-                })
-                if(statusCode === 200){
-                    this.state.successCount++;
-                    const {data: tempSubjects, msg} = JSON.parse(body);
-                    //msg不为空，表示代理出错了
-                    if(msg){
-                        return Promise.reject(new Error(msg));
-                    }
-                    subjects = tempSubjects;
-                    break;
-                }else{
-                    logger.error(`list request status code error: '${statusCode}'`, body);
+        if(this.state.constraintStop){
+            return [];
+        }
+        try {               
+            //获取列表数据
+            const {body, statusCode} = await HttpsUtil.getAsync({
+                host: 'movie.douban.com',
+                path: `/j/new_search_subjects?tag=${encodeURIComponent('电影')}&sort=T&range=0,10&start=${offset}`,
+                rejectUnauthorized: false,
+                agent: new HttpsProxyAgent(this.setting.proxy),
+                headers: this.getRadomHeaders(),                
+                timeout: this.setting.timeout
+            });
+            if(statusCode === 200){
+                this.state.successCount++;
+                const {data, msg} = JSON.parse(body);
+                //msg不为空，表示代理出错了
+                if(msg){
+                    return Promise.reject(new Error(msg));
                 }
-            } catch (error) {
-                const message = `error on get list from '${offset + 1}' to '${offset + this.setting.pageLimit}', becsuse of '${error.message}'`;
-                console.log(message);
-                logger.error(message, error);
+                return data;
+            }else{
+                return Promise.reject(new Error(`error code ${statusCode}`));
             }
-            console.log('begin to try again');
+        }catch(error){
+            return Promise.reject(error);
         }
-
-        if(tryTimes >= this.setting.maxTryTimes){
-            return Promise.reject(new Error(`try to get list for '${tryTimes}' times, but is still not success`));
-        }else{
-            return subjects;
-        }
+        // return new Promise((resolve, reject) => {               
+        //     //获取列表数据
+        //     request({
+        //         url: `https://movie.douban.com/j/new_search_subjects?tag=${encodeURIComponent('电影')}&sort=T&range=0,10&start=${offset}`,
+        //         resolveWithFullResponse: true,
+        //         rejectUnauthorized: false,
+        //         agent: new HttpsProxyAgent(this.setting.proxy),
+        //         headers: this.getRadomHeaders(),                
+        //         timeout: this.setting.timeout
+        //     }, (error, response, body) => {
+        //         if(error){
+        //             reject(error);
+        //             return;
+        //         }
+        //         const {statusCode} = response;
+        //         if(statusCode === 200){
+        //             this.state.successCount++;
+        //             const {data, msg} = JSON.parse(body);
+        //             //msg不为空，表示代理出错了
+        //             if(msg){
+        //                 reject(new Error(msg));
+        //             }
+        //             resolve(data);
+        //         }else{
+        //             reject(new Error(`error code ${statusCode}`));
+        //         }
+        //     })
+        // })        
     }
 
     /**
@@ -147,27 +248,31 @@ export default class DoubanSpider{
      * @param {*} doubanMovieId 豆瓣电影id
      * @param {*} doubanMovieTitle 豆瓣电影名字
      */
-    async parseAndSaveMovie(doubanMovieId: string, doubanMovieTitle: stirng){
-        let tryTimes = 0;
-        const maxTimes = 5;
+    async parseAndSaveMovie(doubanMovieId: string, doubanMovieTitle: stirng) : Promise<boolean>{
+        if(this.state.constraintStop){
+            return true;
+        }
         let doubanMovie = await this._doubanMovieService.getDoubanMoviesByDoubanid(doubanMovieId);
         if(doubanMovie){
             console.log(`parsed id: '${doubanMovieId}' title: '${doubanMovieTitle}'`);
+            return true;
         }else{
-            while(tryTimes < maxTimes){
+            let tryTimes = 0;
+            do {                
                 try {
                     tryTimes++;
                     this.state.requestCount++;                    
                     //解析并保存到数据库
                     const time = new Date().getTime();
                     console.log(`parsing id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(time).format('HH:mm:ss.SSS')}`);
-                    const {statusCode, body} = await request({
-                        url: `https://movie.douban.com/subject/${doubanMovieId}/?from=showing`,
-                        resolveWithFullResponse: true,
+                    const {body, statusCode} = await HttpsUtil.getAsync({
+                        host: 'movie.douban.com',
+                        path: `/subject/${doubanMovieId}/?from=showing`,
                         rejectUnauthorized: false,
                         agent: new HttpsProxyAgent(this.setting.proxy),
-                        headers: this.getRadomHeaders()
-                    })
+                        headers: this.getRadomHeaders(),
+                        timeout: this.setting.timeout
+                    }, 'utf-8');
                     if(statusCode === 200){
                         try {
                             //检测代理是否正常
@@ -183,25 +288,85 @@ export default class DoubanSpider{
                         await this._doubanMovieService.saveOrUpdateDoubanMovie(doubanMovie);
                         this.state.successCount++;                      
                         console.log(`success id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(new Date()).format('HH:mm:ss.SSS')}, cast: ${(new Date().getTime() - time)} ms`);
-                        break;
+                        return true;
+                        //break;                        
                     }else{
-                        logger.error(`parsing request status code error: '${statusCode}'`, body);
-                    }               
+                        const message = `error on parsing id '${doubanMovieId}' title '${doubanMovieTitle}', because of 'error code ${statusCode}'`;
+                        console.log(message);
+                        logger.error(message);
+                        //return false;
+                    } 
+                    console.log('begin to parse again');                 
                 } catch (error) {
-                    const message = `error on parsing id: '${doubanMovieId}' title: '${doubanMovieTitle}', statusCode is '${error.statusCode}'`;
+                    const message = `error on parsing id '${doubanMovieId}' title '${doubanMovieTitle}', because of '${error.message}'`;
                     console.log(message);
-                    logger.error(message, error.message);
-                }              
-                
-                console.log('begin to try again');
-            }
+                    logger.error(message);
+                    //return false;
+                }
+                if(tryTimes <= this.state.maxTryTimes ){
+                    return Promise.reject(new Error(`try to parse for '${tryTimes}' times, but is still not success`))
+                }
+            } while (tryTimes <= this.state.maxTryTimes);     
         }
-        if(tryTimes >= maxTimes){
-            const message = `try to parse id: '${doubanMovieId}' title: '${doubanMovieTitle}' for '${tryTimes}' times, but is still not success`;
-            console.log(message);
-            logger.error(message);
-            //return Promise.reject(new Error(message));
-        }      
+        // return new Promise(async (resolve, reject) => {
+        //     let doubanMovie = await this._doubanMovieService.getDoubanMoviesByDoubanid(doubanMovieId);
+        //     if(doubanMovie){
+        //         console.log(`parsed id: '${doubanMovieId}' title: '${doubanMovieTitle}'`);
+        //         resolve(true);
+        //     }else{
+        //         this.state.requestCount++;                    
+        //         //解析并保存到数据库
+        //         const time = new Date().getTime();
+        //         console.log(`parsing id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(time).format('HH:mm:ss.SSS')}`);
+        //         request({
+        //             url: `https://movie.douban.com/subject/${doubanMovieId}/?from=showing`,
+        //             resolveWithFullResponse: true,
+        //             rejectUnauthorized: false,
+        //             agent: new HttpsProxyAgent(this.setting.proxy),
+        //             headers: this.getRadomHeaders(),
+        //             timeout: this.setting.timeout
+        //         }, async (error, response, body) => {
+        //             if(error){                        
+        //                 const message = `error on parsing id '${doubanMovieId}' title '${doubanMovieTitle}', because of '${error.message}'`;
+        //                 console.log(message);
+        //                 logger.error(message);
+        //                 resolve(false);
+        //                 return;
+        //             }
+        //             const {statusCode} = response;
+        //             if(statusCode === 200){
+        //                 try {
+        //                     //检测代理是否正常
+        //                     const {msg} = JSON.parse(body);
+        //                     reject(new Error(msg));
+        //                 } catch (e) {
+        //                     //返回的不是json数据，表示正常
+        //                 }
+        //                 try {
+        //                     const doubanDocument = $.load(body);
+        //                     doubanMovie = this._doubanMovieService.getDoubanDetail(doubanDocument);
+        //                     //添加豆瓣电影id
+        //                     doubanMovie.doubanMovieId = doubanMovieId;
+        //                     await this._doubanMovieService.saveOrUpdateDoubanMovie(doubanMovie);
+        //                     this.state.successCount++;                      
+        //                     console.log(`success id: '${doubanMovieId}' title: '${doubanMovieTitle}' at ${moment(new Date()).format('HH:mm:ss.SSS')}, cast: ${(new Date().getTime() - time)} ms`);
+        //                     resolve(true);
+        //                 } catch (error) {
+        //                     const message = `error on parsing id '${doubanMovieId}' title '${doubanMovieTitle}', because of '${error.message}'`;
+        //                     console.log(message);
+        //                     logger.error(message);
+        //                     resolve(false);
+        //                 }
+                        
+        //             }else{
+        //                 const message = `error on parsing id '${doubanMovieId}' title '${doubanMovieTitle}', because of 'error code ${statusCode}'`;
+        //                 console.log(message);
+        //                 logger.error(message);
+        //                 resolve(false);
+        //             }               
+        //         })
+        //     }
+        // })
     }
 
     /**
