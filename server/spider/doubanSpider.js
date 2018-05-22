@@ -294,7 +294,9 @@ export default class DoubanSpider{
                         const message = `error on parsing id '${doubanMovieId}' title '${doubanMovieTitle}', because of 'error code ${statusCode}'`;
                         console.log(message);
                         logger.error(message);
-                        //return false;
+                        if(statusCode === 404){
+                            return false;
+                        }
                     } 
                     console.log('begin to parse again');                 
                 } catch (error) {
@@ -303,7 +305,7 @@ export default class DoubanSpider{
                     logger.error(message);
                     //return false;
                 }
-                if(tryTimes <= this.state.maxTryTimes ){
+                if(tryTimes > this.state.maxTryTimes ){
                     return Promise.reject(new Error(`try to parse for '${tryTimes}' times, but is still not success`))
                 }
             } while (tryTimes <= this.state.maxTryTimes);     
