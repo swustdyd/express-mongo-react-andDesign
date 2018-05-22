@@ -151,19 +151,19 @@ export default class DoubanSpider{
             errorCount: errorMovies.length,
             errorTip: 'The count of error movie is <strong>3</strong>',
             startTime: startTimeStr,
-            endTime: endTimeStr,
-            errorMovies: errorMovies
+            endTime: endTimeStr
         }
 
         const attachments = [];
         if(errorMovies.length >= 50){
-            jadeOption.errorTip = `The count of error movie is <strong>${errorMovies.length}</strong>, detail is on the attachments: <strong>error-movies.json</strong> `
+            jadeOption.errorTip = `The count of error movie is <strong>${errorMovies.length}</strong>, more detail is on the attachments: <strong>error-movies.json</strong> `
             attachments.push(
                 {   // utf-8 string as an attachment
                     filename: 'error-movies.json',
                     content: JSON.stringify(errorMovies)
                 }
             );
+            jadeOption.errorMovies = errorMovies.slice(0, 49);
         }else{
             jadeOption.errorTip = `The count of error movie is <strong>${errorMovies.length}</strong>`
             jadeOption.errorMovies = errorMovies;
@@ -171,13 +171,14 @@ export default class DoubanSpider{
 
         const html = jade.renderFile(path.join(BaseConfig.root, './server/mailTemplate/doubanSpider.jade'), jadeOption);
 
+        console.log(`douban spider stop, because of '${stopReason}'`); 
+
         await EmailUtil.sendEmail({
             to: '1562044678@qq.com',
             subject: 'Douban Spider Stop',
             html: html,
             attachments: attachments
         });
-        console.log(`douban spider stop, because of '${stopReason}'`); 
         process.exit();
     }
 
@@ -193,7 +194,7 @@ export default class DoubanSpider{
             //获取列表数据
             const {body, statusCode} = await HttpsUtil.getAsync({
                 host: 'movie.douban.com',
-                path: `/j/new_search_subjects?tag=${encodeURIComponent('电影')}&sort=T&range=0,10&start=${offset}`,
+                path: `/j/new_search_subjects?tags=&sort=T&range=0,10&start=${offset}`,
                 rejectUnauthorized: false,
                 agent: new HttpsProxyAgent(this.setting.proxy),
                 headers: this.getRadomHeaders(),                
@@ -305,10 +306,10 @@ export default class DoubanSpider{
                     logger.error(message);
                     //return false;
                 }
-                if(tryTimes > this.state.maxTryTimes ){
+                if(tryTimes >= this.setting.maxTryTimes ){
                     return Promise.reject(new Error(`try to parse for '${tryTimes}' times, but is still not success`))
                 }
-            } while (tryTimes <= this.state.maxTryTimes);     
+            } while (tryTimes < this.setting.maxTryTimes);     
         }
         // return new Promise(async (resolve, reject) => {
         //     let doubanMovie = await this._doubanMovieService.getDoubanMoviesByDoubanid(doubanMovieId);
