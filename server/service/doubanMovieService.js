@@ -22,6 +22,7 @@ export default class DoubanMovieServie extends BaseService{
         }else{
             //新增
             doubanMovie = new DoubanMovie(doubanMovie);
+            doubanMovie.meta.createAt = doubanMovie.meta.updateAt = Date.now();
             return await doubanMovie.save();
         }
     }
@@ -187,9 +188,6 @@ export default class DoubanMovieServie extends BaseService{
         $otherChildren.map((i, item) => {
             const $item = $(item);
             const plText = $item.text();
-            const data = {
-                name: plText
-            };
             switch(plText){
                 case '类型:':
                     const $type = doubanDetaiDocument('#info').children('span[property="v:genre"]');
@@ -199,12 +197,16 @@ export default class DoubanMovieServie extends BaseService{
                     });
                     detail.types = typeArray;
                     break;
+                case '官方网站:':
+                    detail.officialWebsite = $item.next().attr('href');
+                    break;
                 case '制片国家/地区:':
                     detail.countries = item.next.data.trim().split('/').map((item) => {return item.trim();});
                     break;
                 case '语言:':
                     detail.languages = item.next.data.trim().split('/').map((item) => {return item.trim();});
                     break;
+                case '首播'://与“上映日期”是相同的字段
                 case '上映日期:':
                     const $releaseDate = doubanDetaiDocument('#info').children('span[property="v:initialReleaseDate"]');
                     const releaseDateArray = [];
@@ -212,6 +214,15 @@ export default class DoubanMovieServie extends BaseService{
                         releaseDateArray.push($(item).text());
                     });
                     detail.pubdates = releaseDateArray;
+                    break;
+                case '季数:':
+                    detail.season = doubanDetaiDocument('#season').find('option:selected').text();
+                    break;
+                case '集数:':
+                    detail.count = item.next.data.trim();
+                    break;
+                case '单集片长:':
+                    detail.durations = item.next.data.trim();
                     break;
                 case '片长:':
                     detail.durations = doubanDetaiDocument('#info').children('span[property="v:runtime"]').text();

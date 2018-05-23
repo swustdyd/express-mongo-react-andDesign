@@ -19,6 +19,9 @@ const DoubanMovieSchema = new mongoose.Schema({
     durations: String,
     aka: Mixed,
     IMBdLink: String,
+    officialWebsite: String,
+    season: Number,
+    count: String,
     meta: {
         createAt:{
             type: Date,

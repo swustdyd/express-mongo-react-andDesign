@@ -163,7 +163,7 @@ export default class DoubanSpider{
                     content: JSON.stringify(errorMovies)
                 }
             );
-            jadeOption.errorMovies = errorMovies.slice(0, 49);
+            jadeOption.errorMovies = [];//errorMovies.slice(0, 49);
         }else{
             jadeOption.errorTip = `The count of error movie is <strong>${errorMovies.length}</strong>`
             jadeOption.errorMovies = errorMovies;
@@ -194,7 +194,7 @@ export default class DoubanSpider{
             //获取列表数据
             const {body, statusCode} = await HttpsUtil.getAsync({
                 host: 'movie.douban.com',
-                path: `/j/new_search_subjects?tags=&sort=T&range=0,10&start=${offset}`,
+                path: `/j/new_search_subjects?&sort=T&range=0,10&start=${offset}`,
                 rejectUnauthorized: false,
                 agent: new HttpsProxyAgent(this.setting.proxy),
                 headers: this.getRadomHeaders(),                
