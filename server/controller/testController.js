@@ -17,10 +17,11 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import Url from 'url'
 import jade from 'jade'
 import EmailUtil from '../common/emailUtil'
-import path from 'path'
+import path, { resolve } from 'path'
 import BaseConfig from '../../baseConfig'
-
-const testController = new BaseController();
+import mysqldb from '../common/mysqldb'
+import moment from 'moment'      
+import logger from '../common/logger';          
 
 export default class TestController extends BaseController{
     constructor(){
@@ -36,44 +37,66 @@ export default class TestController extends BaseController{
      */
     async testJS(req, res, next){
         try {
-            const errorMovies = [
-                {
-                    id: '1',
-                    title: 'test1'
-                },
-                {
-                    id: '1',
-                    title: 'test1'
-                },
-                {
-                    id: '1',
-                    title: 'test1'
-                }
-            ]
-            const html = jade.renderFile(path.join(BaseConfig.root, './server/mailTemplate/doubanSpider.jade'), {
-                reason: 'no reason',
-                requestCount: 100,
-                successCount: 100,
-                errorTip: 'The count of error movie is <strong>3</strong>',
-                startTime: '2018-5-21 15:50:32',
-                endTime: '2018-5-21 15:50:32',
-                errorMovies: errorMovies
-            })
-            const info = await EmailUtil.sendEmail({
-                to: '1562044678@qq.com',
-                subject: 'Test NodeMailer',
-                html: html,
-                attachments: [
-                    {   // utf-8 string as an attachment
-                        filename: 'error-movies.json',
-                        content: JSON.stringify(errorMovies)
-                    }
-                ]
-            });
-            res.send(html);
+            // let i = 0;
+            // let result = false;
+            // while(i < 10){
+            //     i++;
+            //     result = await this.getTick();
+            //     if(result){
+            //         break;
+            //     }
+            // }
+            const result = await this.getTick();
+            if(result){                
+                res.send(result);
+            }else{
+                next({message: 'no ticket'});
+            }        
         } catch (error) {
             next(error);
         }
+    }
+
+    async getTick(){
+        const tickets = await mysqldb.query('select * from ticket where id = 1');
+        const ticket = tickets[0];
+        const result = await mysqldb.beginTransaction(async (connection) => {   
+            let isSuccess =  false;                
+            try {                                     
+                if(ticket.count > 0){
+                    const {changedRows} = await new Promise((resolve, reject) => {
+                        mysqldb._connection.query(`update ticket set count = count - 1 where id = ${ticket.id} and count between 1 and ${ticket.count}`, (err, results) => {
+                            if(err){
+                                reject(err);
+                            }
+                            resolve(results);
+                        });
+                    }) 
+                    if(changedRows > 0){
+                        await mysqldb.insertOne('success_ticket', {
+                            createAt: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'), 
+                            updateAt: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+                        }); 
+                        isSuccess = true; 
+                    }                   
+                }                    
+                connection.commit((err) => {
+                    if(err){
+                        reject(err);
+                    }
+                });
+            } catch (error) {
+                connection.rollback((err) => {
+                    if(err){
+                        logger.error(err);
+                        console.log(err);
+                    }
+                });
+                logger.error(error);
+            }
+            return isSuccess;
+        })
+        return result;
     }
 
     async testCheerio(req, res, next){

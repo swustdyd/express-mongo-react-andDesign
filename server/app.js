@@ -7,6 +7,7 @@ import errorHandle from './common/errorHandle'
 import express from 'express'
 import path from 'path'
 import mongoose from 'mongoose'
+import mysqldb from './common/mysqldb'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
@@ -23,7 +24,11 @@ const app = express();
 let serverPort = process.env.PORT || BaseConfig.serverPort;
 serverPort = parseInt(serverPort, 10);
 
-mongoose.connect(BaseConfig.dbConnectString);
+const options = {
+    poolSize: 20// Maintain up to 10 socket connections
+}
+
+mongoose.connect(BaseConfig.dbConnectString, options);
 
 //开启gzip
 app.use(compression());
@@ -80,7 +85,42 @@ app.use(router);
 //统一处理异常返回
 app.use(errorHandle);
 
+   
 app.listen(serverPort, function () {
-    console.log(`Demo(production) is running on port ${serverPort}`);
+    console.log(`Demo(${process.env.NODE_ENV}) is running on port ${serverPort}`);
 });
 
+// const cluster = require('cluster');
+// const numCPUs = require('os').cpus().length;
+
+// if(isDev){    
+//     app.listen(serverPort, function () {
+//         console.log(`Demo(${process.env.NODE_ENV}) is running on port ${serverPort}`);
+//     });
+// }else{
+//     if (cluster.isMaster) {
+//         console.log(`主进程 ${process.pid} 正在运行`);
+      
+//         // 衍生工作进程。
+//         for (let i = 0; i < numCPUs; i++) {
+//             cluster.fork();
+//         }
+      
+//         cluster.on('exit', (worker, code, signal) => {
+//             console.log(`工作进程 ${worker.process.pid} 已退出`);
+//         });
+//     } else {
+//         // 工作进程可以共享任何 TCP 连接。
+//         // 在本例子中，共享的是一个 HTTP 服务器。
+//         // http.createServer((req, res) => {
+//         //     res.writeHead(200);
+//         //     res.end('你好世界\n');
+//         // }).listen(8000);
+    
+//         app.listen(serverPort, function () {
+//             console.log(`Demo(${process.env.NODE_ENV}) is running on port ${serverPort}`);
+//         });
+      
+//         console.log(`工作进程 ${process.pid} 已启动`);
+//     }
+// }
