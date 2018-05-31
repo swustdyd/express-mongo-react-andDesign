@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon --watch webpack.config.js --exec webpack-dev-server",
-    "build": "cross-env NODE_ENV=production webpack",
-    "dll": "webpack --config webpack.dll.config.js"
+    "c:dev": "cross-env NODE_ENV=development nodemon --watch webpack.config.js --exec webpack-dev-server",
+    "c:build": "cross-env NODE_ENV=production webpack",
+    "c:dll": "webpack --config webpack.dll.config.js"
   },
   "dependencies": {
     "antd": "^3.2.2",

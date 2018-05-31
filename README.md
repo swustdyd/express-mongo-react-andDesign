@@ -15,17 +15,15 @@ The explaining post could be found [here](https://github.com/swustdyd/express-mo
 3. Try these out on development.
 
     * open `client` directory
-    * `npm run dll` to build dll file on client/dist.
-    * copy `client/dist/vendor.dll.js` to `server/dist/dll/vendor.dll.js`
-    * `npm run dev` to start client project
+    * `npm run c:dll` to build dll file on client/dist.
+    * `npm run c:dev` to start client project
     * open `server` directory
-    * `npm run start:dev` to start server project
+    * `npm run s:dev` to start server project
 
 4. Try these out on production.
 
     * open `client` directory
-    * `npm run dll` to build dll file on client/dist.
-    * copy `client/dist/vendor.dll.js` to `server/dist/dll/vendor.dll.js`
-    * `npm run build` to build file
+    * `npm run c:dll` to build dll file on client/dist.
+    * `npm run c:build` to build file
     * open `server` directory
-    * `npm run start:pro` to start server project
+    * `npm run s:pro` to start server project

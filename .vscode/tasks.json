@@ -13,7 +13,7 @@
         {
             "label": "client:dev",
             "type": "npm",
-            "script": "dev",
+            "script": "c:dev",
             "path": "client/",
             "problemMatcher": []
         }
