@@ -1,4 +1,5 @@
 import mysql from 'mysql'
+import logger from '../common/logger'
 
 class MysqlDB {
     constructor(){        
@@ -11,7 +12,11 @@ class MysqlDB {
 
         this._connection.connect((err) => {
             if(err){
-                throw err;
+                logger.error(err);
+                console.log('*****************************************')
+                console.log('mysql connect faild, please look at error log')
+                console.log('*****************************************')
+                // throw err;
             }
         });
     }

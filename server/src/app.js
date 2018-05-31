@@ -28,7 +28,15 @@ const options = {
     //poolSize: 20// Maintain up to 10 socket connections
 }
 
-mongoose.connect(BaseConfig.dbConnectString, options);
+mongoose.connect(
+    BaseConfig.dbConnectString, 
+    options
+).catch((reason) => {
+    logger.error(err);
+    console.log('*****************************************')
+    console.log('mongodb connect faild, please look at error log')
+    console.log('*****************************************')
+});
 
 //开启gzip
 app.use(compression());
