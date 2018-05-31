@@ -51,7 +51,7 @@ export default class TestController extends BaseController{
                 res.send(result);
             }else{
                 next({message: 'no ticket'});
-            }        
+            }
         } catch (error) {
             next(error);
         }

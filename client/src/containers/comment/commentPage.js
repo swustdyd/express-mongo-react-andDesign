@@ -51,21 +51,26 @@ class CommentPage extends  React.Component{
             .then((res) => {
                 return res.json()
             }).then((data) => {
-                data.result.forEach((item, index) => {
-                    const obj = latestCommentMap[item._id];
-                    if(obj){
-                        data.result.splice(index, 1);
-                    }
-                });
-                comments.push(...data.result);
-                this.setState({
-                    loaded: true,
-                    comments: comments,
-                    pageIndex: data.pageIndex,
-                    pageSize: data.pageSize,
-                    total: data.total,
-                    totalComments: data.totalComments
-                });
+                if(data.success){
+                    data.result.forEach((item, index) => {
+                        const obj = latestCommentMap[item._id];
+                        if(obj){
+                            data.result.splice(index, 1);
+                        }
+                    });
+                    comments.push(...data.result);
+                    this.setState({
+                        loaded: true,
+                        comments: comments,
+                        pageIndex: data.pageIndex,
+                        pageSize: data.pageSize,
+                        total: data.total,
+                        totalComments: data.totalComments
+                    });
+                }else{
+                    message.error(data.message)
+                }
+                
             })
             .catch((err) => {
                 message.error(err.message);

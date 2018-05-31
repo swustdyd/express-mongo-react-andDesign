@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
@@ -37,7 +38,7 @@ const config = {
             },
             {
                 test: /\.(png|jpg)$/,
-                use: 'url-loader?limit=8192&context=client&name=./images/[name].[ext]'
+                use: 'url-loader?limit=8192&name=./images/[name].[ext]'
             },
             {
                 test: /\.scss$/,
@@ -61,7 +62,15 @@ const config = {
         new HtmlWebpackPlugin({
             title: baseConfig.indexPageTitle,
             filename: 'index.html',
-            template: './src/index.html'
+            template: './src/index.html',
+            favicon: './src/favicon.png'
+        }),
+        new HtmlWebpackIncludeAssetsPlugin({
+            assets:[
+                `${baseConfig.serverHost}:${baseConfig.serverPort}/dist/dll/vendor.dll.js`
+            ],
+            publicPath: false,
+            append: false
         }),
         new ExtractTextPlugin({
             filename: 'stylesheet/[name].css',
@@ -75,7 +84,7 @@ const config = {
             /**
              * 在这里引入 manifest 文件
              */
-            manifest: require('./dist/vendor-manifest.json')
+            manifest: require('../public/dist/dll/vendor-manifest.json')
         }),
         new HappyPack({
             id: 'js',

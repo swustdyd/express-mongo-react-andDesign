@@ -6,7 +6,7 @@
         {
             "label": "server:dev",
             "type": "npm",
-            "script": "start:dev",
+            "script": "s:dev",
             "path": "server/",
             "problemMatcher": []
         },

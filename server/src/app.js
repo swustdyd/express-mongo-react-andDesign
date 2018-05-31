@@ -25,7 +25,7 @@ let serverPort = process.env.PORT || BaseConfig.serverPort;
 serverPort = parseInt(serverPort, 10);
 
 const options = {
-    poolSize: 20// Maintain up to 10 socket connections
+    //poolSize: 20// Maintain up to 10 socket connections
 }
 
 mongoose.connect(BaseConfig.dbConnectString, options);

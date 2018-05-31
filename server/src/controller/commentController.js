@@ -67,7 +67,7 @@ export default class CommentController extends BaseController{
         try{
             const movieId = req.params.id,
                 {pageIndex, pageSize, level, condition = '{}'} = req.query;
-            const newCondition = JSON.parse(req.query.condition);
+            const newCondition = JSON.parse(condition);
             const resData = await this.commentService.getCommentsByMovieId(movieId, {
                 condition: {
                     level: level,
