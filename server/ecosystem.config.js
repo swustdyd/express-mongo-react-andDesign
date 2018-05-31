@@ -7,7 +7,8 @@ module.exports = {
             'NODE_ENV': 'production'
         },
         ignore_watch: ['[\/\\]\./', 'node_modules'],
-        max_memory_restart: '300M',
-        instances: 4
+        max_memory_restart: '250M',
+        instances: 'max',
+        exec_mode: 'cluster'
     }]
 }
