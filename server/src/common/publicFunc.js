@@ -8,7 +8,7 @@ import multer from 'multer'
 import  fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
-import BaseConfig from '../../baseConfig'
+import BaseConfig from '../../../baseConfig'
 import { UploadFileType } from './type';
 
 //计算长度，数值越大，破解难度越大

@@ -1,17 +1,17 @@
 import mongoose from 'mongoose'
 import logger from '../common/logger'
-import ProxyFactory from './proxyFactory'
-import BaseConfig from '../../baseConfig'
+import DoubanSpider from './doubanSpider'
+import BaseConfig from '../../../baseConfig'
 
 mongoose.connect(BaseConfig.dbConnectString);
-
-const proxyFactory = new ProxyFactory();
+const doubanSpider = new DoubanSpider();    
 
 process.nextTick(async () => {
     try {
-        await proxyFactory.createxicidaili();
+        await doubanSpider.start();
     } catch (error) {
         logger.error(error);
     }
+    await mongoose.disconnect();
     process.exit();
 })

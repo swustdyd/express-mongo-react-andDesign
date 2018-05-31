@@ -13,7 +13,7 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import connectMongo from 'connect-mongo'
 import filter from './common/filter'
-import BaseConfig from '../baseConfig'
+import BaseConfig from '../../baseConfig'
 import router from './routes'
 import expandResponse from './common/expandResponse'
 

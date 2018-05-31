@@ -8,7 +8,7 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import moment from 'moment'
 import jade from 'jade'
 import EmailUtil from '../common/emailUtil'
-import BaseConfig from '../../baseConfig'
+import BaseConfig from '../../../baseConfig'
 import path from 'path'
 import HttpsUtil from '../common/httpsUtil'
 

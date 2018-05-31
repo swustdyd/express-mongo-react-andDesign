@@ -18,7 +18,7 @@ import Url from 'url'
 import jade from 'jade'
 import EmailUtil from '../common/emailUtil'
 import path, { resolve } from 'path'
-import BaseConfig from '../../baseConfig'
+import BaseConfig from '../../../baseConfig'
 import mysqldb from '../common/mysqldb'
 import moment from 'moment'      
 import logger from '../common/logger';          

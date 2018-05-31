@@ -4,8 +4,8 @@
   "author": "aaron",
   "main": "app.js",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=dev nodemon --ignore node_modules --ext node,js,jade --exec  babel-node app",
-    "start:pro": "cross-env NODE_ENV=production nodemon --ignore node_modules --ext node,js,jade --exec babel-node app.js",
+    "start:dev": "cross-env NODE_ENV=dev nodemon --ignore node_modules --ext node,js,jade --exec  babel-node src/app",
+    "start:pro": "cross-env NODE_ENV=production nodemon --ignore node_modules --ext node,js,jade --exec babel-node src/app.js",
     "dbs": "babel-node spider/index.js",
     "dbmt": "babel-node spider/doubanMovieType.js",
     "bdproxy": "babel-node proxys/index.js",

@@ -8,7 +8,7 @@ import path from 'path'
 import fs from 'fs'
 import BaseController from './baseController'
 import PubFunction from '../common/publicFunc'
-import BaseConfig from '../../baseConfig'
+import BaseConfig from '../../../baseConfig'
 
 
 export default class UtilController extends BaseController{

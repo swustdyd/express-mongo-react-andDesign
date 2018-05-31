@@ -3,7 +3,7 @@
  */
 import log4js from 'log4js'
 import path from 'path'
-import BaseConfig from '../../baseConfig'
+import BaseConfig from '../../../baseConfig'
 
 log4js.configure({
     appenders: [

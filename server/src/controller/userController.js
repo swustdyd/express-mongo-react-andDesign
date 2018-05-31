@@ -7,7 +7,6 @@
 import UserService from '../service/user'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
-import BaseConfig from '../../baseConfig'
 import BaseController from './baseController';
 
 export default class UserController extends BaseController{
