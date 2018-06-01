@@ -52,8 +52,8 @@ export default class UserController extends BaseController{
      */
     async signin(request, response, next){
         try{
-            const {user: _user} = request.body;
-            const {name, password, sevenDay} = _user;
+            const {user: _user, sevenDay} = request.body;
+            const {name, password} = _user;
             const resData = await this.userService.getUsersByCondition({
                 condition:{
                     name: name
