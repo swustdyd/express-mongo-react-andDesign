@@ -96,9 +96,13 @@ export default class UserController extends BaseController{
      * @param {*} response 
      */
     logout(request, response) {
-        delete request.session.user;
-        delete request.app.locals.user;
-        response.json({success: true, message: '登出成功'});
+        request.session.destroy((err) => {
+            if(err){
+                next(err);
+            }else{                
+                response.json({success: true, message: '登出成功'});
+            }
+        })
     }
 
     /**

@@ -70,13 +70,6 @@ app.use(express.static(path.join(BaseConfig.root, 'public')));//设置静态目�
 
 //在引用所有路由前，可在此做拦截器
 app.use(function (req, res, next) {
-    //console.log("locals.user: " + app.locals.user);
-    //当session过期之后，需要手动删除app.locals.user，系统不会自动删除
-    if(req.session.user){
-        app.locals.user = req.session.user.name;
-    }else{
-        delete app.locals.user;
-    }
     res.header('Access-Control-Allow-Origin', `${BaseConfig.clientHost}:${BaseConfig.clientPort}`);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
