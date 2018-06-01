@@ -1,6 +1,6 @@
-//格式化输出信息
-//const morgan = require('morgan');
-import morgan from 'morgan'
+import morgan from 'morgan';
+import rfs from 'rotating-file-stream';
+import moment from 'moment'
 import compression from 'compression'
 import fs from 'fs'
 import errorHandle from './common/errorHandle'
@@ -61,8 +61,21 @@ app.use(session({
 if(isDev){
     app.use(morgan('dev'));
 }else{
-    app.use(morgan('combined', {
-        stream: fs.createWriteStream(path.join(BaseConfig.root, 'logs/access.log'))
+    morgan.token('localDate', () => {
+        return moment(new Date()).format('YYYY-MM-DD HH:mm:ss.SSS');
+    })
+    app.use(morgan(':localDate :method :url :status from :remote-addr ":referrer" ":user-agent', {
+        stream: rfs((time, index) => {
+            if(!time){
+                return 'access.log';
+            }else{
+                return `access-${moment(time).format('YYYY-MM-DD')}-${index}.log`
+            }
+            
+        }, {
+            interval: '1d', // rotate daily
+            path: path.join(BaseConfig.root, 'logs')
+        })
     }));
 }
 
