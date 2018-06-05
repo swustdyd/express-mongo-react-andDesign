@@ -4,28 +4,34 @@
 //日志打印
 import logger from './logger'
 import BusinessException from './businessException'
+import {ValidationError} from 'sequelize'
+import ErrorCode from './errorCode'
 
 /**
  * 统一自定义异常处理
  */
 function errorHandle(err, req, res, next) {
-    // set locals, only providing error in development
+    let message = err.message || err.toString();
     if(err instanceof BusinessException){
         res.json({
             success: false,
-            message: err.message,
+            message: message,
             errorCode: err.errorCode
         });
-    }else {
-        let message = err.message || err.toString();
+    }else if(err instanceof ValidationError){
+        logger.error(err);
+        res.json({
+            success: false,
+            message: err.errors[0].message,
+            errorCode: ErrorCode.validationError
+        });
+    }else if(err instanceof Error){
         if(res.app.get('env') !== 'dev'){
             message =  '系统错误，请联系管理员';
             /** 将错误信息存储 **/
             logger.error(err);
-        }else if(err instanceof Error){
-            console.log(err);
         }else{
-            console.log(message);
+            console.log(err);
         }
         res.status(err.status || 500);
         res.json({message: message, success: false, errorCode: err.status || 500});

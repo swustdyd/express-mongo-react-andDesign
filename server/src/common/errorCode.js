@@ -10,6 +10,7 @@ const errorCode : ErrorCodeType = {
     defaultCode: 500,
     requestSignin: 1,
     requestAdmin: 2,
-    requestSuperAdmin: 3
+    requestSuperAdmin: 3,
+    validationError: 4
 };
 export default errorCode;
