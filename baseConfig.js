@@ -12,7 +12,8 @@ const config = {
     staticPath: 'public',
     root: path.resolve(__dirname),
     indexPageTitle: 'Demo 首页',
-    logLevel: 'info'
+    logLevel: 'info',
+    dataFormatString: 'YYYY-MM-DD HH:mm:ss'
 };
 
 config.staticSourceHost = `${config.serverHost}:${config.serverPort}`;
