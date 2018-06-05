@@ -7,7 +7,7 @@ import errorHandle from './common/errorHandle'
 import express from 'express'
 import path from 'path'
 import mongoose from 'mongoose'
-import mysqldb from './common/mysqldb'
+import {db} from './db'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
@@ -37,6 +37,13 @@ mongoose.connect(
     console.log('mongodb connect faild, please look at error log')
     console.log('*****************************************')
 });
+
+db.authenticate()
+    .catch((err) => {
+        console.log('*****************************************')
+        console.error('Unable to connect to the database:', err);
+        console.log('*****************************************')
+    });
 
 //开启gzip
 app.use(compression());
