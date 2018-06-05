@@ -1,7 +1,8 @@
 import React from 'react'
 import {message, Icon, Spin} from 'antd'
 import API from '../../common/api'
-import MoviePoster from '../../components/moviePoster'
+import DoubanPoster from './doubanPoster'
+
 
 import './doubanMovieList.scss'
 
@@ -83,19 +84,10 @@ export default class DoubanMovieList extends React.Component{
     }
 
     getMoviePoster(dataList = []){
+        const {doubanIconShow} = this.state;
         const list = [];
         dataList.forEach((item, index) => {            
-            list.push(
-                <MoviePoster 
-                    movieData={{
-                        title: item.name,
-                        summary: item.summary,
-                        poster: {
-                            src: item.mainpic.href
-                        }
-                    }}
-                />
-            )
+            list.push(<DoubanPoster item={item}/>)
         })
         return list;
     }

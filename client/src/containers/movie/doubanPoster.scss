@@ -1,0 +1,23 @@
+.douban-poster{
+    position: relative;
+    overflow: hidden;    
+    display: inline-block;
+}
+.douban-icon{
+    transition: all 0.6s;
+    display: none;
+    height: 25px;
+    width: 25px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-image: url('../../images/douban_favicon_48x48.png');
+    background-size: 100%;
+    z-index: 1;
+}
+.douban-icon.show{
+    display: inline-block;
+}
+.douban-icon:hover{
+    transform: scale(1.2);
+}
