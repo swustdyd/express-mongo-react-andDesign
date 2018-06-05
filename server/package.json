@@ -9,9 +9,8 @@
     "s:stop": "pm2 delete ecosystem.config.js",
     "s:detail": "pm2 monit",
     "s:build": "babel src --out-dir dist",
-    "dbs": "babel-node spider/index.js",
-    "dbmt": "babel-node spider/doubanMovieType.js",
-    "bdproxy": "babel-node proxys/index.js",
+    "dbs": "babel-node src/spider/index.js",
+    "dbmt": "babel-node src/spider/doubanMovieType.js",
     "eslint": "eslint **/*.js",
     "eslint:fix": "eslint **/*.js --fix",
     "flow": "flow init"

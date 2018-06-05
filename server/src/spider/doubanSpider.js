@@ -37,7 +37,7 @@ export default class DoubanSpider{
             orderno: 'ZF20185198833KDe2RM',
             secret: 'd9709e1cd99b4d978dc840c315d568b4',
             pageLimit: 20,
-            noResponsTimeOut: 1 * 60 *1000 //1分钟无反应，停止spider
+            noResponsTimeOut: 5 * 60 *1000 //5分钟无反应，停止spider
         };
 
         this.state = {
