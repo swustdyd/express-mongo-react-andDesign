@@ -65,3 +65,19 @@ $iconWidth: 100px;
 .douban-container .next-icon{
     right: 0;
 }
+.douban-poster{
+    position: relative;
+    overflow: hidden;    
+    display: inline-block;
+}
+.douban-icon{
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-image: url('../../images/douban_favicon_48x48.png');
+    background-size: 100%;
+    z-index: 1;
+}

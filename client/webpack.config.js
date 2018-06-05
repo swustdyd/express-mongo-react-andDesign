@@ -38,7 +38,11 @@ const config = {
             },
             {
                 test: /\.(png|jpg)$/,
-                use: 'url-loader?limit=8192&name=./images/[name].[ext]'
+                loader: 'url-loader',
+                options:{
+                    limit: 8192,
+                    name: 'images/[name].[ext]'
+                }
             },
             {
                 test: /\.scss$/,
@@ -48,8 +52,7 @@ const config = {
                 test: /\.css$/,
                 use: [
                     'style-loader',
-                    'css-loader',
-                    'resolve-url-loader'
+                    'css-loader'
                 ]
             },
             {
@@ -63,7 +66,7 @@ const config = {
             title: baseConfig.indexPageTitle,
             filename: 'index.html',
             template: './src/index.html',
-            favicon: './src/favicon.png'
+            favicon: './src/images/favicon.png'
         }),
         new HtmlWebpackIncludeAssetsPlugin({
             assets:[
@@ -94,7 +97,7 @@ const config = {
         new HappyPack({
             id: 'scss',
             threadPool: happyThreadPool,
-            loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader']
+            loaders: ['style-loader', 'css-loader', 'sass-loader']
         })
         /* new BundleAnalyzerPlugin({
             // Can be `server`, `static` or `disabled`.
