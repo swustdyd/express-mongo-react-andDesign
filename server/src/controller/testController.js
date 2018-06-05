@@ -20,7 +20,8 @@ import EmailUtil from '../common/emailUtil'
 import path, { resolve } from 'path'
 import BaseConfig from '../../../baseConfig'
 import moment from 'moment'      
-import logger from '../common/logger';          
+import logger from '../common/logger';        
+import DoubanMovie from '../models/douban_movie'
 
 export default class TestController extends BaseController{
     constructor(){
@@ -45,7 +46,10 @@ export default class TestController extends BaseController{
             //         break;
             //     }
             // }
-            const result = await this.getTick();
+            //const result = await this.getTick();
+            const result = await DoubanMovie.create({
+                name: '测试'
+            })
             if(result){                
                 res.send(result);
             }else{
