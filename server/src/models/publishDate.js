@@ -13,10 +13,7 @@ const PublishDate = sequelize.define('publishDate', {
         type: DataTypes.INTEGER
     },
     publishDate:{
-        type: DataTypes.DATE,
-        get(){
-            return moment(this.getDataValue('publishDate')).format(dayFormatString);
-        }
+        type: DataTypes.STRING(100)
     },
     createAt: {
         type: DataTypes.DATE,

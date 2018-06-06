@@ -9,6 +9,7 @@ export const sequelize = new Sequelize('test', 'root', 'DD89757000', {
         acquire: 30000,
         idle: 10000
     },
+    timezone: '+08:00',
     logging: (sqlString) => {
         console.log(sqlString);
     },
