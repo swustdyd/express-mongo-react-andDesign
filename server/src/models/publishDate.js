@@ -1,10 +1,10 @@
 import logger from '../common/logger'
 import moment from 'moment'
 import {sequelize, DataTypes, modelSyncOptions} from '../db/sequelize'
-import { dateFormatString } from '../../../baseConfig'
+import { dateFormatString, dayFormatString } from '../../../baseConfig'
 
-const MovieType = sequelize.define('movieType', {
-    id:{
+const PublishDate = sequelize.define('publishDate', {
+    publishId:{
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -12,8 +12,11 @@ const MovieType = sequelize.define('movieType', {
     movieId:{
         type: DataTypes.INTEGER
     },
-    typeId:{
-        type: DataTypes.INTEGER
+    publishDate:{
+        type: DataTypes.DATE,
+        get(){
+            return moment(this.getDataValue('publishDate')).format(dayFormatString);
+        }
     },
     createAt: {
         type: DataTypes.DATE,
@@ -33,8 +36,8 @@ const MovieType = sequelize.define('movieType', {
     }
 })
 
-// MovieType.sync(modelSyncOptions).catch((err) => {
+// PublishDate.sync(modelSyncOptions).catch((err) => {
 //     logger.error(err);
 // })
 
-export default MovieType;
+export default PublishDate;

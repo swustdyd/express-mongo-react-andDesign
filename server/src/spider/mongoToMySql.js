@@ -2,6 +2,18 @@ import mongoose from 'mongoose'
 import DoubanMovieService from '../service/doubanMovieService'
 import logger from '../common/logger'
 import BaseConfig from '../../../baseConfig'
+import Aka from '../models/aka'
+import AkaWithOther from '../models/akaWithOther'
+import Artist from '../models/artist'
+import ArtistJob from '../models/artistJob'
+import Country from '../models/country'
+import CountryMovie from '../models/countryMovie'
+import DoubanMovie from '../models/doubanMovie'
+import Job from '../models/job'
+import Language from '../models/language'
+import LanguageMovie from '../models/languageMovie'
+import MovieType from '../models/movieType'
+import PublishDate from '../models/publishDate'
 
 mongoose.connect(BaseConfig.dbConnectString);
 const doubanMovieService = new DoubanMovieService();

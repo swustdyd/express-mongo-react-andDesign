@@ -1,7 +1,8 @@
 /**
  * Created by Aaron on 2018/1/17.
  */
-import Movie from '../models/movie'
+//import Movie from '../models/movie'
+const Movie = {};
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'

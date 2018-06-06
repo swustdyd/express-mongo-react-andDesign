@@ -13,7 +13,8 @@ const config = {
     root: path.resolve(__dirname),
     indexPageTitle: 'Demo 首页',
     logLevel: 'info',
-    dataFormatString: 'YYYY-MM-DD HH:mm:ss'
+    dateFormatString: 'YYYY-MM-DD HH:mm:ss',
+    dayFormatString: 'YYYY-MM-DD'
 };
 
 config.staticSourceHost = `${config.serverHost}:${config.serverPort}`;

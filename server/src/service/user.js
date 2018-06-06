@@ -1,7 +1,8 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-import User from '../models/user'
+//import User from '../models/user'
+const User = {};
 import logger from '../common/logger'
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'

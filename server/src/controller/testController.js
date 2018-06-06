@@ -11,7 +11,6 @@ import HttpsUtil from '../common/httpsUtil'
 import BaseController from './baseController';
 import DoubanMovieServie from '../service/doubanMovieService';
 import PublicFunction from '../common/publicFunc'
-import Proxy from '../models/proxy'
 import crypto from 'crypto'
 import HttpsProxyAgent from 'https-proxy-agent'
 import Url from 'url'
@@ -21,12 +20,12 @@ import path, { resolve } from 'path'
 import BaseConfig from '../../../baseConfig'
 import moment from 'moment'      
 import logger from '../common/logger';        
-import DoubanMovie from '../models/douban_movie'
+import DoubanMovie from '../models/doubanMovie'
 
 export default class TestController extends BaseController{
     constructor(){
         super();
-        this._doubanMovieService = new DoubanMovieServie();
+        //this._doubanMovieService = new DoubanMovieServie();
     }
 
     /**

@@ -1,7 +1,8 @@
 /**
  * Created by Aaron on 2018/1/19.
  */
-import Comment from '../models/comment'
+//import Comment from '../models/comment'
+const Comment = {};
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'

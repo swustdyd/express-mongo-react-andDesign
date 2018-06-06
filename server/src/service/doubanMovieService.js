@@ -1,5 +1,6 @@
 import $ from 'cheerio'
-import DoubanMovie from '../models/doubanMovie'
+//import DoubanMovie from '../models/doubanMovie'
+const DoubanMovie = {};
 import MovieType from '../models/movieType'
 import BusinessException from '../common/businessException';
 import BaseService from './baseService'

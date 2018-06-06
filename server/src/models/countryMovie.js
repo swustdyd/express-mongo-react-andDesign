@@ -3,16 +3,16 @@ import moment from 'moment'
 import {sequelize, DataTypes, modelSyncOptions} from '../db/sequelize'
 import { dateFormatString } from '../../../baseConfig'
 
-const MovieType = sequelize.define('movieType', {
+const CountryMovie = sequelize.define('countryMovie', {
     id:{
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    movieId:{
+    countryId:{
         type: DataTypes.INTEGER
     },
-    typeId:{
+    movieId:{
         type: DataTypes.INTEGER
     },
     createAt: {
@@ -33,8 +33,8 @@ const MovieType = sequelize.define('movieType', {
     }
 })
 
-// MovieType.sync(modelSyncOptions).catch((err) => {
+// CountryMovie.sync(modelSyncOptions).catch((err) => {
 //     logger.error(err);
 // })
 
-export default MovieType;
+export default CountryMovie;
