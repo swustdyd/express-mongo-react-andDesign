@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import moment from 'moment'
 import DoubanMovieService from '../service/doubanMovieService'
 import logger from '../common/logger'
 import BaseConfig from '../../../baseConfig'
@@ -182,6 +183,15 @@ async function insertType(mongoDoubanMovie, t, doubanMovie){
             });
             if(!type){
                 type = await Type.create({typeName: item}, {transaction: t});
+                // const now = Date.now();
+                // await db.query('insert into type(typeName,createAt,updateAt) values (:item, :createAt, :updateAt) on duplicate key update typeName = :item', {
+                //     replacements:{
+                //         item: item,
+                //         createAt: moment(now).format(BaseConfig.dateFormatString),
+                //         updateAt: moment(now).format(BaseConfig.dateFormatString)
+                //     },
+                //     transaction: t
+                // });
             }
             await MovieType.create({movieId: doubanMovie.movieId, typeId: type.typeId}, {transaction: t});
         }
