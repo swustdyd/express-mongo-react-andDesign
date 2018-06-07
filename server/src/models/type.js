@@ -10,8 +10,7 @@ const Type = sequelize.define('type', {
         primaryKey: true
     },
     typeName:{
-        type: DataTypes.STRING(100),
-        unique: true
+        type: DataTypes.STRING(100)
     },
     createAt: {
         type: DataTypes.DATE,
