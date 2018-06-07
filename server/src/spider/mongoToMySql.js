@@ -7,6 +7,7 @@ import Aka from '../models/aka'
 import AkaWithOther from '../models/akaWithOther'
 import Artist from '../models/artist'
 import ArtistJob from '../models/artistJob'
+import ArtistMovie from '../models/artistMovie'
 import Country from '../models/country'
 import CountryMovie from '../models/countryMovie'
 import DoubanMovie from '../models/doubanMovie'
@@ -115,19 +116,92 @@ async function insertAka(mongoDoubanMovie, t, doubanMovie){
 }
 
 async function insertArtist(mongoDoubanMovie, t, doubanMovie){
+    await insertActor(mongoDoubanMovie, t, doubanMovie);
+    await insertWriter(mongoDoubanMovie, t, doubanMovie);
+    await insertDirector(mongoDoubanMovie, t, doubanMovie);
+}
+
+async function insertActor(mongoDoubanMovie, t, doubanMovie){
     //演员
+    let actorJob = await Job.findOne({
+        where: {
+            jobENName: 'actor'
+        },
+        transaction: t
+    })
+    if(!actorJob){
+        actorJob = await Job.create({jobName: '演员', jobENName: 'actor'});
+    }
     if(mongoDoubanMovie.actors){
         for(let i = 0; i < mongoDoubanMovie.actors.length; i++){
             const item = mongoDoubanMovie.actors[i];
-            let actor = await Artist.findOne({
+            let artist = await Artist.findOne({
                 where: {
                     name: item
                 }, 
                 transaction: t
             });
-            if(!actor){
-                actor = await Artist.create({name: item}, {transaction: t});
+            if(!artist){
+                artist = await Artist.create({name: item}, {transaction: t});
             }
+            await ArtistMovie.create({artistId: artist.artistId, movieId: doubanMovie.movieId});
+            await ArtistJob.create({artistId: artist.artistId, jobId: actorJob.jobId});
+        }
+    }
+}
+async function insertWriter(mongoDoubanMovie, t, doubanMovie){
+    //编剧
+    let writerJob = await Job.findOne({
+        where: {
+            jobENName: 'writer'
+        },
+        transaction: t
+    })
+    if(!writerJob){
+        writerJob = await Job.create({jobName: '编剧', jobENName: 'writer'});
+    }
+    if(mongoDoubanMovie.writers){
+        for(let i = 0; i < mongoDoubanMovie.writers.length; i++){
+            const item = mongoDoubanMovie.writers[i];
+            let artist = await Artist.findOne({
+                where: {
+                    name: item
+                }, 
+                transaction: t
+            });
+            if(!artist){
+                artist = await Artist.create({name: item}, {transaction: t});
+            }
+            await ArtistMovie.create({artistId: artist.artistId, movieId: doubanMovie.movieId});
+            await ArtistJob.create({artistId: artist.artistId, jobId: writerJob.jobId});
+        }
+    }
+}
+async function insertDirector(mongoDoubanMovie, t, doubanMovie){
+    //导演
+    let directorJob = await Job.findOne({
+        where: {
+            jobENName: 'director'
+        },
+        transaction: t
+    })
+    if(!directorJob){
+        directorJob = await Job.create({jobName: '导演', jobENName: 'director'});
+    }
+    if(mongoDoubanMovie.directors){
+        for(let i = 0; i < mongoDoubanMovie.directors.length; i++){
+            const item = mongoDoubanMovie.directors[i];
+            let artist = await Artist.findOne({
+                where: {
+                    name: item
+                }, 
+                transaction: t
+            });
+            if(!artist){
+                artist = await Artist.create({name: item}, {transaction: t});
+            }
+            await ArtistMovie.create({artistId: artist.artistId, movieId: doubanMovie.movieId});
+            await ArtistJob.create({artistId: artist.artistId, jobId: directorJob.jobId});
         }
     }
 }
