@@ -21,7 +21,7 @@ const DoubanMovie = sequelize.define('doubanMovie', {
         }
     },
     name: {
-        type: DataTypes.STRING(50),        
+        type: DataTypes.STRING(500),        
         allowNull: false
     },
     year: {
@@ -39,7 +39,7 @@ const DoubanMovie = sequelize.define('doubanMovie', {
         type: DataTypes.STRING(2500)
     },
     durations: {
-        type: DataTypes.STRING(50)
+        type: DataTypes.STRING(500)
     },
     IMBdLink: {
         type: DataTypes.STRING(200)

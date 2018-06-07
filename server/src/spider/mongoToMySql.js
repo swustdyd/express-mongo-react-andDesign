@@ -26,8 +26,8 @@ doUpdate();
 
 async function doUpdate() {
     try {
-        // const total = await MongoDoubanMovie.count();
-        const total = 20;
+        const total = await MongoDoubanMovie.count();
+        //const total = 20;
         const pageSize = 20;
         const pageEndIndex = Math.ceil(total / pageSize);
         console.log(`电影总数为：${total}, pageEndIndex: ${pageEndIndex}, pageSize: ${pageSize}`);
@@ -37,9 +37,10 @@ async function doUpdate() {
             const promiseList = [];
             for(let i = 0; i < result.length; i++){
                 const doubanMovie = result[i];
-                promiseList.push(updateOne(doubanMovie));
+                //promiseList.push(updateOne(doubanMovie));
+                await updateOne(doubanMovie)
             }
-            await Promise.all(promiseList);
+            //await Promise.all(promiseList);
 
         }
         console.log('解析成功');
@@ -57,8 +58,8 @@ async function updateOne(mongoDoubanMovie){
             let doubanMovie = await DoubanMovie.findOne({
                 where: {
                     doubanMovieId: mongoDoubanMovie.doubanMovieId
-                },
-                transaction: t
+                }
+                // transaction: t
             })
             //不存在该电影，进行数据解析
             if(!doubanMovie){
@@ -68,7 +69,7 @@ async function updateOne(mongoDoubanMovie){
                     name: mongoDoubanMovie.name,
                     year: mongoDoubanMovie.year,
                     average: mongoDoubanMovie.average,
-                    picture: mongoDoubanMovie.mainpic.href,
+                    picture: mongoDoubanMovie.mainpic ? mongoDoubanMovie.mainpic.href : '',
                     summary: mongoDoubanMovie.summary,
                     durations: mongoDoubanMovie.durations,
                     IMBdLink: mongoDoubanMovie.IMBdLink,

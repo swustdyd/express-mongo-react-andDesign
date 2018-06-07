@@ -10,7 +10,7 @@ const Aka = sequelize.define('aka', {
         primaryKey: true
     },
     akaName:{
-        type: DataTypes.STRING(100)
+        type: DataTypes.STRING(500)
     },
     createAt: {
         type: DataTypes.DATE,
