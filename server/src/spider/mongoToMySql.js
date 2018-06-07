@@ -58,8 +58,8 @@ async function updateOne(mongoDoubanMovie){
             let doubanMovie = await DoubanMovie.findOne({
                 where: {
                     doubanMovieId: mongoDoubanMovie.doubanMovieId
-                }
-                // transaction: t
+                },
+                transaction: t
             })
             //不存在该电影，进行数据解析
             if(!doubanMovie){
