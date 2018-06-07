@@ -9,6 +9,7 @@
     "s:stop": "pm2 delete ecosystem.config.js",
     "s:detail": "pm2 monit",
     "s:build": "babel src --out-dir dist",
+    "db:build": "babel-node src/db/sync.js",
     "dbs": "babel-node src/spider/index.js",
     "mtm": "babel-node src/spider/mongoToMySql.js",
     "eslint": "eslint **/*.js",
