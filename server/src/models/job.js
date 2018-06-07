@@ -12,6 +12,9 @@ const Job = sequelize.define('job', {
     jobName:{
         type: DataTypes.STRING(100)
     },
+    jobENName:{
+        type: DataTypes.STRING(100)
+    },
     createAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
