@@ -21,6 +21,7 @@ isDev && sequelize.sync({
     alter: true
 }).then(() => {
     console.log('db buidl success');
+    process.exit();
 }).catch((err) => {
     console/log('db build failed');
     logger.log(err);
