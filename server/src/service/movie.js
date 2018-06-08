@@ -1,13 +1,13 @@
-import MovieModel from '../models/movie'
-import { db } from '../db';
 import _ from 'underscore'
+import MovieModel from '../models/movie'
+import AakModel from '../models/aka'
+import AkaWithOtherModel from '../models/akaWithOther'
+import { db } from '../db';
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
 import { PageReturnType, QueryOptionsType, ObjectId, SingleReturnType, MovieType } from '../common/type';
 import BaseService from './baseService';
-
-const queryDefaultOptions = QueryDefaultOptions;
 
 /**
  * 电影模块service
@@ -17,35 +17,25 @@ export default class MovieService extends BaseService{
      * 根据条件查询电影
      * @param customOptions 查询条件
      */
-    getMoviesByCondition(customOptions: QueryOptionsType) : Promise<PageReturnType> {
-        const options = _.extend({}, queryDefaultOptions, customOptions);
-        return new Promise(function (resolve, reject) {
-            Movie.count(options.condition, function (err, count) {
-                if(err){
-                    reject(err);
-                }
-                Movie.find(options.condition)
-                    .sort(options.sort)
-                    .limit(options.pageSize)
-                    .skip(options.pageIndex * options.pageSize)
-                    .exec((err, movies) => {
-                        if(err){
-                            reject(err);
-                        }
-                        movies.forEach((movie) => {
-                            if(movie.poster && movie.poster.src){
-                                movie.poster.src = PubFunction.rebuildImgUrl(movie.poster.src);
-                            }
-                        });
-                        resolve({
-                            success: true,
-                            result: movies,
-                            total: count,
-                            pageIndex: options.pageIndex,
-                            pageSize: options.pageSize
-                        });
-                    });
-            });
+    async getMoviesByCondition(customOptions: QueryOptionsType) : Promise<PageReturnType> {
+        const options = _.extend({}, QueryDefaultOptions, customOptions);
+        return await MovieModel.findAll({
+            inlcude:[{
+                model: AkaWithOtherModel,
+                as: 'awo',
+                where: {
+                    movieId: db.Sequelize.col('awo.otherId')
+                },
+                inlcude:[{
+                    model: AakModel,
+                    as: 'a',
+                    where: {
+                        akaId: db.Sequelize.col('a.akaId')
+                    }
+                }]
+            }],
+            offset: options.pageIndex * options.pageSize,
+            limit: options.pageSize
         });
     }
 
@@ -66,51 +56,37 @@ export default class MovieService extends BaseService{
 
     /**
      * 根据电影id删除电影
-     * @param id 电影id
+     * @param movieId 电影id
      */
-    deleteMovieById(id: number) : Promise<{success: boolean}> {
-        return new Promise(function (resolve, reject) {
-            if(!id){
-                reject(new BusinessException('电影id不能为空'))
+    async deleteMovieById(movieId: number) : Promise<boolean> {
+        if(!movieId){
+            throw new BusinessException('电影id不能为空');
+        }
+        const result = await db.query('delete from movie where movieId = :id', {
+            replacements:{
+                id: parseInt(movieId)
             }
-            Movie.remove({_id: id}, function (err) {
-                if(err){
-                    reject(err);
-                }
-                resolve({success: true});
-            });
-        });
+        })
+        const {affectedRows} = result[1];
+        return affectedRows > 0;
     }
 
     /**
      * 保存或者修改电影
      * @param movie 电影信息
      */
-    async saveOrUpdateMovie(movie: MovieModel) : Promise<SingleReturnType> {
-        let originMovie = '';
+    async saveOrUpdateMovie(movie: MovieModel) : Promise<MovieModel> {
         //修改
-        if(movie._id){
-            const resData = await this.getMovieById(movie._id);
-            originMovie = resData.result;
-            _.extend(originMovie, movie);
-            originMovie.meta.updateAt = Date.now();
-        }else{
-            originMovie = new Movie(movie);
-            originMovie.meta.createAt = originMovie.meta.updateAt = Date.now();
-        }
-        return new Promise(function (resolve, reject) {
-            if(originMovie.poster && originMovie.poster.src){
-                const parseResult = PubFunction.parseUrl(originMovie.poster.src);
-                if(parseResult){
-                    originMovie.poster.src = parseResult.path;
-                }
+        if(movie.movieId){
+            movie.updateAt = Date.now();
+            const originModel = await this.getMovieById(movie.movieId);
+            if(!originModel){
+                throw new BusinessException(`电影'${movie.movieId}'不存在`);
             }
-            originMovie.save(function (err, movie) {
-                if(err){
-                    reject(err);
-                }
-                resolve({success: true, result: movie});
-            })
-        });
+            movie = await originModel.update(movie);
+        }else{
+            movie = await MovieModel.create(movie)
+        }
+        return movie;
     }    
 }

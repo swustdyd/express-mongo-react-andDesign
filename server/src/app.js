@@ -16,6 +16,7 @@ import filter from './common/filter'
 import BaseConfig from '../../baseConfig'
 import router from './routes'
 import expandResponse from './common/expandResponse'
+import logger from './common/logger';
 
 const MongoStore = connectMongo(session);
 const isDev = process.env.NODE_ENV !== 'production';
@@ -32,7 +33,7 @@ mongoose.connect(
     BaseConfig.dbConnectString, 
     options
 ).catch((reason) => {
-    logger.error(err);
+    logger.error(reason);
     console.log('*****************************************')
     console.log('mongodb connect faild, please look at error log')
     console.log('*****************************************')
@@ -40,8 +41,9 @@ mongoose.connect(
 
 db.authenticate()
     .catch((err) => {
+        logger.error(err);
         console.log('*****************************************')
-        console.error('Unable to connect to the database:', err);
+        console.error('Unable to connect to the database, please look at error log');
         console.log('*****************************************')
     });
 

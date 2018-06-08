@@ -1,4 +1,5 @@
 import fs from 'fs'
+import Sequelize from 'sequelize'
 import path from 'path'
 import logger from '../common/logger'
 import {sequelize, modelSyncOptions} from './sequelize'
@@ -21,3 +22,4 @@ import {sequelize, modelSyncOptions} from './sequelize'
 //     alter: true
 // });
 export const db = sequelize;
+db.Sequelize = Sequelize;

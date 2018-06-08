@@ -8,13 +8,11 @@ import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
-import DoubanMovieServie from '../service/movie';
 
 export default class MovieController extends BaseController{
     constructor(){
         super();
         this._movieService = new MovieService();
-        this._doubanMovieServie = new DoubanMovieServie();
     }
 
     /**
@@ -69,13 +67,14 @@ export default class MovieController extends BaseController{
      */
     async newOrUpdate(request, response, next) {
         try {
-            const {movie} = request.body;
-            const resData = await this._movieService.saveOrUpdateMovie(movie);
-            const message = movie._id ? '修改成功' : '新增成功';
-            if(resData.success){
-                resData.message = message;
-            }
-            response.json(resData);
+            let {movie} = request.body;
+            const message = movie.moiveId ? '修改成功' : '新增成功';
+            movie = await this._movieService.saveOrUpdateMovie(movie);
+            response.json({
+                success: true,
+                result: movie,
+                message
+            });
         }catch (e){
             next(e);
         }
@@ -91,9 +90,8 @@ export default class MovieController extends BaseController{
     async delete(request, response, next) {
         try {
             const {id} = request.query;
-            const resData = await this._movieService.deleteMovieById(id);
-            resData.message = '删除成功';
-            response.json(resData);
+            const success = await this._movieService.deleteMovieById(id);
+            response.json({success});
         }catch (e){
             next(e);
         }
