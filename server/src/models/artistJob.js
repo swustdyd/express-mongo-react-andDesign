@@ -28,7 +28,7 @@ const ArtistJob = sequelize.define('artistJob', {
         defaultValue: DataTypes.NOW,
         allowNull: false,
         get(){
-            return moment(this.getDataValue('createAt')).format(dateFormatString);
+            return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
 })
