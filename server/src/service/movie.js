@@ -1,8 +1,5 @@
-/**
- * Created by Aaron on 2018/1/17.
- */
-//import Movie from '../models/movie'
-const Movie = {};
+import MovieModel from '../models/movie'
+import { db } from '../db';
 import _ from 'underscore'
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
@@ -54,22 +51,16 @@ export default class MovieService extends BaseService{
 
     /**
      * 根据id 获取电影
-     * @param id 电影id
+     * @param movieId 电影id
      */
-    getMovieById(id: ObjectId) : Promise<SingleReturnType> {
-        return new Promise(function (resolve, reject){
-            if(!id){
-                reject(new BusinessException('电影id不能为空'))
+    async getMovieById(movieId: number) : Promise<MovieModel> {        
+        if(!movieId){
+            throw new BusinessException('电影id不能为空');
+        }
+        return await MovieModel.findOne({
+            where:{
+                movieId: movieId
             }
-            Movie.findOne({_id: id}, function (err, movie) {
-                if(err){
-                    reject(err);
-                }
-                if(movie.poster && movie.poster.src){
-                    movie.poster.src = PubFunction.rebuildImgUrl(movie.poster.src);
-                }
-                resolve({success: true, result: movie});
-            })
         });
     }
 
@@ -77,7 +68,7 @@ export default class MovieService extends BaseService{
      * 根据电影id删除电影
      * @param id 电影id
      */
-    deleteMovieById(id: ObjectId) : Promise<{success: boolean}> {
+    deleteMovieById(id: number) : Promise<{success: boolean}> {
         return new Promise(function (resolve, reject) {
             if(!id){
                 reject(new BusinessException('电影id不能为空'))
@@ -95,7 +86,7 @@ export default class MovieService extends BaseService{
      * 保存或者修改电影
      * @param movie 电影信息
      */
-    async saveOrUpdateMovie(movie: MovieType) : Promise<SingleReturnType> {
+    async saveOrUpdateMovie(movie: MovieModel) : Promise<SingleReturnType> {
         let originMovie = '';
         //修改
         if(movie._id){
@@ -121,30 +112,5 @@ export default class MovieService extends BaseService{
                 resolve({success: true, result: movie});
             })
         });
-    }
-
-    /**
-     * 根据分组信息返回对应的数据
-     * @param groupArray
-     * @param match 
-     */
-    getMoviesByGroup(groupArray: [], match: {}) : Promise<SingleReturnType> {
-        return new Promise((resolve, reject) => {
-            const group = {};
-            groupArray = groupArray || [];
-            groupArray.forEach((item) => {
-                group[item] = `$${item}`
-            });
-            match = match || {};
-            Movie.aggregate([
-                {$match: match},
-                {$group: {_id: group, count: { $sum: 1}}}
-            ], (err, data) => {
-                if(err){
-                    reject(err);
-                }
-                resolve({success: true, result: data});
-            })
-        });
-    }
+    }    
 }

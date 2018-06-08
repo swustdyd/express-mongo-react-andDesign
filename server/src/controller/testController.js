@@ -9,7 +9,6 @@ import https from 'https'
 import request from 'request-promise-native'
 import HttpsUtil from '../common/httpsUtil'
 import BaseController from './baseController';
-import DoubanMovieServie from '../service/doubanMovieService';
 import PublicFunction from '../common/publicFunc'
 import crypto from 'crypto'
 import HttpsProxyAgent from 'https-proxy-agent'
@@ -20,12 +19,12 @@ import path, { resolve } from 'path'
 import BaseConfig from '../../../baseConfig'
 import moment from 'moment'      
 import logger from '../common/logger';        
-import DoubanMovie from '../models/doubanMovie'
+import MovieService from '../service/movie'
 
 export default class TestController extends BaseController{
     constructor(){
         super();
-        //this._doubanMovieService = new DoubanMovieServie();
+        this._movieService = new MovieService();
     }
 
     /**
@@ -46,13 +45,12 @@ export default class TestController extends BaseController{
             //     }
             // }
             //const result = await this.getTick();
-            const result = await DoubanMovie.create({
-                name: '测试'
-            })
+            const {id} = req.query;
+            const result = await this._movieService.getMovieById(id);
             if(result){                
                 res.send(result);
             }else{
-                next({message: 'no ticket'});
+                next({message: 'no this movie'});
             }
         } catch (error) {
             next(error);

@@ -8,7 +8,7 @@ import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
-import DoubanMovieServie from '../service/doubanMovieService';
+import DoubanMovieServie from '../service/movie';
 
 export default class MovieController extends BaseController{
     constructor(){
