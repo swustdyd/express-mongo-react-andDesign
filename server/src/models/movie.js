@@ -3,7 +3,7 @@ import moment from 'moment'
 import {sequelize, DataTypes, modelSyncOptions} from '../db/sequelize'
 import { dateFormatString } from '../../../baseConfig'
 
-const DoubanMovie = sequelize.define('doubanMovie', {
+const Movie = sequelize.define('movie', {
     movieId:{
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -72,8 +72,4 @@ const DoubanMovie = sequelize.define('doubanMovie', {
     }
 });
 
-// DoubanMovie.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
-
-export default DoubanMovie;
+export default Movie;
