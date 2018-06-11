@@ -27,10 +27,10 @@ export default class MovieController extends BaseController{
                 {
                     name: 'movie.createAt'
                 },
-                {
-                    name: 'a.akaName',
-                    as: 'akaName'
-                },
+                // {
+                //     name: 'a.akaName',
+                //     as: 'akaName'
+                // },
                 {
                     name: 'l.languageName',
                     as: 'language'
@@ -46,6 +46,7 @@ export default class MovieController extends BaseController{
             }
             if(id){
                 condition.addWhere({
+                    alias: 'movie',
                     name: 'movieId',
                     value: parseInt(id),
                     opType: OpType.EQ,
@@ -79,28 +80,28 @@ export default class MovieController extends BaseController{
                     logicOpType: LogicOpType.AND
                 })
             }
-            condition.addJoin({
-                name: 'akaWithOther',
-                alias: 'awo',
-                on:{
-                    sourceKey: 'otherId',
-                    targetKey:{
-                        alias: 'movie',
-                        key: 'movieId'
-                    }
-                }
-            })
-            condition.addJoin({
-                name: 'aka',
-                alias: 'a',
-                on:{
-                    sourceKey: 'akaId',
-                    targetKey:{
-                        alias: 'awo',
-                        key: 'akaId'
-                    }
-                }
-            })
+            // condition.addJoin({
+            //     name: 'akaWithOther',
+            //     alias: 'awo',
+            //     on:{
+            //         sourceKey: 'otherId',
+            //         targetKey:{
+            //             alias: 'movie',
+            //             key: 'movieId'
+            //         }
+            //     }
+            // })
+            // condition.addJoin({
+            //     name: 'aka',
+            //     alias: 'a',
+            //     on:{
+            //         sourceKey: 'akaId',
+            //         targetKey:{
+            //             alias: 'awo',
+            //             key: 'akaId'
+            //         }
+            //     }
+            // })
             condition.addJoin({
                 name: 'languagemovie',
                 alias: 'lm',
