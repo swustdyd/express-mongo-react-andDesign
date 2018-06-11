@@ -6,7 +6,7 @@ import { db } from '../db';
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
-import { PageReturnType, QueryOptionsType, ObjectId, SingleReturnType, MovieType } from '../common/type';
+import { PageResult } from '../common/type';
 import BaseService from './baseService';
 import Condition from '../db/condition';
 
@@ -18,7 +18,7 @@ export default class MovieService extends BaseService{
      * 根据条件查询电影
      * @param condition 查询条件
      */
-    async getMoviesByCondition(condition: Condition) : Promise<PageReturnType> {
+    async getMoviesByCondition(condition: Condition) : Promise<PageResult> {
         return await db.query(condition.toSql(), {
             type: db.QueryTypes.SELECT
         });

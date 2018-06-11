@@ -14,16 +14,14 @@ export type APIResponseType = {
     errorCode: number
 }
 
-export type PageReturnType = {
-    success: boolean,
-    message: string,
+export type PageResult = {
     result: [],
     pageIndex: number,
     pageSzie: number,
     total: number
 }
 
-export type SingleReturnType = {
+export type SingleResult = {
     success: boolean, 
     /**
      * 返回的结果

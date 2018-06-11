@@ -1,13 +1,8 @@
-/*
- * @Author: yedong.deng 
- * @Date: 2018-05-10 17:24:23 
- * @Last Modified by:   aaron.deng 
- * @Last Modified time: 2018-05-10 17:24:23 
- */
 import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
+import Condition, {OpType, LogicOpType} from '../db/condition'
 
 export default class MovieController extends BaseController{
     constructor(){
@@ -23,36 +18,112 @@ export default class MovieController extends BaseController{
      */
     async getMovies(req, res, next) {
         try {            
-            const {pageIndex, pageSize} = req.query;
-            let condition = req.query.condition || '{}';
-            condition = JSON.parse(condition);
-            const newCondition = {};
+            const {pageIndex, pageSize, name, id, startYear, endYear, language} = req.query;
+            const condition = new Condition('movie', [
+                {
+                    name: 'movie.name',
+                    as: 'showName'
+                },
+                {
+                    name: 'movie.createAt'
+                },
+                {
+                    name: 'a.akaName',
+                    as: 'akaName'
+                },
+                {
+                    name: 'l.languageName',
+                    as: 'language'
+                }
+            ]);
+            if(name){
+                condition.addWhere({
+                    name: 'name',
+                    value: `${name}%`,
+                    opType: OpType.LIKE,
+                    logicOpType: LogicOpType.AND
+                })
+            }
+            if(id){
+                condition.addWhere({
+                    name: 'movieId',
+                    value: parseInt(id),
+                    opType: OpType.EQ,
+                    logicOpType: LogicOpType.AND
+                })
+            }
 
-            if(condition.title){
-                newCondition.title = new RegExp(`^${condition.title}.*$`, 'i');
+            if(startYear){
+                condition.addWhere({
+                    name: 'year',
+                    value: parseInt(startYear),
+                    opType: OpType.GTE,
+                    logicOpType: LogicOpType.AND
+                })
             }
-            if(condition._id){
-                newCondition._id = condition._id;
-            }
-
-            if(condition.searchYear && condition.searchYear.start){
-                newCondition.year = {};
-                newCondition.year.$gte = condition.searchYear.start
-            }
-            if(condition.searchYear && condition.searchYear.end){
-                newCondition.year = newCondition.year || {};
-                newCondition.year.$lte = condition.searchYear.end;
-            }
-
-            if(condition.language){
-                newCondition.language = condition.language;
+            if(endYear){
+                condition.addWhere({
+                    name: 'year',
+                    value: parseInt(endYear),
+                    opType: OpType.LTE,
+                    logicOpType: LogicOpType.AND
+                })
             }
 
-            const resData = await this._movieService.getMoviesByCondition({
-                condition: newCondition,
-                pageIndex: pageIndex,
-                pageSize: pageSize
-            });
+            if(language){
+                condition.addWhere({
+                    alias: 'l',
+                    name: 'languageId',
+                    value: parseInt(language),
+                    opType: OpType.EQ,
+                    logicOpType: LogicOpType.AND
+                })
+            }
+            condition.addJoin({
+                name: 'akaWithOther',
+                alias: 'awo',
+                on:{
+                    sourceKey: 'otherId',
+                    targetKey:{
+                        alias: 'movie',
+                        key: 'movieId'
+                    }
+                }
+            })
+            condition.addJoin({
+                name: 'aka',
+                alias: 'a',
+                on:{
+                    sourceKey: 'akaId',
+                    targetKey:{
+                        alias: 'awo',
+                        key: 'akaId'
+                    }
+                }
+            })
+            condition.addJoin({
+                name: 'languagemovie',
+                alias: 'lm',
+                on:{
+                    sourceKey: 'movieId',
+                    targetKey:{
+                        alias: 'movie',
+                        key: 'movieId'
+                    }
+                }
+            })
+            condition.addJoin({
+                name: 'language',
+                alias: 'l',
+                on:{
+                    sourceKey: 'languageId',
+                    targetKey:{
+                        alias: 'lm',
+                        key: 'languageId'
+                    }
+                }
+            })
+            const resData = await this._movieService.getMoviesByCondition(condition);
             res.json(resData);
         }catch(e) {
             next(e);

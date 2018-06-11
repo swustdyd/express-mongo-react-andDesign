@@ -26,7 +26,8 @@ type WhereItem = {
 
 type FiledItem = {
     name: string,
-    alias: string
+    alias: string,
+    as: string
 }
 
 export const JoinType = {
@@ -85,15 +86,15 @@ export default class Condition{
 
     _parseFileds(){
         let filedsString = '';
-        if(this.fileds.length < 0) {
-            filedsString = '*' 
-        }else{
+        if(this.fileds.length > 0) {
             filedsString = this.fileds.map((item) => {
                 if(typeof item !== 'string'){
-                    item = `${item.alias}.${item.name}`;
+                    item = `${item.alias ? `${item.alias}.${item.name}` : item.name}${item.as ? ` as ${item.as}`: ''}`;
                 }
                 return item;
             }).join(', ')
+        }else{
+            filedsString = '*' 
         }
         return filedsString;
     }
@@ -108,7 +109,7 @@ export default class Condition{
                 }else{
                     itemString = `${item.logicOpType || LogicOpType.AND} `;
                 }
-                itemString += `${`${item.alias}.${item.name}`} ${item.opType || OpType.EQ} ${this._parseValue(item.value)}`;
+                itemString += `${item.alias ? `${item.alias}.${item.name}` : item.name} ${item.opType || OpType.EQ} ${this._parseValue(item.value)}`;
                 return itemString;
             }).join(' ');
         }
