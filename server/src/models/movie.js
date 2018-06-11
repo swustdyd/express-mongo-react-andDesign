@@ -2,6 +2,8 @@ import logger from '../common/logger'
 import moment from 'moment'
 import {sequelize, DataTypes, modelSyncOptions} from '../db/sequelize'
 import { dateFormatString } from '../../../baseConfig'
+import AkaModel from './aka'
+import AkaWithOtherModel from './akaWithOther'
 
 const Movie = sequelize.define('movie', {
     movieId:{
@@ -11,7 +13,7 @@ const Movie = sequelize.define('movie', {
     },
     doubanMovieId: {
         type: DataTypes.STRING(20),
-        unique: true,
+        unique: 'idx_doubanMovieId',
         allowNull: false,
         validate:{
             is:{
@@ -70,6 +72,15 @@ const Movie = sequelize.define('movie', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_doubanMovieId',
+            method: 'BTREE',
+            unique: true,
+            fields:['doubanMovieId']
+        }
+    ]
 });
 
 export default Movie;

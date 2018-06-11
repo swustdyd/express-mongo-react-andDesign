@@ -23,6 +23,6 @@ isDev && sequelize.sync({
     console.log('db buidl success');
     process.exit();
 }).catch((err) => {
-    console/log('db build failed');
-    logger.log(err);
+    console.log('db build failed');
+    logger.error(err);
 });
