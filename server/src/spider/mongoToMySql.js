@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 import moment from 'moment'
-import DoubanMovieService from '../service/doubanMovieService'
 import logger from '../common/logger'
 import BaseConfig from '../../../baseConfig'
 import Aka from '../models/aka'
@@ -10,7 +9,7 @@ import ArtistJob from '../models/artistJob'
 import ArtistMovie from '../models/artistMovie'
 import Country from '../models/country'
 import CountryMovie from '../models/countryMovie'
-import DoubanMovie from '../models/doubanMovie'
+import Movie from '../models/movie'
 import Job from '../models/job'
 import Language from '../models/language'
 import LanguageMovie from '../models/languageMovie'
@@ -56,7 +55,7 @@ async function doUpdate() {
 async function updateOne(mongoDoubanMovie){
     return await mysqldb.transaction().then(async (t) => {        
         try {        
-            let doubanMovie = await DoubanMovie.findOne({
+            let doubanMovie = await Movie.findOne({
                 where: {
                     doubanMovieId: mongoDoubanMovie.doubanMovieId
                 },
@@ -65,7 +64,7 @@ async function updateOne(mongoDoubanMovie){
             //不存在该电影，进行数据解析
             if(!doubanMovie){
                 //新增该电影到mysql
-                doubanMovie = await DoubanMovie.create({
+                doubanMovie = await Movie.create({
                     doubanMovieId: mongoDoubanMovie.doubanMovieId,
                     name: mongoDoubanMovie.name,
                     year: mongoDoubanMovie.year,
@@ -78,12 +77,20 @@ async function updateOne(mongoDoubanMovie){
                     season: mongoDoubanMovie.season,
                     count: mongoDoubanMovie.count
                 }, {transaction: t})
-                await insertAka(mongoDoubanMovie, t, doubanMovie);
-                await insertArtist(mongoDoubanMovie, t, doubanMovie);
-                await insertCountry(mongoDoubanMovie, t, doubanMovie);
-                await insertLanguage(mongoDoubanMovie, t, doubanMovie);
-                await insertPubdate(mongoDoubanMovie, t, doubanMovie);
-                await insertType(mongoDoubanMovie, t, doubanMovie);
+                // await insertAka(mongoDoubanMovie, t, doubanMovie);
+                // await insertArtist(mongoDoubanMovie, t, doubanMovie);
+                // await insertCountry(mongoDoubanMovie, t, doubanMovie);
+                // await insertLanguage(mongoDoubanMovie, t, doubanMovie);
+                // await insertPubdate(mongoDoubanMovie, t, doubanMovie);
+                // await insertType(mongoDoubanMovie, t, doubanMovie);
+                await Promise.all([
+                    insertAka(mongoDoubanMovie, t, doubanMovie),
+                    insertArtist(mongoDoubanMovie, t, doubanMovie),
+                    insertCountry(mongoDoubanMovie, t, doubanMovie),
+                    insertLanguage(mongoDoubanMovie, t, doubanMovie),
+                    insertPubdate(mongoDoubanMovie, t, doubanMovie),
+                    insertType(mongoDoubanMovie, t, doubanMovie)
+                ])
             }else{
                 console.log(`电影：${doubanMovie.name} 已存在`);
             }
