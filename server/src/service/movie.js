@@ -8,6 +8,7 @@ import BusinessException from '../common/businessException'
 import { QueryDefaultOptions } from '../common/commonSetting'
 import { PageReturnType, QueryOptionsType, ObjectId, SingleReturnType, MovieType } from '../common/type';
 import BaseService from './baseService';
+import Condition from '../db/condition';
 
 /**
  * 电影模块service
@@ -15,27 +16,11 @@ import BaseService from './baseService';
 export default class MovieService extends BaseService{
     /**
      * 根据条件查询电影
-     * @param customOptions 查询条件
+     * @param condition 查询条件
      */
-    async getMoviesByCondition(customOptions: QueryOptionsType) : Promise<PageReturnType> {
-        const options = _.extend({}, QueryDefaultOptions, customOptions);
-        return await MovieModel.findAll({
-            inlcude:[{
-                model: AkaWithOtherModel,
-                as: 'awo',
-                where: {
-                    movieId: db.Sequelize.col('awo.otherId')
-                },
-                inlcude:[{
-                    model: AakModel,
-                    as: 'a',
-                    where: {
-                        akaId: db.Sequelize.col('a.akaId')
-                    }
-                }]
-            }],
-            offset: options.pageIndex * options.pageSize,
-            limit: options.pageSize
+    async getMoviesByCondition(condition: Condition) : Promise<PageReturnType> {
+        return await db.query(condition.toSql(), {
+            type: db.QueryTypes.SELECT
         });
     }
 

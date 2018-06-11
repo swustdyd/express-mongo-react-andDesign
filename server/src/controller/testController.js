@@ -20,6 +20,8 @@ import BaseConfig from '../../../baseConfig'
 import moment from 'moment'      
 import logger from '../common/logger';        
 import MovieService from '../service/movie'
+import Condition, {JoinType, OpType, LogicOpType} from '../db/condition'
+import { db } from '../db';
 
 export default class TestController extends BaseController{
     constructor(){
@@ -45,8 +47,72 @@ export default class TestController extends BaseController{
             //     }
             // }
             //const result = await this.getTick();
-            const {id} = req.query;
-            const result = await this._movieService.getMovieById(id);
+            // const {id} = req.query;
+            // const result = await this._movieService.getMovieById(id);
+            const condition = new Condition('movie', 
+                [
+                    'movieId',
+                    'name',
+                    {
+                        name: 'akaName',
+                        alias: 'a',
+                        as: 'aka_name'
+                    }
+                ],
+                [
+                    // {
+                    //     name: 'name',
+                    //     alias: 'movie',
+                    //     opType: OpType.LIKE,
+                    //     logicOpType: LogicOpType.AND,
+                    //     value: '钢铁%'
+                    // },
+                    // {
+                    //     name: 'createAt',
+                    //     alias: 'movie',
+                    //     opType: OpType.GTE,
+                    //     logicOpType: LogicOpType.AND,
+                    //     value: new Date()
+                    // },
+                    // {
+                    //     name: 'movieId',
+                    //     alias: 'movie',
+                    //     opType: OpType.GTE,
+                    //     logicOpType: LogicOpType.AND,
+                    //     value: 1
+                    // }
+                ],
+                [
+                    {
+                        name: 'akaWithOther',
+                        alias: 'awo',
+                        on:{
+                            sourceKey: 'otherId',
+                            targetKey: {
+                                key: 'movieId',
+                                alias: 'movie'
+                            }
+                        },
+                        type: JoinType.LEFT
+                    },
+                    {
+                        name: 'aka',
+                        alias: 'a',
+                        on:{
+                            sourceKey: 'akaId',
+                            targetKey: {
+                                key: 'akaId',
+                                alias: 'awo'
+                            }, 
+                            type: JoinType.LEFT
+                        }
+                    }
+                ]
+            );
+            condition.setOffset(0),
+            condition.setLimit(10);
+            const sql = condition.toSql();
+            const result = await db.query(sql, {type: db.QueryTypes.SELECT});
             if(result){                
                 res.send(result);
             }else{
