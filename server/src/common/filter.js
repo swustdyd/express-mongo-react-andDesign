@@ -24,6 +24,7 @@ function filter(req, res, next){
     }else{
         req.query.pageSize = DefaultPageSize;
     }
+    req.query.offset =  req.query.pageIndex * req.query.pageSize;
     //初始化post请求中的分页信息
     if (req.body.pageIndex) {
         req.body.pageIndex = /^[0-9]+$/.test(req.body.pageIndex) ? parseInt(req.body.pageIndex) : 0;
@@ -36,6 +37,7 @@ function filter(req, res, next){
     }else{
         req.body.pageSize = DefaultPageSize;
     }
+    req.body.offset =  req.body.pageIndex * req.body.pageSize
     next();
 }
 export default filter;
