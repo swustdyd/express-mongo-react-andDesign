@@ -3,23 +3,25 @@ import Sequelize from 'sequelize'
 import path from 'path'
 import logger from '../common/logger'
 import {sequelize, modelSyncOptions} from './sequelize'
+import Condition from './condition';
 
-// fs.readdirSync(path.resolve(__dirname, '../models')).filter((file) => {
-//     return (file.indexOf('.') !== 0) && (file.slice(-3) === '.js');
-// }).forEach((file) => {
-//     const model = require(path.resolve(__dirname, `../models/${file}`));
-//     sequelize.models[model.name] = model;
-// })
 
-// //执行更新数据库结构操作
-
-// const isDev = process.env.NODE_ENV !== 'production';
-// isDev && sequelize.sync({
-//     // force: true 如果表已经存在，将会丢弃表
-//     force: false,
-//     // Alters tables to fit models. Not recommended for production use. 
-//     // Deletes data in columns that were removed or had their type changed in the model.
-//     alter: true
-// });
 export const db = sequelize;
 db.Sequelize = Sequelize;
+
+/**
+ * 根据条件统计
+ * @param {*} condition 搜索的条件 
+ */
+async function count(condition: Condition){
+    const tmpFileds = JSON.stringify(condition.fileds);
+    let countFiledString = '*';
+    if(condition.distinct && condition.distinctFileds.length > 0){
+        countFiledString = `distinct ${condition.distinctFileds.join(', ')}`;
+    }
+    condition.fileds = [{name: `count(${countFiledString})`, as: 'total'}];
+    const result =  await db.query(condition.toSql(), {type: db.QueryTypes.SELECT});
+    condition.fileds = JSON.parse(tmpFileds);
+    return result[0].total;
+}
+db.count = count;
