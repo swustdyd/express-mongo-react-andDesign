@@ -16,6 +16,17 @@ export const LogicOpType = {
     OR: 'or'
 }
 
+export const OrderType = {
+    ASC: 'asc',
+    DESC: 'desc'
+}
+
+export const JoinType = {
+    LEFT: 'left join',
+    RIGHT: 'right join',
+    INNER: 'inner join'
+}
+
 type WhereItem = {
     name: string,
     alias: string,
@@ -28,12 +39,6 @@ type FiledItem = {
     name: string,
     alias: string,
     as: string
-}
-
-export const JoinType = {
-    LEFT: 'left join',
-    RIGHT: 'right join',
-    INNER: 'inner join'
 }
 
 type Joins = {
@@ -49,8 +54,20 @@ type Joins = {
     type: JoinType
 }
 
+type GroupBy = {
+    name: string,
+    alias: string
+}
+
+type OrderBy = {
+    name: string,
+    alias: string,
+    type: OrderType
+}
+
 export default class Condition{
-    constructor(tableName: string, fileds: Array<string|FiledItem> = [], where: WhereItem[] = [], joins: Joins[] = []){        
+    constructor(tableName: string, fileds: Array<string|FiledItem> = [], 
+        where: WhereItem[] = [], joins: Joins[] = [], groupBy: GroupBy[] = [], orderBy: OrderBy[] = []){        
         if(!tableName){
             throw new Error('tablename can\'t be null')
         }
@@ -59,11 +76,20 @@ export default class Condition{
         this.where = where;
         this.joins = joins;
         this.offset = 0,
-        this.limit = QueryDefaultOptions.pageSize
+        this.limit = QueryDefaultOptions.pageSize,
+        this.distinct = false;
+        this.distinctFileds = [];
+        this.orderBy = orderBy;
+        this.groupBy = groupBy;
     }
 
     setOffset(offset: number){
         this.offset = offset;
+    }
+
+    setDistinct(value: boolean, ...distinctFileds){
+        this.distinct = value;
+        this.distinctFileds = distinctFileds;
     }
 
     setLimit(limit: number){
@@ -82,6 +108,14 @@ export default class Condition{
 
     addJoin(item: Joins){
         this.joins.push(item);
+    }
+
+    addOrderBY(item: OrderBy){
+        this.orderBy.push(item);
+    }
+
+    addGroupBy(item: GroupBy){
+        this.groupBy.push(item)
     }
 
     _parseFileds(){
@@ -138,12 +172,35 @@ export default class Condition{
         return joinString;
     }
 
+    _parseOrder(){
+        let orderString = '';
+        if(this.orderBy.length > 0){
+            orderString += 'order by '
+            orderString += this.orderBy.map((item) => {
+                return `${item.alias ? `${item.alias}.${item.name}` : item.name} ${item.type || OrderType.ASC}`
+            }).join(', ');
+        }
+        return orderString;
+    }
+
+    _parseGroup(){
+        let groupString = '';
+        if(this.groupBy.length > 0){
+            groupString += 'group by '
+            groupString += this.groupBy.map((item) => {
+                return `${item.alias ? `${item.alias}.${item.name}` : item.name}`
+            }).join(', ');
+        }
+        return groupString;
+    }
+
     toSql(){
         const filedsString = this._parseFileds();
         const whereString = this._parseWhere();
         const joinString = this._parseJoins();
-
-        const sql = `select ${filedsString} from ${this.tableName}${joinString ? ` ${joinString}` : ''} ${whereString} limit ${this.offset}, ${this.limit}`;
+        const groupString = this._parseGroup();
+        const orderString = this._parseOrder();
+        const sql = `select${this.distinct ? ' distinct' : ''} ${filedsString} from ${this.tableName}${joinString ? ` ${joinString}` : ''}${whereString ? ` ${whereString}` : ''}${groupString ?` ${groupString}` : ''}${orderString ? ` ${orderString}` : ''} limit ${this.offset}, ${this.limit}`;
         return sql;
     }
 }
