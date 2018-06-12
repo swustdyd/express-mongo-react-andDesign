@@ -31,10 +31,14 @@ const MovieType = sequelize.define('movieType', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_movieId',
+            method: 'BTREE',
+            fields:['movieId']
+        }
+    ]
 })
-
-// MovieType.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
 
 export default MovieType;

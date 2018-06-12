@@ -31,10 +31,14 @@ const CountryMovie = sequelize.define('countryMovie', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_movieId',
+            method: 'BTREE',
+            fields:['movieId']
+        }
+    ]
 })
-
-// CountryMovie.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
 
 export default CountryMovie;

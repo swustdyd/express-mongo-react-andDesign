@@ -31,10 +31,14 @@ const ArtistJob = sequelize.define('artistJob', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_jobId',
+            method: 'BTREE',
+            fields:['jobId']
+        }
+    ]
 })
-
-// ArtistJob.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
 
 export default ArtistJob;

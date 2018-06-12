@@ -31,10 +31,14 @@ const LanguageMovie = sequelize.define('languageMovie', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_movieId',
+            method: 'BTREE',
+            fields:['movieId']
+        }
+    ]
 })
-
-// LanguageMovie.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
 
 export default LanguageMovie;

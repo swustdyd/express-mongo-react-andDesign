@@ -30,6 +30,14 @@ const ArtistMovie = sequelize.define('artistMovie', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_movieId',
+            method: 'BTREE',
+            fields:['movieId']
+        }
+    ]
 })
 
 export default ArtistMovie;

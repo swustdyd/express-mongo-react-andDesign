@@ -31,10 +31,14 @@ const PublishDate = sequelize.define('publishDate', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_movieId',
+            method: 'BTREE',
+            fields:['movieId']
+        }
+    ]
 })
-
-// PublishDate.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
 
 export default PublishDate;

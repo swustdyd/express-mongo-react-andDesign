@@ -31,10 +31,14 @@ const AkaWithOther = sequelize.define('akaWithOther', {
             return moment(this.getDataValue('updateAt')).format(dateFormatString);
         }
     }
+}, {
+    indexes:[
+        {
+            name: 'idx_otherId',
+            method: 'BTREE',
+            fields:['otherId']
+        }
+    ]
 })
-
-// AkaWithOther.sync(modelSyncOptions).catch((err) => {
-//     logger.error(err);
-// })
 
 export default AkaWithOther;
