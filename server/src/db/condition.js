@@ -31,8 +31,8 @@ type WhereItem = {
     name: string,
     alias: string,
     value: any,
-    opType: OpType,
-    logicOpType: LogicOpType
+    opType: string,
+    logicOpType: string
 }
 
 type FiledItem = {
@@ -51,7 +51,7 @@ type Joins = {
             key: string
         }
     },
-    type: JoinType
+    type: string
 }
 
 type GroupBy = {
@@ -62,7 +62,7 @@ type GroupBy = {
 type OrderBy = {
     name: string,
     alias: string,
-    type: OrderType
+    type: string
 }
 
 export default class Condition{
