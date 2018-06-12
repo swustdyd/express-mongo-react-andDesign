@@ -14,17 +14,15 @@ db.Sequelize = Sequelize;
  * @param {*} condition 搜索的条件 
  */
 async function count(condition: Condition){
-    const tmpFileds = JSON.stringify(condition.fileds);
-    const tmpGroupBy = JSON.stringify(condition.groupBy);
     let countFiledString = '*';
     if(condition.distinct && condition.distinctFileds.length > 0){
         countFiledString = `distinct ${condition.distinctFileds.join(', ')}`;
     }
-    condition.fileds = [{name: `count(${countFiledString})`, as: 'total'}];
-    condition.groupBy = [];
-    const result =  await db.query(condition.toSql(), {type: db.QueryTypes.SELECT});
-    condition.fileds = JSON.parse(tmpFileds);
-    condition.groupBy = JSON.parse(tmpGroupBy)
+    const whereString = condition._parseWhere();
+    const joinString = condition._parseJoins();
+    const orderString = condition._parseOrder();
+    const sql = `select count(${countFiledString}) as total from ${condition.tableName}${joinString ? ` ${joinString}` : ''}${whereString ? ` ${whereString}` : ''}${orderString ? ` ${orderString}` : ''}`
+    const result =  await db.query(sql, {type: db.QueryTypes.SELECT});
     return result[0].total;
 }
 db.count = count;

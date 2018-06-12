@@ -2,7 +2,7 @@ import MovieService from '../service/movie'
 import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
-import Condition, {OpType, LogicOpType} from '../db/condition'
+import Condition, {OpType, LogicOpType, JoinType, OrderType} from '../db/condition'
 
 export default class MovieController extends BaseController{
     constructor(){
@@ -18,22 +18,35 @@ export default class MovieController extends BaseController{
      */
     async getMovies(req, res, next) {
         try {            
-            const {pageIndex, pageSize, name, id, startYear, endYear, language} = req.query;
+            const {offset, pageSize, name, id, startYear, endYear, language} = req.query;
             const condition = new Condition('movie', [
                 {
                     name: 'movie.name',
-                    as: 'showName'
+                    as: 'title'
                 },
                 {
                     name: 'movie.createAt'
                 },
-                // {
-                //     name: 'a.akaName',
-                //     as: 'akaName'
-                // },
+                {
+                    name: 'a.akaName',
+                    as: 'akaName'
+                },
                 {
                     name: 'l.languageName',
                     as: 'language'
+                },
+                'movie.year',
+                {
+                    name: 'movie.updateAt',
+                    as: '`update`'
+                },
+                {
+                    name: 'movie.movieId',
+                    as: '_id'
+                },
+                {
+                    name: 'c.countryName',
+                    as: 'country'
                 }
             ]);
             if(name){
@@ -80,28 +93,28 @@ export default class MovieController extends BaseController{
                     logicOpType: LogicOpType.AND
                 })
             }
-            // condition.addJoin({
-            //     name: 'akaWithOther',
-            //     alias: 'awo',
-            //     on:{
-            //         sourceKey: 'otherId',
-            //         targetKey:{
-            //             alias: 'movie',
-            //             key: 'movieId'
-            //         }
-            //     }
-            // })
-            // condition.addJoin({
-            //     name: 'aka',
-            //     alias: 'a',
-            //     on:{
-            //         sourceKey: 'akaId',
-            //         targetKey:{
-            //             alias: 'awo',
-            //             key: 'akaId'
-            //         }
-            //     }
-            // })
+            condition.addJoin({
+                name: 'akaWithOther',
+                alias: 'awo',
+                on:{
+                    sourceKey: 'otherId',
+                    targetKey:{
+                        alias: 'movie',
+                        key: 'movieId'
+                    }
+                }
+            })
+            condition.addJoin({
+                name: 'aka',
+                alias: 'a',
+                on:{
+                    sourceKey: 'akaId',
+                    targetKey:{
+                        alias: 'awo',
+                        key: 'akaId'
+                    }
+                }
+            })
             condition.addJoin({
                 name: 'languagemovie',
                 alias: 'lm',
@@ -124,8 +137,36 @@ export default class MovieController extends BaseController{
                     }
                 }
             })
+            condition.addJoin({
+                name: 'countrymovie',
+                alias: 'cm',
+                on:{
+                    sourceKey: 'movieId',
+                    targetKey:{
+                        alias: 'movie',
+                        key: 'movieId'
+                    }
+                }
+            })
+            condition.addJoin({
+                name: 'country',
+                alias: 'c',
+                on:{
+                    sourceKey: 'countryId',
+                    targetKey:{
+                        alias: 'cm',
+                        key: 'countryId'
+                    }
+                }
+            })
+            condition.setDistinct(true, 'movie.movieId', 'movie.doubanMovieId');
+            condition.addGroupBy({name: 'movieId', alias: 'movie'});
+            condition.addOrderBY({name: 'year', alias: 'movie', type: OrderType.DESC});
+            condition.addOrderBY({name: 'createAt', alias: 'movie', type: OrderType.DESC});
+            condition.setOffset(offset);
+            condition.setLimit(pageSize);
             const resData = await this._movieService.getMoviesByCondition(condition);
-            res.json(resData);
+            res.json({success: true, ...resData});
         }catch(e) {
             next(e);
         }

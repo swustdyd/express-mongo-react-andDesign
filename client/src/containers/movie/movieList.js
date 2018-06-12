@@ -23,16 +23,22 @@ class MovieList extends React.Component{
     constructor(){
         super();
         this.state = {
-            yearRange: {}
+            yearRange: {},            
+            total: 0,
+            pageIndex: 0,
+            pageSize: 10,
+            movies: []
         };
         this.handleSearchClick = this.handleSearchClick.bind(this);
     }
     getSearchCondition(){
         const condition = {};
-        const { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();
-        condition.searchYear = searchYear;
+        const { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();        
+        if(searchYear){
+            condition.searchYear = searchYear;
+        }
         if(searchTitle){
-            condition.title = searchTitle;
+            condition.name = searchTitle;
         }
         if(searchLanguage){
             condition.language = searchLanguage;
@@ -40,13 +46,14 @@ class MovieList extends React.Component{
         return condition;
     }
     handleDeleteClick(id){
+        const {pageIndex} = this.state;
         this.props.movieListAction.deleteMovie(id, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
                 if(data.success){
                     message.success(data.message);
-                    this.searchAndLoadMovies(this.props.movieListState.pageIndex);
+                    this.searchAndLoadMovies(pageIndex);
                 }else{
                     message.error(data.message);
                 }
@@ -54,10 +61,11 @@ class MovieList extends React.Component{
         });
     }
     handleEditClick(id){
+        const {pageIndex, pageSize} = this.state;
         const condition = {
             _id: id
         };
-        this.props.movieListAction.searchMovies(condition, 0, (err, data) => {
+        this.props.movieListAction.searchMovies(condition, 0, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -68,7 +76,7 @@ class MovieList extends React.Component{
                         modalContent: <MovieEdit
                             onSubmitSuccess={() => {
                                 this.props.modalAction.hideModal();
-                                this.searchAndLoadMovies(this.props.movieListState.pageIndex);
+                                this.searchAndLoadMovies(pageIndex);
                             }}
                             initData={data.result[0]}
                         />,
@@ -87,16 +95,18 @@ class MovieList extends React.Component{
     componentDidMount(){
         this.searchAndLoadMovies();
     }
-    searchAndLoadMovies(pageIndex, condition){
-        this.props.movieListAction.searchMovies(condition, pageIndex, 10, (err, data) => {
+    searchAndLoadMovies(pageIndex = 0, condition){
+        const {pageSize} = this.state;
+        this.props.movieListAction.searchMovies(condition, pageIndex, pageSize, (err, data) => {
             if(err){
                 message.error(err.message)
             }else {
                 if(data.success){
-                    data.result.forEach(function (item) {
-                        item.key = item._id;
-                    });
-                    this.props.movieListAction.loadMovieList(data.result, data.pageIndex, data.pageSize, data.total);
+                    this.setState({
+                        pageIndex: pageIndex,
+                        total: data.total,
+                        movies: data.result
+                    })
                 }else {
                     message.error(data.message)
                 }
@@ -104,20 +114,21 @@ class MovieList extends React.Component{
         });
     }
     handleNewClick(){
+        const {pageIndex} = this.state;
         this.props.modalAction.showModal({
             title: '新增电影',
             maskClosable: false,
             modalContent: <MovieEdit
                 onSubmitSuccess={() => {
                     this.props.modalAction.hideModal();
-                    this.searchAndLoadMovies(this.props.movieListState.pageIndex);
+                    this.searchAndLoadMovies(pageIndex);
                 }}
             />,
             width: 800
         });
     }
     render(){
-        const {total, pageIndex, pageSize, movies } = this.props.movieListState;
+        const {total, pageIndex, pageSize, movies } = this.state;
         const { getFieldDecorator } = this.props.form;
         const columns = [
             {
@@ -147,9 +158,9 @@ class MovieList extends React.Component{
             },
             {
                 title: '最后更新时间',
-                dataIndex: 'meta',
+                dataIndex: 'update',
                 key: 'update',
-                render: (text) => { return momont(text.updateAt).format('YYYY-MM-DD HH:mm:ss')}
+                render: (time) => { return momont(time).format('YYYY-MM-DD HH:mm:ss')}
             },
             {
                 title: '评论',

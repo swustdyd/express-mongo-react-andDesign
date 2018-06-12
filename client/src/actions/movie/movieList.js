@@ -8,6 +8,7 @@ export default {
         return (dispatch, getState) => {
             if((typeof condition) === 'function'){
                 callback = condition;
+                condition = {};
             }
             if((typeof pageIndex) === 'function'){
                 callback = pageIndex;
@@ -17,7 +18,11 @@ export default {
                 callback = pageSize;
                 pageSize = 5;
             }
-            fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&condition=${JSON.stringify(condition || {})}`)
+            const conditionArray = [];
+            for(const key in condition){
+                conditionArray.push(`${key}=${condition[key]}`);
+            }
+            fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&${conditionArray.join('&')}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
