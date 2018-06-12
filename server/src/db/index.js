@@ -15,13 +15,16 @@ db.Sequelize = Sequelize;
  */
 async function count(condition: Condition){
     const tmpFileds = JSON.stringify(condition.fileds);
+    const tmpGroupBy = JSON.stringify(condition.groupBy);
     let countFiledString = '*';
     if(condition.distinct && condition.distinctFileds.length > 0){
         countFiledString = `distinct ${condition.distinctFileds.join(', ')}`;
     }
     condition.fileds = [{name: `count(${countFiledString})`, as: 'total'}];
+    condition.groupBy = [];
     const result =  await db.query(condition.toSql(), {type: db.QueryTypes.SELECT});
     condition.fileds = JSON.parse(tmpFileds);
+    condition.groupBy = JSON.parse(tmpGroupBy)
     return result[0].total;
 }
 db.count = count;
