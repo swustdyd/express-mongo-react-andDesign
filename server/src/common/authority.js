@@ -31,7 +31,8 @@ export default class Authroity{
                     const {user} = decoded;   
                     if(!user){
                         next(new BusinessException('请登录', errorCode.requestSignin));
-                    }else{                    
+                    }else{
+                        req.token = {user};                   
                         next();
                     }
                 }
