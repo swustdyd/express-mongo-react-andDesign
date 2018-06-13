@@ -1,9 +1,8 @@
 /**
  * Created by Aaron on 2018/3/2.
  */
-/*import './common/polyfill'
-import './common/common'*/
 import React from 'react'
+import Cookies from 'js-cookie'
 import { HashRouter, Route } from 'react-router-dom'
 import ReactDom from 'react-dom'
 import HMFLayout from './common/hmfLayout'
@@ -36,6 +35,14 @@ const store = createStore(
     AppReducer,
     applyMiddleware(...middleware)
 );
+
+const customFetch = window.fetch;
+
+window.fetch = (url, options = {}) => {
+    options.headers = options.headers || {};
+    options.headers.Authorization = Cookies.get('token') || '';
+    return customFetch(url, options)
+}
 
 ReactDom.render(
     <Provider store={store}>
