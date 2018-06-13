@@ -27,15 +27,9 @@ export default class MovieController extends BaseController{
                 {
                     name: 'movie.createAt'
                 },
-                {
-                    name: 'a.akaName',
-                    as: 'akaName'
-                },
-                {
-                    name: 'l.languageName',
-                    as: 'language'
-                },
+                'movie.picture',
                 'movie.year',
+                'movie.summary',
                 {
                     name: 'movie.updateAt',
                     as: '`update`'
@@ -47,6 +41,14 @@ export default class MovieController extends BaseController{
                 {
                     name: 'c.countryName',
                     as: 'country'
+                },
+                {
+                    name: 'a.akaName',
+                    as: 'akaName'
+                },
+                {
+                    name: 'l.languageName',
+                    as: 'language'
                 }
             ]);
             if(name){
