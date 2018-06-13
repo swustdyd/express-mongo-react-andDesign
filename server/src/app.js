@@ -53,19 +53,19 @@ app.use(bodyParser());
 //filter
 app.use(filter);
 app.use(cookieParser());
-app.use(session({
-    secret: 'demo',
-    store: new MongoStore({
-        mongooseConnection: mongoose.connection
-        //ttl: 30 * 60// 30 minute 存储在mongo的有效时间，默认为14天，过期后会自动删除
-    }),
-    cookie: {
-        maxAge: 30 * 60 * 1000// 30 minute session和cookie的有效时间，默认是浏览器关闭，该设置优先级大于ttl
-    },
-    rolling: true,
-    resave: true,
-    saveUninitialized: false
-}));
+// app.use(session({
+//     secret: 'demo',
+//     store: new MongoStore({
+//         mongooseConnection: mongoose.connection
+//         //ttl: 30 * 60// 30 minute 存储在mongo的有效时间，默认为14天，过期后会自动删除
+//     }),
+//     cookie: {
+//         maxAge: 30 * 60 * 1000// 30 minute session和cookie的有效时间，默认是浏览器关闭，该设置优先级大于ttl
+//     },
+//     rolling: true,
+//     resave: true,
+//     saveUninitialized: false
+// }));
 
 if(isDev){
     app.use(morgan('dev'));
@@ -93,7 +93,7 @@ app.use(express.static(path.join(BaseConfig.root, 'public')));//设置静态目�
 //在引用所有路由前，可在此做拦截器
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', `${BaseConfig.clientHost}:${BaseConfig.clientPort}`);
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Credentials', 'true');
     next();
