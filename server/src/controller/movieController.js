@@ -19,7 +19,7 @@ export default class MovieController extends BaseController{
     async getMovies(req, res, next) {
         try {            
             const {offset, pageSize, name, id, startYear, endYear, language} = req.query;
-            const condition = new Condition('movie', [
+            const condition = new Condition([
                 {
                     name: 'movie.name',
                     as: 'title'
