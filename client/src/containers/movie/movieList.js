@@ -162,12 +162,12 @@ class MovieList extends React.Component{
                 key: 'update',
                 render: (time) => { return momont(time).format('YYYY-MM-DD HH:mm:ss')}
             },
-            {
-                title: '评论',
-                dataIndex: '_id',
-                key: 'comment',
-                render: (id) => { return <Link to={`/moviePage/comment/${id}`} >查看评论</Link>}
-            },
+            // {
+            //     title: '评论',
+            //     dataIndex: '_id',
+            //     key: 'comment',
+            //     render: (id) => { return <Link to={`/moviePage/comment/${id}`} >查看评论</Link>}
+            // },
             {
                 title: '编辑',
                 dataIndex: '_id',

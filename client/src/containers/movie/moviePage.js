@@ -44,9 +44,9 @@ class MoviePage extends React.Component{
                         level={2}
                     >
                         <Menu.Item key="movieList"><Link to="/moviePage/movieList" >电影列表</Link></Menu.Item>
-                        <Menu.Item key="movieCount"><Link to="/moviePage/movieCount" >统计</Link></Menu.Item>
+                        {/* <Menu.Item key="movieCount"><Link to="/moviePage/movieCount" >统计</Link></Menu.Item>
                         <Menu.Item key="doubanMovieList"><Link to="/moviePage/doubanMovieList" >豆瓣电影列表</Link></Menu.Item>
-                        <Menu.Item key="doubanMovieCount"><Link to="/moviePage/doubanMovieCount" >豆瓣电影统计</Link></Menu.Item>
+                        <Menu.Item key="doubanMovieCount"><Link to="/moviePage/doubanMovieCount" >豆瓣电影统计</Link></Menu.Item> */}
                     </HashRouterMenu>
                 }
                 right={
