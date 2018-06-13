@@ -45,7 +45,14 @@ export type QueryOptionsType = {
     pageIndex: number
 };
 
-export type ErrorCodeType = {}
+export type ErrorCodeType = {
+    defaultCode: number,
+    noAuthroity: number,
+    requestSignin: number,
+    requestAdmin: number,
+    requestSuperAdmin: number,
+    validationError: number
+}
 
 export type UploadFileType = {
     /**
