@@ -27,19 +27,24 @@ class IndexPage extends React.Component{
                 width: 350,
                 height: 350
             },
-            resData: {}
+            pageIndex: 0,
+            pageSize: 20,
+            total: 0,
+            movies:[]
         }
     }
 
-    getAndLoadMovies(pageIndex){
-        const _this = this;
-        _this.props.movieListAction.searchMovies({}, pageIndex, 15, (err, data) => {
+    getAndLoadMovies(pageIndex = 0){
+        const {pageSize} = this.state;
+        this.props.movieListAction.searchMovies({}, pageIndex, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
                 if(data.success){
-                    _this.setState({
-                        resData: data,
+                    this.setState({
+                        pageIndex,
+                        total: data.total,
+                        movies: data.result,
                         currentPoster: data.result.length ? data.result[0]._id : 0
                     });
                 }else{
@@ -50,12 +55,11 @@ class IndexPage extends React.Component{
     }
 
     getStyleMap(){
-        const currentId = this.state.currentPoster;
         const styleMap = {};
-        const { resData } = this.state;
-        const movies = resData.result;
-        const height = Math.max(this.state.windowInnerHeight, this.state.minHeight) - this.state.padding.y - this.state.controllerHeight;
-        const width = Math.max(this.state.windowInnerWidth, 500) - this.state.padding.x;
+        const { movies, currentPoster: currentId, centerStyle,
+            controllerHeight, windowInnerWidth, windowInnerHeight, minHeight, padding} = this.state;
+        const height = Math.max(windowInnerHeight, minHeight) - padding.y - controllerHeight;
+        const width = Math.max(windowInnerWidth, 500) - padding.x;
         if(movies && movies.length > 0){
             movies.forEach((item) => {
                 const randomDeg = Math.ceil(Math.random() * 30);
@@ -64,8 +68,8 @@ class IndexPage extends React.Component{
                     transform: `rotate(${randomSymbol}${randomDeg}deg)`
                 };
                 if(item._id === currentId){
-                    style.top = (height - this.state.centerStyle.height) / 2;
-                    style.left = (width - this.state.centerStyle.width) / 2;
+                    style.top = (height - centerStyle.height) / 2;
+                    style.left = (width - centerStyle.width) / 2;
                     style.transform = undefined;
                 }else{
                     style.top = Math.ceil(Math.random() * (height - 100));
@@ -113,6 +117,9 @@ class IndexPage extends React.Component{
         const styleMap = this.getStyleMap();
         if(movies && movies.length > 0){
             movies.forEach((item, index) => {
+                item.poster = {
+                    src: item.picture
+                }
                 let className = '';
                 if(item._id === this.state.currentPoster){
                     className = 'center'
@@ -155,40 +162,41 @@ class IndexPage extends React.Component{
         return controllers;
     }
 
-    render(){
-        const minHeight = Math.max(this.state.windowInnerHeight, this.state.minHeight) - this.state.padding.y - this.state.controllerHeight;
-        const { result } = this.state.resData;
+    render(){        
+        const { movies, pageIndex, total, pageSize,
+            windowInnerHeight, minHeight: settingMinHeight, padding, controllerHeight} = this.state;
+        const minHeight = Math.max(windowInnerHeight, settingMinHeight) - padding.y - controllerHeight;
         const lastPageProps = {};
-        if(this.state.resData.pageIndex <= 0){
+        if(pageIndex <= 0){
             lastPageProps.disabled = true;
         }
         const nextPageProps = {};
-        if(this.state.resData.pageIndex === Math.floor( this.state.resData.total / this.state.resData.pageSize)){
+        if(pageIndex === Math.floor( total / pageSize)){
             nextPageProps.disabled = true;
         }
         return (
             <div>
                 <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>
-                    {this.createMoviePosters(result)}
+                    {this.createMoviePosters(movies)}
                 </div>
                 <div
                     style={{
-                        height: this.state.controllerHeight,
-                        lineHeight: `${this.state.controllerHeight}px`
+                        height: controllerHeight,
+                        lineHeight: `${controllerHeight}px`
                     }}
                     className="controller"
                 >
                     <a
                         className="page-icon"
-                        onClick={() => {this.getAndLoadMovies(this.state.resData.pageIndex - 1)}}
+                        onClick={() => {this.getAndLoadMovies(pageIndex - 1)}}
                         {...lastPageProps}
                     >
                         last page
                     </a>
-                    {this.createControlPosters(result)}
+                    {this.createControlPosters(movies)}
                     <a
                         className="page-icon"
-                        onClick={() => {this.getAndLoadMovies(this.state.resData.pageIndex + 1)}}
+                        onClick={() => {this.getAndLoadMovies(pageIndex + 1)}}
                         {...nextPageProps}
                     >
                         next page

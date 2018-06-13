@@ -20,7 +20,9 @@ export default {
             }
             const conditionArray = [];
             for(const key in condition){
-                conditionArray.push(`${key}=${condition[key]}`);
+                if(condition[key]){                    
+                    conditionArray.push(`${key}=${condition[key]}`);
+                }
             }
             fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&${conditionArray.join('&')}`)
                 .then((res) => {
@@ -30,17 +32,6 @@ export default {
                 }).catch((err) => {
                     callback(err)
                 });
-        }
-    },
-    loadMovieList: (movies, pageIndex, pageSize, total) => {
-        return {
-            type: 'LOAD_MOVIE_LIST',
-            payload: {
-                movies: movies,
-                total: total,
-                pageIndex: pageIndex,
-                pageSize: pageSize
-            }
         }
     },
     deleteMovie: (id, cb) => {

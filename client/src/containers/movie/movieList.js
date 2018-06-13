@@ -29,7 +29,6 @@ class MovieList extends React.Component{
             pageSize: 10,
             movies: []
         };
-        this.handleSearchClick = this.handleSearchClick.bind(this);
     }
     getSearchCondition(){
         const condition = {};
@@ -219,7 +218,7 @@ class MovieList extends React.Component{
             }
         };
         return(
-            <Form onSubmit={this.handleSearchClick}>
+            <Form onSubmit={(e) => {this.handleSearchClick(e)}}>
                 <Row gutter={12}>
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="电影名">
