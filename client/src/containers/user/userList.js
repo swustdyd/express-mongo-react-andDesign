@@ -156,15 +156,15 @@ class UserList extends React.Component{
             },
             {
                 title: '创建日期',
-                dataIndex: 'meta',
+                dataIndex: 'updateAt',
                 key: 'createAt',
-                render: (meta) => { return Moment(meta.createAt).format('YYYY-MM-DD HH:mm:ss')}
+                render: (createAt) => { return Moment(createAt).format('YYYY-MM-DD HH:mm:ss')}
             },
             {
                 title: '更新日期',
-                dataIndex: 'meta',
+                dataIndex: 'updateAt',
                 key: 'updateAt',
-                render: (meta) => { return Moment(meta.updateAt).format('YYYY-MM-DD HH:mm:ss')}
+                render: (updateAt) => { return Moment(updateAt).format('YYYY-MM-DD HH:mm:ss')}
             },
             {
                 title: '编辑',
