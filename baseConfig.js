@@ -14,7 +14,8 @@ const config = {
     indexPageTitle: 'Demo 首页',
     logLevel: 'info',
     dateFormatString: 'YYYY-MM-DD HH:mm:ss',
-    dayFormatString: 'YYYY-MM-DD'
+    dayFormatString: 'YYYY-MM-DD',
+    tokenSecret: 'qwertyuiop'
 };
 
 config.staticSourceHost = `${config.serverHost}:${config.serverPort}`;
