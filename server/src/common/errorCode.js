@@ -8,6 +8,7 @@ import { ErrorCodeType } from './type';
  */
 const errorCode : ErrorCodeType = {
     defaultCode: 500,
+    noAuthroity: 401,
     requestSignin: 1,
     requestAdmin: 2,
     requestSuperAdmin: 3,

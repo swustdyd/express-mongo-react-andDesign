@@ -1,4 +1,5 @@
 import API from '../../common/api'
+import Cookies from 'js-cookie'
 
 const loginControlAction = {
     login: (name, password, sevenDay) => {
@@ -8,15 +9,13 @@ const loginControlAction = {
                 headers: {
                     'Content-type': 'application/json'
                 },
-                //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-                credentials: 'include',
                 body: JSON.stringify({user: {name: name, password: password}, sevenDay: sevenDay})
             }).then((res) => { 
                 return res.json()
             }).then((data) => {
                 if(data.success){
-                    //dispatch(loginControlAction.loginSuccess(name, data.message))
-                    window.location.reload();
+                    dispatch(loginControlAction.loginSuccess({name}, data.message));
+                    Cookies.set('token', data.token);
                 }else {
                     //console.log(data);
                     dispatch(loginControlAction.loginFail(data.message))

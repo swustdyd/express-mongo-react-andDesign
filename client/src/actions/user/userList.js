@@ -2,6 +2,7 @@
  * Created by Aaron on 2018/3/12.
  */
 import API from '../../common/api'
+import Cookies from 'js-cookie'
 
 export default {
     searchUsers: (condition, pageIndex, pageSize, cb) => {
@@ -18,8 +19,9 @@ export default {
                 pageSize = 5;
             }
             fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`, {
-                //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-                credentials: 'include'
+                headers: {
+                    Authorization: Cookies.get('token')
+                }
             }).then((res) => {
                 return res.json()
             }).then((data) => {
