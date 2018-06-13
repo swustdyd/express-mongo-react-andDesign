@@ -33,6 +33,7 @@ export default class UserService extends BaseService{
      * @param condition 查询条件
      */
     async getUsersByCondition(condition: Condition) : Promise<PageResult> {
+        condition.setTableName('user');
         const total = await db.count(condition);
         const result = await db.query(condition.toSql(), {type: db.QueryTypes.SELECT});
         return {result, total};

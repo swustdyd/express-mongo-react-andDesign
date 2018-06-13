@@ -19,6 +19,7 @@ export default class MovieService extends BaseService{
      * @param condition 查询条件
      */
     async getMoviesByCondition(condition: Condition) : Promise<PageResult> {
+        condition.setTableName('movie');
         const total = await db.count(condition);
         const result = await db.query(condition.toSql(), {
             type: db.QueryTypes.SELECT
