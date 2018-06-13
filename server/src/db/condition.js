@@ -66,12 +66,9 @@ type OrderBy = {
 }
 
 export default class Condition{
-    constructor(tableName: string, fileds: Array<string|FiledItem> = [], 
-        where: WhereItem[] = [], joins: Joins[] = [], groupBy: GroupBy[] = [], orderBy: OrderBy[] = []){        
-        if(!tableName){
-            throw new Error('tablename can\'t be null')
-        }
-        this.tableName = tableName;
+    constructor(fileds: Array<string|FiledItem> = [], 
+        where: WhereItem[] = [], joins: Joins[] = [], groupBy: GroupBy[] = [], orderBy: OrderBy[] = []){  
+        this.tableName = '';
         this.fileds = fileds;
         this.where = where;
         this.joins = joins;
@@ -82,7 +79,9 @@ export default class Condition{
         this.orderBy = orderBy;
         this.groupBy = groupBy;
     }
-
+    setTableName(tableName: string){
+        this.tableName = tableName;
+    }
     setOffset(offset: number){
         this.offset = offset;
     }
@@ -194,7 +193,10 @@ export default class Condition{
         return groupString;
     }
 
-    toSql(){
+    toSql(){              
+        if(!this.tableName){
+            throw new Error('tablename can\'t be null')
+        }
         const filedsString = this._parseFileds();
         const whereString = this._parseWhere();
         const joinString = this._parseJoins();
