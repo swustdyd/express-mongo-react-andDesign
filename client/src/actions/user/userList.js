@@ -18,17 +18,14 @@ export default {
                 cb = pageSize;
                 pageSize = 5;
             }
-            fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`, {
-                headers: {
-                    Authorization: Cookies.get('token')
-                }
-            }).then((res) => {
-                return res.json()
-            }).then((data) => {
-                cb(undefined, data);
-            }).catch((err) => {
-                cb(err)
-            });
+            fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`)
+                .then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    cb(undefined, data);
+                }).catch((err) => {
+                    cb(err)
+                });
         }
     },
     loadUsersList: (users, pageIndex, pageSize, total) => {

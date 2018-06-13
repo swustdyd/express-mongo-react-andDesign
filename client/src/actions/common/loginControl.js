@@ -41,15 +41,14 @@ const loginControlAction = {
     },
     checkLogin: () => {
         return (dispatch, getState) => {
-            fetch(API.checkLogin, {
-                credentials: 'include'
-            }).then((res) => {
-                return res.json()
-            }).then((data) => {
-                if(data.success){
-                    dispatch(loginControlAction.loginSuccess(data.result));
-                }
-            });
+            fetch(API.checkLogin)
+                .then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    if(data.success){
+                        dispatch(loginControlAction.loginSuccess(data.result));
+                    }
+                });
         }
     },
     loginSuccess: (user, message) => {
