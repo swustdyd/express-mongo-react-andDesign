@@ -33,9 +33,10 @@ class MovieList extends React.Component{
     }
     getSearchCondition(){
         const condition = {};
-        const { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();        
+        const { searchTitle, searchLanguage, searchYear } = this.props.form.getFieldsValue();     
         if(searchYear){
-            condition.searchYear = searchYear;
+            condition.startYear = searchYear.start;
+            condition.endYear = searchYear.end;
         }
         if(searchTitle){
             condition.name = searchTitle;
