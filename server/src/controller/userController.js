@@ -182,16 +182,28 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
-    checkLogin(request, response, next) {
-        // if(request.session.user){
-        //     response.json({
-        //         success: true,
-        //         result: request.session.user
-        //     })
-        // }else {
-        //     response.json({success: false})
-        // }
-        next(new BusinessException('检查登录功能已弃用'));
+    checkLogin(req, res, next) {
+        try {            
+            const token = req.get('Authorization');
+            if(!token){
+                res.json({success: false, message: 'token为空'});
+            }else{
+                jwt.verify(token, tokenSecret, (err, decoded) => {
+                    if(err){
+                        res.json({success: false, message: err.message});
+                    }else{
+                        const {user} = decoded;   
+                        if(!user){
+                            res.json({success: false, message: '用户为空'});
+                        }else{
+                            res.json({success: true, result: user});
+                        }
+                    }
+                }); 
+            }
+        } catch (error) {
+            next(error)
+        }
     }
 
     /**
