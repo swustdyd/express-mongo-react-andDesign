@@ -40,5 +40,25 @@ export default {
                     cb(err)
                 });
         }
+    },
+    getMovieByGroup: (group = '', whereArray = [], cb) => {
+        if(typeof whereArray === 'function'){
+            cb = whereArray;
+            whereArray = [];
+        }
+        return () => {
+            fetch(`${API.getMoviesByGroup}?group=${group}&whereArray=${JSON.stringify(whereArray)}`)
+                .then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    if(cb){
+                        cb(undefined, data)
+                    }
+                }).catch((err) => {
+                    if(cb){
+                        cb(err);
+                    }
+                });
+        }        
     }
 }

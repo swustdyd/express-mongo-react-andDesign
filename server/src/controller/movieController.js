@@ -214,7 +214,7 @@ export default class MovieController extends BaseController{
     }
 
     /**
-     * 上传用户头像
+     * 上传电影海报
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
@@ -246,10 +246,14 @@ export default class MovieController extends BaseController{
      */
     async getMoviesByGroup(req, res, next){
         try {
-            const groupArray = JSON.parse(req.query.groupArray || '[]');
-            const match = JSON.parse(req.query.match || '{}');
-            const resData = await this._movieService.getMoviesByGroup(groupArray, match);
-            res.json(resData);
+            const group = req.query.group || '';
+            const whereArray = JSON.parse(req.query.whereArray || '[]');
+            if(!group){
+                next(new BusinessException('分组字段不能为空'))
+            }else{                
+                const result = await this._movieService.getMoviesByGroup(group, whereArray);
+                res.json({success: true, result});
+            }
         }catch (e){
             next(e);
         }
