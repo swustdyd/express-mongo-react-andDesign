@@ -27,6 +27,7 @@ export default class MovieController extends BaseController{
                 {
                     name: 'movie.createAt'
                 },
+                'movie.doubanMovieId',
                 'movie.picture',
                 'movie.year',
                 'movie.summary',

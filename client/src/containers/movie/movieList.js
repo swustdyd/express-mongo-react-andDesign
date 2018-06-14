@@ -139,7 +139,10 @@ class MovieList extends React.Component{
             {
                 title: '电影名',
                 dataIndex: 'title',
-                key: 'title'
+                key: 'title',
+                render: (title, record) => {
+                    return <a href={`https://movie.douban.com/subject/${record.doubanMovieId}`} target="_blank">{title}</a>
+                }
             },
             {
                 title: '国家',
@@ -157,9 +160,9 @@ class MovieList extends React.Component{
                 key: 'year'
             },
             {
-                title: '最后更新时间',
-                dataIndex: 'update',
-                key: 'update',
+                title: '创建时间',
+                dataIndex: 'createAt',
+                key: 'createAt',
                 render: (time) => { return momont(time).format('YYYY-MM-DD HH:mm:ss')}
             },
             // {
@@ -168,14 +171,14 @@ class MovieList extends React.Component{
             //     key: 'comment',
             //     render: (id) => { return <Link to={`/moviePage/comment/${id}`} >查看评论</Link>}
             // },
-            {
-                title: '编辑',
-                dataIndex: '_id',
-                key: 'edit',
-                render: (id) => {
-                    return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
-                }
-            },
+            // {
+            //     title: '编辑',
+            //     dataIndex: '_id',
+            //     key: 'edit',
+            //     render: (id) => {
+            //         return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
+            //     }
+            // },
             {
                 title: '删除',
                 dataIndex: '_id',
@@ -246,8 +249,8 @@ class MovieList extends React.Component{
                 </Row>
                 <Row>
                     <Button type="primary" htmlType="submit" icon="search">搜索</Button>
-                    &emsp;
-                    <Button type="primary" icon="plus-circle-o" onClick={() => {this.handleNewClick()}}>新增电影</Button>
+                    {/* &emsp;
+                    <Button type="primary" icon="plus-circle-o" onClick={() => {this.handleNewClick()}}>新增电影</Button> */}
                 </Row>
                 <Divider />
                 <Table
