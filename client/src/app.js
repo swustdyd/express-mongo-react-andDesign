@@ -40,7 +40,9 @@ const customFetch = window.fetch;
 
 window.fetch = (url, options = {}) => {
     options.headers = options.headers || {};
-    options.headers.Authorization = Cookies.get('token') || '';
+    // options.headers.Authorization = Cookies.get('token') || '';
+    //默认带上cookie
+    options.credentials = 'include';
     return customFetch(url, options)
 }
 

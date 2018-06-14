@@ -15,7 +15,7 @@ const loginControlAction = {
             }).then((data) => {
                 if(data.success){
                     dispatch(loginControlAction.loginSuccess({name}, data.message));
-                    Cookies.set('token', data.token);
+                    //Cookies.set('token', data.token);
                 }else {
                     //console.log(data);
                     dispatch(loginControlAction.loginFail(data.message))
@@ -41,9 +41,7 @@ const loginControlAction = {
     },
     checkLogin: () => {
         return (dispatch, getState) => {
-            fetch(API.checkLogin, {
-                credentials: 'include'
-            }).then((res) => {
+            fetch(API.checkLogin).then((res) => {
                 return res.json()
             }).then((data) => {
                 if(data.success){

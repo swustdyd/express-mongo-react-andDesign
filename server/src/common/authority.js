@@ -20,25 +20,30 @@ export default class Authroity{
      * @param {*} next 
      */
     static requestSignin(req, res, next) {
-        const token = req.get('Authorization');
-        if(!token){
-            next(new BusinessException('无权访问', errorCode.noAuthroity));
+        // const token = req.get('Authorization');
+        // if(!token){
+        //     next(new BusinessException('无权访问', errorCode.noAuthroity));
+        // }else{
+        //     jwt.verify(token, tokenSecret, (err, decoded) => {
+        //         if(err){
+        //             next(new BusinessException(Authroity._handleJWTError(err), errorCode.requestSignin));
+        //         }else{
+        //             const {user} = decoded;   
+        //             if(!user){
+        //                 next(new BusinessException('请登录', errorCode.requestSignin));
+        //             }else{
+        //                 req.token = {user};                   
+        //                 next();
+        //             }
+        //         }
+        //     }); 
+        // }      
+        const {user} = req.session;
+        if(!user){
+            next(new BusinessException('请登录', errorCode.requestSignin));
         }else{
-            jwt.verify(token, tokenSecret, (err, decoded) => {
-                if(err){
-                    next(new BusinessException(Authroity._handleJWTError(err), errorCode.requestSignin));
-                }else{
-                    const {user} = decoded;   
-                    if(!user){
-                        next(new BusinessException('请登录', errorCode.requestSignin));
-                    }else{
-                        req.token = {user};                   
-                        next();
-                    }
-                }
-            }); 
-        }      
-               
+            next();
+        }     
     }
 
     /**
@@ -48,23 +53,29 @@ export default class Authroity{
      * @param {*} next 
      */
     static requestAdmin(req, res, next) {        
-        const token = req.get('Authorization');
-        if(!token){
-            next(new BusinessException('无权访问', errorCode.noAuthroity));
+        // const token = req.get('Authorization');
+        // if(!token){
+        //     next(new BusinessException('无权访问', errorCode.noAuthroity));
+        // }else{
+        //     const decoded = jwt.verify(token, tokenSecret, (err, decoded) => {
+        //         if(err){
+        //             next(new BusinessException(Authroity._handleJWTError(err), errorCode.requestSignin));
+        //         }else{
+        //             const {user} = decoded;   
+        //             if(!user || user.role < role['admin']){
+        //                 next(new BusinessException('需要管理员权限', errorCode.requestSuperAdmin));
+        //             }else{
+        //                 next();
+        //             }    
+        //         }
+        //     }); 
+        // }  
+        const {user} = req.session;
+        if(!user || user.role < role['admin']){
+            next(new BusinessException('需要管理员权限', errorCode.requestAdmin));
         }else{
-            const decoded = jwt.verify(token, tokenSecret, (err, decoded) => {
-                if(err){
-                    next(new BusinessException(Authroity._handleJWTError(err), errorCode.requestSignin));
-                }else{
-                    const {user} = decoded;   
-                    if(!user || user.role < role['admin']){
-                        next(new BusinessException('需要管理员权限', errorCode.requestSuperAdmin));
-                    }else{
-                        next();
-                    }    
-                }
-            }); 
-        }   
+            next();
+        } 
     }
 
     /**
@@ -74,22 +85,28 @@ export default class Authroity{
      * @param {*} next 
      */
     static requestSuperAdmin(req, res, next) {
-        const token = req.get('Authorization');
-        if(!token){
-            next(new BusinessException('无权访问', errorCode.noAuthroity));
-        }
-        jwt.verify(token, tokenSecret, (err, decoded) => {
-            if(err){
-                next(new BusinessException(Authroity._handleJWTError(err), errorCode.requestSignin));
-            }else{
-                const {user} = decoded;   
-                if(!user || user.role < role['superAdmin']){
-                    next(new BusinessException('需要超级管理员权限', errorCode.requestSuperAdmin));
-                }else{
-                    next();
-                } 
-            }   
-        });   
+        // const token = req.get('Authorization');
+        // if(!token){
+        //     next(new BusinessException('无权访问', errorCode.noAuthroity));
+        // }
+        // jwt.verify(token, tokenSecret, (err, decoded) => {
+        //     if(err){
+        //         next(new BusinessException(Authroity._handleJWTError(err), errorCode.requestSignin));
+        //     }else{
+        //         const {user} = decoded;   
+        //         if(!user || user.role < role['superAdmin']){
+        //             next(new BusinessException('需要超级管理员权限', errorCode.requestSuperAdmin));
+        //         }else{
+        //             next();
+        //         } 
+        //     }   
+        // });
+        const {user} = req.session;
+        if(!user || user.role < role['superAdmin']){
+            next(new BusinessException('需要超级管理员权限', errorCode.requestSuperAdmin));
+        }else{
+            next();
+        }   
     }
 
     static _handleJWTError(err){

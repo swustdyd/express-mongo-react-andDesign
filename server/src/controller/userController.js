@@ -66,24 +66,22 @@ export default class UserController extends BaseController{
             if(!users || users.length < 1) {
                 next(new BusinessException('用户名不存在！'));
             }else{
-                const user = users[0];
-                const isMatch = await PubFunction.comparePassword(password, user.password);
+                const isMatch = await PubFunction.comparePassword(password, users[0].password);
                 if(isMatch){
+                    const user = users[0];
                     //过滤敏感信息
                     user.password = '';
-                    //默认过期时间30分钟
-                    let expiresIn = 30 * 60;
-                    //七天免登录
                     if(sevenDay){
-                        expiresIn = 7 * 24 * 60 * 60;
+                        //七天免登录
+                        request.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+                    }else{
+                        //30分钟
+                        request.session.cookie.maxAge = 1000 * 60 * 30;
                     }
-                    const token = jwt.sign({user}, tokenSecret, {
-                        expiresIn
-                    })
+                    request.session.user = user;
                     response.json({
                         success: true,
-                        message: '登录成功',
-                        token
+                        message: '登录成功'
                     });
                 }else{
                     next(new BusinessException('用户名或密码错误！'));
@@ -100,14 +98,13 @@ export default class UserController extends BaseController{
      * @param {*} response 
      */
     logout(request, response, next) {
-        // request.session.destroy((err) => {
-        //     if(err){
-        //         next(err);
-        //     }else{                
-        //         response.json({success: true, message: '登出成功'});
-        //     }
-        // })
-        next(new BusinessException('登出功能已弃用'));
+        request.session.destroy((err) => {
+            if(err){
+                next(err);
+            }else{                
+                response.json({success: true, message: '登出成功'});
+            }
+        })
     }
 
     /**
@@ -184,22 +181,30 @@ export default class UserController extends BaseController{
      */
     checkLogin(req, res, next) {
         try {            
-            const token = req.get('Authorization');
-            if(!token){
-                res.json({success: false, message: 'token为空'});
-            }else{
-                jwt.verify(token, tokenSecret, (err, decoded) => {
-                    if(err){
-                        res.json({success: false, message: err.message});
-                    }else{
-                        const {user} = decoded;   
-                        if(!user){
-                            res.json({success: false, message: '用户为空'});
-                        }else{
-                            res.json({success: true, result: user});
-                        }
-                    }
-                }); 
+            // const token = req.get('Authorization');
+            // if(!token){
+            //     res.json({success: false, message: 'token为空'});
+            // }else{
+            //     jwt.verify(token, tokenSecret, (err, decoded) => {
+            //         if(err){
+            //             res.json({success: false, message: err.message});
+            //         }else{
+            //             const {user} = decoded;   
+            //             if(!user){
+            //                 res.json({success: false, message: '用户为空'});
+            //             }else{
+            //                 res.json({success: true, result: user});
+            //             }
+            //         }
+            //     }); 
+            // }
+            if(req.session.user){
+                res.json({
+                    success: true,
+                    result: req.session.user
+                })
+            }else {
+                res.json({success: false})
             }
         } catch (error) {
             next(error)
