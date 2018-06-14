@@ -14,10 +14,8 @@ const loginControlAction = {
                 return res.json()
             }).then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.loginSuccess({name}, data.message));
-                    //Cookies.set('token', data.token);
+                    dispatch(loginControlAction.loginSuccess(data.result, data.message));
                 }else {
-                    //console.log(data);
                     dispatch(loginControlAction.loginFail(data.message))
                 }
             });

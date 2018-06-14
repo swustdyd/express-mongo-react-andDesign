@@ -3,12 +3,14 @@
  */
 import API from '../../common/api'
 import Cookies from 'js-cookie'
+import Common from '../../common/common'
 
 export default {
     searchUsers: (condition, pageIndex, pageSize, cb) => {
         return (dispatch, getState) => {
             if((typeof condition) === 'function'){
                 cb = condition;
+                condition = {};
             }
             if((typeof pageIndex) === 'function'){
                 cb = pageIndex;
@@ -18,7 +20,7 @@ export default {
                 cb = pageSize;
                 pageSize = 5;
             }
-            fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`)
+            fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&${Common.parseCondition(condition)}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -28,28 +30,36 @@ export default {
                 });
         }
     },
-    loadUsersList: (users, pageIndex, pageSize, total) => {
-        return {
-            type: 'LOAD_USER_LIST',
-            payload: {
-                users: users,
-                total: total,
-                pageIndex: pageIndex,
-                pageSize: pageSize
-            }
-        }
-    },
     deleteUser: (id, cb) => {
         return () => {
-            fetch(`${API.deleteUser}?id=${id}`, {
-                //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-                credentials: 'include'
+            fetch(`${API.deleteUser}?id=${id}`)            
+                .then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    if(cb){                    
+                        cb(undefined, data);
+                    }
+                }).catch((err) => {
+                    cb(err)
+                });
+        }
+    },
+    editUser:(user, cb: (err: Error, data) => {}) => {
+        return () => {
+            fetch(API.editUser, {
+                method: 'post',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({user})
             }).then((res) => {
                 return res.json()
             }).then((data) => {
-                cb(undefined, data);
+                if(cb){
+                    cb(undefined, data)
+                }
             }).catch((err) => {
-                cb(err)
+                cb(err);
             });
         }
     }

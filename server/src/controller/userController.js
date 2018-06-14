@@ -4,7 +4,7 @@ import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
 import {tokenSecret} from '../../../baseConfig'
-import Condition from '../db/condition'
+import Condition, {OpType} from '../db/condition'
 
 export default class UserController extends BaseController{
     constructor(){
@@ -81,7 +81,8 @@ export default class UserController extends BaseController{
                     request.session.user = user;
                     response.json({
                         success: true,
-                        message: '登录成功'
+                        message: '登录成功', 
+                        result: user
                     });
                 }else{
                     next(new BusinessException('用户名或密码错误！'));
@@ -115,21 +116,28 @@ export default class UserController extends BaseController{
      */
     async getUsers(request, response, next) {
         try {
-            const {offset, pageSize} = request.query;
-            let condition = request.query.condition || '{}';
-            condition = JSON.parse(condition);
-
-            const newCondition = {};
-            if(condition.searchName){
-                newCondition.name = new RegExp(`^${condition.searchName}.*$`, 'i')
+            const {offset, pageSize, name, role, userId} = request.query;
+            const condition = new Condition(['name', 'role', 'userId', 'createAt', 'updateAt', 'icon']);
+            if(name){
+                condition.addWhere({
+                    name: 'name',
+                    value: `${name}%`,
+                    opType: OpType.LIKE
+                })
             }
-            if(condition.searchRole){
-                newCondition.role = condition.searchRole;
+            if(role){
+                condition.addWhere({
+                    name: 'role',
+                    value: parseInt(role)
+                })
             }
-            if(condition._id){
-                newCondition._id = condition._id;
+            if(userId){
+                condition.addWhere({
+                    name: 'userId',
+                    value: parseInt(userId)
+                })
             }
-            const pageResult = await this.userService.getUsersByCondition(new Condition());
+            const pageResult = await this.userService.getUsersByCondition(condition);
             response.json({success: true, ...pageResult});
         }catch (e){
             next(e);
@@ -145,30 +153,27 @@ export default class UserController extends BaseController{
     async updatePwd(request, response, next) {
         try {
             const {originPwd, newPwd} = request.body;
-            const userId = request.session.user._id;
+            const {userId} = request.session.user;
 
-            let resData = await this.userService.getUserById(userId);
-            if(!resData.result){
+            const user = await this.userService.getUserById(userId);
+            if(!user){
                 next(new BusinessException('该用户不存在'));
             }else{
-                const isMatch = await PubFunction.comparePassword(originPwd, resData.result.password);
+                const isMatch = await PubFunction.comparePassword(originPwd, user.password);
                 if(isMatch){
-                    const user = {
-                        _id: userId,
+                    await this.userService.saveOrUpdateUser({
+                        userId: userId,
                         password: newPwd
-                    };
-                    resData = await this.userService.saveOrUpdateUser(user);
-                    if(resData.success){
-                        resData.message = '修改密码成功';
-                        //过滤敏感信息
-                        resData.result = '';
-                    }
-                    response.json(resData);
+                    });
+                    response.json({
+                        success: true,
+                        message: '修改密码成功'
+                    });
                 }else{
                     next(new BusinessException('原密码不正确'));
                 }
             }
-        }catch (e){
+        }catch (err){
             next(err);
         }
     }
@@ -220,11 +225,11 @@ export default class UserController extends BaseController{
     async delete(request, response, next) {
         try {
             const id = request.param('id');
-            if(request.session.user._id === id){
+            if(request.session.user.userId === id){
                 next(new BusinessException('当前用户不能删除'));
             }else{
-                const resData = await this.userService.deleteUserById(id);
-                response.json(resData);
+                const success = await this.userService.deleteUserById(id);
+                response.json({success});
             }
         }catch (e){
             next(e);
@@ -241,39 +246,45 @@ export default class UserController extends BaseController{
         try {
             const {user} = request.body;
             const currentUser = request.session.user;
+            
             //检查是否重名
-            let resData = this.userService.getUsersByCondition({
-                condition: {
-                    _id: {$ne: user._id},
-                    name: user.name
-                }
-            });
-            if(resData.result && resData.result.length > 0){
+            let condition = new Condition();
+            condition.addWhere({
+                name: 'name',
+                value: user.name
+            })
+            condition.addWhere({
+                name: 'userId',
+                value: user.userId,
+                opType: OpType.NEQ
+            })
+            let pageResult = await this.userService.getUsersByCondition(condition);
+            if(pageResult.result && pageResult.result.length > 0){
                 next(new BusinessException('用户名已存在'));
             }else {
-                resData = await this.userService.getUsersByCondition({
-                    condition: {
-                        _id: user._id
-                    }
-                });
+                //查询出要修改的用户
+                condition = new Condition();
+                condition.addWhere({
+                    name: 'userId',
+                    value: user.userId
+                })
+                pageResult = await this.userService.getUsersByCondition(condition);
 
-                if(resData.result && resData.result.length > 0){
-                    const originUser = resData.result[0];
+                if(pageResult.result && pageResult.result.length > 0){
+                    const originUser = pageResult.result[0];
                     if(currentUser.role < originUser.role){
                         next(new BusinessException(`您的角色权限低于${user.name}，不能编辑`));
                     }else if(currentUser.role < user.role){
                         next(new BusinessException(`您给${user.name}设置的角色权限不能高于您的角色权限`));
                     }else {
-                        resData = await this.userService.saveOrUpdateUser(user);
-                        if(resData.success){
-                            resData.message = '保存成功';
-                            //过滤敏感信息
-                            resData.result = '';
-                        }
-                        response.json(resData);
+                        await this.userService.saveOrUpdateUser(user);
+                        response.json({
+                            success: true,
+                            message: '保存成功'
+                        });
                     }
                 }else {
-                    next(new BusinessException('用户不存在'));
+                    next(new BusinessException(`用户(${user.userId})不存在`));
                 }
             }
         }catch (e){

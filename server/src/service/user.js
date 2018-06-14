@@ -19,7 +19,7 @@ export default class UserService extends BaseService{
      */
     async getUserById(userId: number) : Promise<UserModel> {
         if(!userId){
-            reject(new BusinessException('用户id不能为空'))
+            throw new BusinessException('用户id不能为空');
         }
         return await UserModel.findOne({
             where:{
@@ -52,8 +52,7 @@ export default class UserService extends BaseService{
         if(user.userId){
             //修改用户
             const originUser = await this.getUserById(user.userId);
-            originUser.updateAt = Date.now();
-            user = _.extend(originUser, user);
+            user.updateAt = Date.now();
             user = await originUser.update(user)
         }else{
             user = await UserModel.create(user);

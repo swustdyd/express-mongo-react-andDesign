@@ -6,7 +6,7 @@ import MoviePoster from '../../components/moviePoster'
 import { message } from 'antd'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import MovieListAction from '../../actions/movie/movieList'
+import MovieAction from '../../actions/movie/movieAction'
 import BaseConfig from '../../../../baseConfig'
 import './index.scss'
 
@@ -36,7 +36,7 @@ class IndexPage extends React.Component{
 
     getAndLoadMovies(pageIndex = 0){
         const {pageSize} = this.state;
-        this.props.movieListAction.searchMovies({}, pageIndex, pageSize, (err, data) => {
+        this.props.movieAction.searchMovies({}, pageIndex, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -214,7 +214,7 @@ const mapStateToPros = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-        movieListAction: bindActionCreators(MovieListAction, dispatch)
+        movieAction: bindActionCreators(MovieAction, dispatch)
     }
 }
 

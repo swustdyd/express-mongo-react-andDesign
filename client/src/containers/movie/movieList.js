@@ -12,7 +12,7 @@ import momont from 'moment'
 import { bindActionCreators } from 'redux';
 import MovieEdit from './movieEdit'
 import { connect } from 'react-redux';
-import MovieListAction from '../../actions/movie/movieList'
+import MovieAction from '../../actions/movie/movieAction'
 import ModalAction from '../../actions/common/customModal'
 import YearRangePicker from '../../components/yearRangePicker'
 import Common from '../../common/common'
@@ -47,7 +47,7 @@ class MovieList extends React.Component{
     }
     handleDeleteClick(id){
         const {pageIndex} = this.state;
-        this.props.movieListAction.deleteMovie(id, (err, data) => {
+        this.props.movieAction.deleteMovie(id, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -65,7 +65,7 @@ class MovieList extends React.Component{
         const condition = {
             _id: id
         };
-        this.props.movieListAction.searchMovies(condition, 0, pageSize, (err, data) => {
+        this.props.movieAction.searchMovies(condition, 0, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -97,7 +97,7 @@ class MovieList extends React.Component{
     }
     searchAndLoadMovies(pageIndex = 0, condition){
         const {pageSize} = this.state;
-        this.props.movieListAction.searchMovies(condition, pageIndex, pageSize, (err, data) => {
+        this.props.movieAction.searchMovies(condition, pageIndex, pageSize, (err, data) => {
             if(err){
                 message.error(err.message)
             }else {
@@ -261,13 +261,13 @@ class MovieList extends React.Component{
 }
 const mapStateToPros = (state) => {
     return {
-        movieListState: state.movie.movieList
+        movieState: state.movie
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        movieListAction: bindActionCreators(MovieListAction, dispatch),
+        movieAction: bindActionCreators(MovieAction, dispatch),
         modalAction: bindActionCreators(ModalAction, dispatch)
     }
 };

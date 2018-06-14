@@ -5,23 +5,33 @@ import React from 'react'
 import {Form, Button, Input, Select, Spin, message, Tooltip, Icon} from 'antd'
 import Common from '../../common/common'
 import PicturesWall from '../../components/picturesWall'
+import UserAction from '../../actions/user/userAction'
 import API from '../../common/api'
+import path from 'path'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import {staticSourceHost} from '../../../../baseConfig'
 
 const FormItem = Form.Item;
 
 class UserEdit extends React.Component{
     constructor(props){
         super(props);
-        const iconList = [];
+        let iconList = [];
         let { initData } = props;
         initData = initData || {};
-        if(initData.icon){
-            iconList.push(initData.icon)
+        if(initData.icon){            
+            iconList = [{
+                uid: 0,
+                name: path.basename(initData.icon),
+                status: 'done',
+                url: `${staticSourceHost}${initData.icon}`
+            }]
         }
         this.state = {
             submiting: false,
-            initData: initData,
-            iconList: iconList
+            initData,
+            iconList
         };
     }
     handleSubmitClick(e){
@@ -29,41 +39,29 @@ class UserEdit extends React.Component{
         this.props.form.validateFieldsAndScroll((err, valus) => {
             if(!err){
                 const userInput = this.props.form.getFieldsValue();
-                userInput._id = this.state.initData._id;
+                userInput.userId = this.state.initData.userId;
                 const { iconList } = this.state;
                 if(iconList.length > 0){
-                    userInput.icon = {
-                        displayName: iconList[0].name,
-                        src: iconList[0].url
-                    }
+                    const parseResult = Common.parseUrl(iconList[0].url);
+                    userInput.icon = parseResult ? `/${parseResult.path}` : '';
                 }else{
                     userInput.icon = '';
                 }
-                fetch(API.editUser, {
-                    method: 'post',
-                    headers: {
-                        'Content-type': 'application/json'
-                    },
-                    //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-                    credentials: 'include',
-                    body: JSON.stringify({user: userInput})
-                }).then((res) => {
-                    return res.json()
-                }).then((data) => {
-                    if(data.success){
+                this.props.userAction.editUser(userInput, (err, data) => {
+                    if(err){
+                        message.success(err.message);
+                    }else if(data.success){
                         message.success(data.message);
                         if(this.props.onSubmitSuccess){
-                            this.props.onSubmitSuccess();
+                            this.props.onSubmitSuccess(data);
                         }
                     }else {
                         message.error(data.message);
                         if(this.props.onSubmitFail){
-                            this.props.onSubmitFail();
+                            this.props.onSubmitFail(data);
                         }
                     }
-                }).catch((err) => {
-                    message.error(err.message);
-                });
+                })
             }
         });
     }
@@ -99,12 +97,6 @@ class UserEdit extends React.Component{
                 }
             }
         };
-        iconList.forEach((item, index) => {
-            item.uid = index;
-            item.name = item.displayName || item.name;
-            item.status = 'done';
-            item.url = item.src || item.url;
-        });
         return (
             <Spin tip="提交中..." spinning={this.state.submiting}>
                 <Form onSubmit={this.handleSubmitClick.bind(this)} className="userEdit-form">
@@ -174,4 +166,11 @@ class UserEdit extends React.Component{
     }
 }
 
-export default Form.create()(UserEdit);
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        userAction: bindActionCreators(UserAction, dispatch)
+    }
+};
+
+export default connect(undefined, mapDispatchToProps)(Form.create()(UserEdit));

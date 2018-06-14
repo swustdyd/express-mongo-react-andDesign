@@ -2,6 +2,7 @@
  * Created by Aaron on 2018/3/10.
  */
 import API from '../../common/api'
+import Common from '../../common/common'
 
 export default {
     searchMovies: (condition, pageIndex, pageSize, callback) => {
@@ -18,13 +19,7 @@ export default {
                 callback = pageSize;
                 pageSize = 5;
             }
-            const conditionArray = [];
-            for(const key in condition){
-                if(condition[key]){                    
-                    conditionArray.push(`${key}=${condition[key]}`);
-                }
-            }
-            fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&${conditionArray.join('&')}`)
+            fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&${Common.parseCondition(condition)}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {

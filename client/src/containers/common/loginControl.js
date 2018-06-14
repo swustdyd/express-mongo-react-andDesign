@@ -7,7 +7,7 @@ import Login from './login'
 import ModifyPwd from './modifyPwd'
 import UserRegister from './userRegister'
 import { message } from 'antd'
-import BaseConfig from '../../../../baseConfig'
+import {userDefaultIcon, staticSourceHost} from '../../../../baseConfig'
 
 import './loginControl.scss'
 
@@ -27,7 +27,6 @@ class LoginControl extends React.Component{
         this.props.loginControlAction.logout();
     }
     componentDidMount(){
-        //console.log('loginControl render');
         this.props.loginControlAction.checkLogin();
     }
     handleModifyPwdClick(){
@@ -67,12 +66,7 @@ class LoginControl extends React.Component{
                         <div>
                             <img
                                 className="user-icon"
-                                src={
-                                    loginState.user.icon && loginState.user.icon.src ?
-                                        loginState.user.icon.src
-                                        :
-                                        BaseConfig.userDefaultIcon
-                                }
+                                src={loginState.user.icon ? `${staticSourceHost}${loginState.user.icon}` : userDefaultIcon}
                             />
                             <span>欢迎您，{loginState.user.name}</span>
                             &emsp;|&emsp;
