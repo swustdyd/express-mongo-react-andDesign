@@ -16,18 +16,18 @@ const MovieList = asyncComponent(() => {
 const MovieCount = asyncComponent(() => {
     return import ('./movieCount')
 })
-/* webpackChunkName: "commentPage" */ 
-const CommentPage = asyncComponent(() => {
-    return import ('../comment/commentPage')
-})
-/* webpackChunkName: "doubanMovieList" */ 
-const DoubanMovieList = asyncComponent(() => {
-    return import ('./doubanMovieList')
-})
-/* webpackChunkName: "doubanMovieCount" */ 
-const DoubanMovieCount = asyncComponent(() => {
-    return import ('./doubanMovieCount')
-})
+// /* webpackChunkName: "commentPage" */ 
+// const CommentPage = asyncComponent(() => {
+//     return import ('../comment/commentPage')
+// })
+// /* webpackChunkName: "doubanMovieList" */ 
+// const DoubanMovieList = asyncComponent(() => {
+//     return import ('./doubanMovieList')
+// })
+// /* webpackChunkName: "doubanMovieCount" */ 
+// const DoubanMovieCount = asyncComponent(() => {
+//     return import ('./doubanMovieCount')
+// })
 
 class MoviePage extends React.Component{
     constructor(props){
@@ -53,9 +53,9 @@ class MoviePage extends React.Component{
                     <div>
                         <Route path="/moviePage/movieList" component={MovieList}/>
                         <Route path="/moviePage/movieCount" component={MovieCount}/>
-                        <Route path="/moviePage/comment/:movieId" component={CommentPage}/>
+                        {/* <Route path="/moviePage/comment/:movieId" component={CommentPage}/>
                         <Route path="/moviePage/doubanMovieList" component={DoubanMovieList}/>
-                        <Route path="/moviePage/doubanMovieCount" component={DoubanMovieCount}/>                        
+                        <Route path="/moviePage/doubanMovieCount" component={DoubanMovieCount}/>                         */}
                     </div>
                 }
             />
