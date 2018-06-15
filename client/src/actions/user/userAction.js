@@ -5,6 +5,10 @@ import API from '../../common/api'
 import Cookies from 'js-cookie'
 import Common from '../../common/common'
 
+export const userActionType = {
+    
+}
+
 export default {
     searchUsers: (condition, pageIndex, pageSize, cb) => {
         return (dispatch, getState) => {

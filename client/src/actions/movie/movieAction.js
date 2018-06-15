@@ -4,6 +4,10 @@
 import API from '../../common/api'
 import Common from '../../common/common'
 
+export const movieActionType = {
+    
+}
+
 export default {
     searchMovies: (condition, pageIndex, pageSize, callback) => {
         return (dispatch, getState) => {
