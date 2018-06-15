@@ -70,7 +70,7 @@ export default class PublicFunction{
         if (fs.existsSync(dirname)) {
             return true;
         } else {
-            if (mkdirsSync(path.dirname(dirname))) {
+            if (PublicFunction.mkdirsSync(path.dirname(dirname))) {
                 fs.mkdirSync(dirname);
                 return true;
             }else{
@@ -99,7 +99,7 @@ export default class PublicFunction{
                 //logger.info(`path is '${path}'`);
                 if(!fs.existsSync(savePath)){
                     //logger.info('create upload directory');
-                    mkdirsSync(savePath);
+                    PublicFunction.mkdirsSync(savePath);
                 }
                 cb(null, savePath);
             },
