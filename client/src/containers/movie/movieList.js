@@ -254,7 +254,14 @@ class MovieList extends React.Component{
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="语言">
                             {getFieldDecorator('searchLanguage')(
-                                <Select allowClear>
+                                <Select 
+                                    allowClear
+                                    showSearch
+                                    filterOption={(inputValue, option) => {
+                                        const reg = new RegExp(inputValue);
+                                        return reg.test(option.props.children);
+                                    }}
+                                >
                                     {Common.createOptions(languages, 'languageName', 'languageId')}
                                 </Select>
                             )}
