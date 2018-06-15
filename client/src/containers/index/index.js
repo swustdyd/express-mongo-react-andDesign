@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import MoviePoster from '../../components/moviePoster'
-import { message } from 'antd'
+import { message, Spin } from 'antd'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MovieAction from '../../actions/movie/movieAction'
@@ -30,12 +30,16 @@ class IndexPage extends React.Component{
             pageIndex: 0,
             pageSize: 20,
             total: 0,
-            movies:[]
+            movies:[],
+            loading: false
         }
     }
 
     getAndLoadMovies(pageIndex = 0){
         const {pageSize} = this.state;
+        this.setState({
+            loading: true
+        })
         this.props.movieAction.searchMovies({}, pageIndex, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
@@ -51,6 +55,9 @@ class IndexPage extends React.Component{
                     message.error(data.message);
                 }
             }
+            this.setState({
+                loading: false
+            })
         });
     }
 
@@ -133,8 +140,6 @@ class IndexPage extends React.Component{
                     href={`/movie/detail.html/${item._id}`}
                 />)
             })
-        }else {
-            moviePosters.push(<h1 key={-1} style={{textAlign: 'center'}}>暂无数据</h1>);
         }
         return moviePosters;
     }
@@ -163,7 +168,7 @@ class IndexPage extends React.Component{
     }
 
     render(){        
-        const { movies, pageIndex, total, pageSize,
+        const { movies, pageIndex, total, pageSize, loading,
             windowInnerHeight, minHeight: settingMinHeight, padding, controllerHeight} = this.state;
         const minHeight = Math.max(windowInnerHeight, settingMinHeight) - padding.y - controllerHeight;
         const lastPageProps = {};
@@ -175,34 +180,36 @@ class IndexPage extends React.Component{
             nextPageProps.disabled = true;
         }
         return (
-            <div>
-                <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>
-                    {this.createMoviePosters(movies)}
-                </div>
-                <div
-                    style={{
-                        height: controllerHeight,
-                        lineHeight: `${controllerHeight}px`
-                    }}
-                    className="controller"
-                >
-                    <a
-                        className="page-icon"
-                        onClick={() => {this.getAndLoadMovies(pageIndex - 1)}}
-                        {...lastPageProps}
+            <Spin tip="loading..." spinning={loading}>
+                <div>
+                    <div style={{minHeight: minHeight, position: 'relative', overflow: 'hidden'}}>
+                        {this.createMoviePosters(movies)}
+                    </div>
+                    <div
+                        style={{
+                            height: controllerHeight,
+                            lineHeight: `${controllerHeight}px`
+                        }}
+                        className="controller"
                     >
-                        last page
-                    </a>
-                    {this.createControlPosters(movies)}
-                    <a
-                        className="page-icon"
-                        onClick={() => {this.getAndLoadMovies(pageIndex + 1)}}
-                        {...nextPageProps}
-                    >
-                        next page
-                    </a>
+                        <a
+                            className="page-icon"
+                            onClick={() => {this.getAndLoadMovies(pageIndex - 1)}}
+                            {...lastPageProps}
+                        >
+                            last page
+                        </a>
+                        {this.createControlPosters(movies)}
+                        <a
+                            className="page-icon"
+                            onClick={() => {this.getAndLoadMovies(pageIndex + 1)}}
+                            {...nextPageProps}
+                        >
+                            next page
+                        </a>
+                    </div>
                 </div>
-            </div>
+            </Spin>            
         );
     }
 }
