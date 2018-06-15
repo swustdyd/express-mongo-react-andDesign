@@ -192,7 +192,7 @@ class MovieEdit extends React.Component{
                             initialValue: `${initData.language || ''}`
                         })(
                             <Select allowClear>
-                                {Common.createLanguageOptions()}
+                                {Common.createOptions()}
                             </Select>
                         )}
                     </FormItem>

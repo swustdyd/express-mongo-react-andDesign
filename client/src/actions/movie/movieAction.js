@@ -60,5 +60,21 @@ export default {
                     }
                 });
         }        
+    },
+    getLanguage: (cb) => {
+        return () => {
+            fetch(API.getLanguage)
+                .then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    if(cb){
+                        cb(undefined, data)
+                    }
+                }).catch((err) => {
+                    if(cb){
+                        cb(err);
+                    }
+                });
+        }
     }
 }

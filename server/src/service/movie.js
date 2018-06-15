@@ -2,6 +2,7 @@ import _ from 'underscore'
 import MovieModel from '../models/movie'
 import AakModel from '../models/aka'
 import AkaWithOtherModel from '../models/akaWithOther'
+import LanguageModel from '../models/language'
 import { db } from '../db';
 import PubFunction from '../common/publicFunc'
 import BusinessException from '../common/businessException'
@@ -78,7 +79,7 @@ export default class MovieService extends BaseService{
         return movie;
     }
     /**
-     * 获取电影分类信息
+     * 获取电影统计分类信息
      * @param {*} key 分组的字段
      * @param {*} whereArray 筛选条件
      */
@@ -120,5 +121,12 @@ export default class MovieService extends BaseService{
             type: db.QueryTypes.SELECT,
             replacements: whereReplacements
         });
+    }
+
+    /**
+     * 获取所有的语言信息
+     */
+    async getLanguage(){
+        return await LanguageModel.findAll();
     }
 }

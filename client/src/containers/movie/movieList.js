@@ -27,7 +27,8 @@ class MovieList extends React.Component{
             total: 0,
             pageIndex: 0,
             pageSize: 10,
-            movies: []
+            movies: [],
+            languages: []
         };
     }
     getSearchCondition(){
@@ -94,6 +95,19 @@ class MovieList extends React.Component{
     }
     componentDidMount(){
         this.searchAndLoadMovies();
+        this.props.movieAction.getLanguage((err, data) => {
+            if(err){
+                message.error(err.message);
+            }else{
+                if(data.success){
+                    this.setState({
+                        languages: data.result
+                    })
+                }else{
+                    message.error(err.message);
+                }
+            }
+        })
     }
     searchAndLoadMovies(pageIndex = 0, condition){
         const {pageSize} = this.state;
@@ -128,7 +142,7 @@ class MovieList extends React.Component{
         });
     }
     render(){
-        const {total, pageIndex, pageSize, movies } = this.state;
+        const {total, pageIndex, pageSize, movies, languages} = this.state;
         const { getFieldDecorator } = this.props.form;
         const columns = [
             {
@@ -241,7 +255,7 @@ class MovieList extends React.Component{
                         <FormItem {...formItemLayout} label="语言">
                             {getFieldDecorator('searchLanguage')(
                                 <Select allowClear>
-                                    {Common.createLanguageOptions()}
+                                    {Common.createOptions(languages, 'languageName', 'languageId')}
                                 </Select>
                             )}
                         </FormItem>

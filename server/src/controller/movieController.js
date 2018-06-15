@@ -239,7 +239,7 @@ export default class MovieController extends BaseController{
     }
 
     /**
-     * 获取电影的分类信息
+     * 获取电影的分类统计信息
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
@@ -260,15 +260,17 @@ export default class MovieController extends BaseController{
     }
 
     /**
-     * 获取豆瓣电影信息
+     * 获取电影的所有语言信息
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
      */
-    async getDoubanMovie(req, res, next){
+    async getLanguage(req, res, next){
         try {
-            const {pageIndex, pageSize} = req.query;
-            res.json(await this._doubanMovieServie.getDoubanMovies(pageIndex, pageSize));
+            res.json({
+                success: true,
+                result: await this._movieService.getLanguage()
+            });
         } catch (error) {
             next(error);
         }

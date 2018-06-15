@@ -16,13 +16,10 @@ export default {
         const currentKey = paths[level] ? paths[level] : props.defaultKeys[0];
         return currentKey;
     },
-    createLanguageOptions: () => {
-        const languages = ['英语', '国语', '俄语', '日语', '西班牙语', '粤语'];
-        const options = [];
-        languages.forEach((item, index) => {
-            options.push(<Option value={item} key={index}>{item}</Option>)
+    createOptions: (array = [], contentKey, valueKey) => {
+        return array.map((item, index) => {
+            return <Option value={item[valueKey]} key={item[valueKey]}>{item[contentKey]}</Option>
         });
-        return options;
     },
     createUserRoleOptions: () => {
         const userRoles = [
