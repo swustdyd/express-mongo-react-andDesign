@@ -18,21 +18,23 @@ class MovieCount extends React.Component{
     }
 
     componentDidMount(){
-        //this.getMoviesGroupByYear();
+        this.getMoviesGroupByYear();
         this.getMoviesGroupByLanguage();
     }
 
     rebuildMoviesDataByYear(data){
         data.sort((a, b) => {
-            return a._id.year - b._id.year;
+            return a.year - b.year;
         });
         const newData = {
             year: [],
             count: []
         };
-        data.forEach( (item) => {
-            newData.year.push(item._id.year);
-            newData.count.push(item.count);
+        data.forEach((item) => {
+            if(item.count >= 10 && item.year){
+                newData.year.push(item.year);
+                newData.count.push(item.count);
+            }            
         });
         return newData;
     }
@@ -40,36 +42,39 @@ class MovieCount extends React.Component{
     rebuildMoviesDataByLanguage(data){
         const newData = [];
         data.forEach((item) => {
-            newData.push([item._id.language, item.count]);
+            if(item.count >= 10 && item.language){
+                newData.push([item.language, item.count]);
+            } 
+            newData.push([item.language, item.count]);
         });
         return newData;
     }
 
     getMoviesGroupByYear(){
-        // const _this = this;
-        // const groupArray = ['year'];
-        // fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
-        //     .then((res) => {
-        //         return res.json()
-        //     }).then((data) => {
-        //         if(data.success){
-        //             data = _this.rebuildMoviesDataByYear(data.result);
-        //             this.setState({
-        //                 moviesOfEachYear: data
-        //             });
-        //         }else{
-        //             message.error(data.message);
-        //         }
-        //     });
-    }
-
-    getMoviesGroupByLanguage(){
         this.props.movieAction.getMovieByGroup('year', (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
                 if(data.success){
-                    console.log(data);
+                    this.setState({
+                        moviesOfEachYear: this.rebuildMoviesDataByYear(data.result)
+                    })
+                }else{
+                    message.error(data.message);
+                }
+            }
+        })
+    }
+
+    getMoviesGroupByLanguage(){
+        this.props.movieAction.getMovieByGroup('language', (err, data) => {
+            if(err){
+                message.error(err.message);
+            }else{
+                if(data.success){                    
+                    this.setState({
+                        moviesOfEachLanguage: this.rebuildMoviesDataByLanguage(data.result)
+                    })
                 }else{
                     message.error(data.message);
                 }
