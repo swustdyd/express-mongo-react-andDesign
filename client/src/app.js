@@ -16,6 +16,7 @@ import IndexPage from './containers/index/index'
 import Nav from './common/nav'
 import Footer from './common/footer'
 import { asyncComponent } from './components/asyncComponent'
+import RouterAnimation from './common/routerAnimation'
 
 //异步引用moviePage模块
 const MoviePage = asyncComponent(() => { return import('./containers/movie/moviePage')})
@@ -48,15 +49,15 @@ window.fetch = (url, options = {}) => {
 
 ReactDom.render(
     <Provider store={store}>
-        <HashRouter>
+        <HashRouter>          
             <HMFLayout
                 header={Nav}
                 content={
-                    <div>
+                    <RouterAnimation>
                         <Route exact path="/" component={IndexPage}/>
                         <Route path="/moviePage" component={MoviePage}/>
                         <Route path="/userPage" component={UserPage}/>
-                    </div>
+                    </RouterAnimation>
                 }
                 footer={Footer}
             >
