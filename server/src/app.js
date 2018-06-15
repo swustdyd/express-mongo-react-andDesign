@@ -53,19 +53,19 @@ app.use(bodyParser());
 //filter
 app.use(filter);
 app.use(cookieParser());
-// app.use(session({
-//     secret: 'demo',
-//     store: new MongoStore({
-//         mongooseConnection: mongoose.connection
-//         //ttl: 30 * 60// 30 minute 存储在mongo的有效时间，默认为14天，过期后会自动删除
-//     }),
-//     cookie: {
-//         maxAge: 30 * 60 * 1000// 30 minute session和cookie的有效时间，默认是浏览器关闭，该设置优先级大于ttl
-//     },
-//     rolling: true,
-//     resave: true,
-//     saveUninitialized: false
-// }));
+app.use(session({
+    secret: 'demo',
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+        //ttl: 30 * 60// 30 minute 存储在mongo的有效时间，默认为14天，过期后会自动删除
+    }),
+    cookie: {
+        maxAge: 30 * 60 * 1000// 30 minute session和cookie的有效时间，默认是浏览器关闭，该设置优先级大于ttl
+    },
+    rolling: true,
+    resave: true,
+    saveUninitialized: false
+}));
 
 if(isDev){
     app.use(morgan('dev'));

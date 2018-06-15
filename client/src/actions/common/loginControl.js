@@ -1,7 +1,47 @@
 import API from '../../common/api'
 import Cookies from 'js-cookie'
 
+export const loginControlActionType = {
+    LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+    LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
+    ACTION_SUCCESS: 'ACTION_SUCCESS',
+    ACTION_FAIL: 'ACTION_FAIL'
+}
+
 const loginControlAction = {
+    loginSuccess: (user, message) => {
+        return {
+            type: loginControlActionType.LOGIN_SUCCESS,
+            payload: {
+                user: user,
+                message: message
+            }
+        }
+    },
+    logoutSuccess: (message) => {
+        return {
+            type: loginControlActionType.LOGOUT_SUCCESS,
+            payload: {
+                message: message
+            }
+        }
+    },
+    actionSuccess: (message) => {
+        return {
+            type: loginControlActionType.ACTION_SUCCESS,
+            payload:{
+                message: message
+            }
+        }
+    },
+    actionFail: (message) => {
+        return {
+            type: loginControlActionType.ACTION_FAIL,
+            payload:{
+                message: message
+            }
+        }
+    },    
     login: (name, password, sevenDay) => {
         return (dispatch, getState) => {
             fetch(API.signin, {
@@ -14,11 +54,9 @@ const loginControlAction = {
                 return res.json()
             }).then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.loginSuccess({name}, data.message));
-                    Cookies.set('token', data.token);
+                    dispatch(loginControlAction.loginSuccess(data.result, data.message));
                 }else {
-                    //console.log(data);
-                    dispatch(loginControlAction.loginFail(data.message))
+                    dispatch(loginControlAction.actionFail(data.message))
                 }
             });
         }
@@ -34,54 +72,20 @@ const loginControlAction = {
                     //dispatch(loginControlAction.logoutSuccess(data.message));
                     window.location.reload();
                 }else {
-                    dispatch(loginControlAction.logoutFail(data.message))
+                    dispatch(loginControlAction.actionFail(data.message))
                 }
             });
         }
     },
     checkLogin: () => {
         return (dispatch, getState) => {
-            fetch(API.checkLogin)
-                .then((res) => {
-                    return res.json()
-                }).then((data) => {
-                    if(data.success){
-                        dispatch(loginControlAction.loginSuccess(data.result));
-                    }
-                });
-        }
-    },
-    loginSuccess: (user, message) => {
-        return {
-            type: 'LOGIN_SUCCESS',
-            payload: {
-                user: user,
-                message: message
-            }
-        }
-    },
-    loginFail: (message) => {
-        return {
-            type: 'LOGIN_FAIL',
-            payload: {
-                message: message
-            }
-        }
-    },
-    logoutSuccess: (message) => {
-        return {
-            type: 'LOGOUT_SUCCESS',
-            payload: {
-                message: message
-            }
-        }
-    },
-    logoutFail: (message) => {
-        return {
-            type: 'LOGOUT_FAIL',
-            payload: {
-                message: message
-            }
+            fetch(API.checkLogin).then((res) => {
+                return res.json()
+            }).then((data) => {
+                if(data.success){
+                    dispatch(loginControlAction.loginSuccess(data.result));
+                }
+            });
         }
     },
     modifyPwd: (originPwd, newPwd) => {
@@ -97,27 +101,11 @@ const loginControlAction = {
                 return res.json()
             }).then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.modifyPwdSuccess(data.message));
+                    dispatch(loginControlAction.actionSuccess(data.message));
                 }else {
-                    dispatch(loginControlAction.modifyPwdFail(data.message))
+                    dispatch(loginControlAction.actionFail(data.message))
                 }
             })
-        }
-    },
-    modifyPwdSuccess: (message) => {
-        return {
-            type: 'MODIFY_PWD_SUCCESS',
-            payload:{
-                message: message
-            }
-        }
-    },
-    modifyPwdFail: (message) => {
-        return {
-            type: 'MODIFY_PWD_FAIL',
-            payload:{
-                message: message
-            }
         }
     },
     userRegister: (name, pwd) => {
@@ -133,27 +121,11 @@ const loginControlAction = {
                 return res.json()
             }).then((data) => {
                 if(data.success){
-                    dispatch(loginControlAction.userRegisterSuccess(data.message));
+                    dispatch(loginControlAction.actionSuccess(data.message));
                 }else {
-                    dispatch(loginControlAction.userRegisterFail(data.message))
+                    dispatch(loginControlAction.actionFail(data.message))
                 }
             })
-        }
-    },
-    userRegisterSuccess: (message) => {
-        return {
-            type: 'USER_REGISTER_SUCCESS',
-            payload:{
-                message: message
-            }
-        }
-    },
-    userRegisterFail: (message) => {
-        return {
-            type: 'USER_REGISTER_FAIL',
-            payload:{
-                message: message
-            }
         }
     }
 };

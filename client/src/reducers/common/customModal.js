@@ -1,6 +1,7 @@
 /**
  * Created by Aaron on 2018/3/10.
  */
+import { modalActionType } from '../../actions/common/customModal';
 
 const initState = {
     title: '',
@@ -15,10 +16,10 @@ const initState = {
 
 export default (state = initState, action) => {
     switch (action.type){
-        case 'SHOW_MODAL':
+        case modalActionType.SHOW_MODAL:
             return Object.assign({}, state, action.payload, {visible: true});
-        case 'HIDE_MODAL':
-            return Object.assign({}, initState);
+        case modalActionType.HIDE_MODAL:
+            return initState;
         default:
             return state;
     }

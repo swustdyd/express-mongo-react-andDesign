@@ -27,10 +27,10 @@ class YearRangePicker extends React.Component {
         }
         if(value >= this.state.valueOfSecond){
             nextState.valueOfSecond = undefined;
-            nextState.startOfSecond = value + 1;
+            nextState.startOfSecond = value;
         }
         nextState.valueOfFirst = value;
-        nextState.startOfSecond = value ?  value + 1 : this.state.startOfFirst;
+        nextState.startOfSecond = value ?  value : this.state.startOfFirst;
         //this.props.onChange({start: nextState.valueOfFirst, end: nextState.valueOfSecond});
         this.onChange({start: nextState.valueOfFirst, end: nextState.valueOfSecond});
         this.setState(nextState);

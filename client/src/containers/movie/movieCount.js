@@ -4,7 +4,9 @@
 import React from 'react'
 import { message } from 'antd'
 import ReactHighcharts from 'react-highcharts' // Expects that Highcharts was loaded in the code.
-import API from '../../common/api'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import MovieAction from '../../actions/movie/movieAction'
 
 class MovieCount extends React.Component{
     constructor(props){
@@ -22,15 +24,17 @@ class MovieCount extends React.Component{
 
     rebuildMoviesDataByYear(data){
         data.sort((a, b) => {
-            return a._id.year - b._id.year;
+            return a.year - b.year;
         });
         const newData = {
             year: [],
             count: []
         };
-        data.forEach( (item) => {
-            newData.year.push(item._id.year);
-            newData.count.push(item.count);
+        data.forEach((item) => {
+            if(item.count >= 10 && item.year){
+                newData.year.push(item.year);
+                newData.count.push(item.count);
+            }            
         });
         return newData;
     }
@@ -38,54 +42,44 @@ class MovieCount extends React.Component{
     rebuildMoviesDataByLanguage(data){
         const newData = [];
         data.forEach((item) => {
-            /*if(item._id.language === '英语'){
-                newData.push({
-                    name: item._id.language,
-                    y: item.count,
-                    sliced: true
-                });
-            }else{
-                newData.push([item._id.language, item.count]);
-            }*/
-            newData.push([item._id.language, item.count]);
+            if(item.count >= 10 && item.language){
+                newData.push([item.language, item.count]);
+            } 
+            newData.push([item.language, item.count]);
         });
         return newData;
     }
 
     getMoviesGroupByYear(){
-        const _this = this;
-        const groupArray = ['year'];
-        fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
-            .then((res) => {
-                return res.json()
-            }).then((data) => {
+        this.props.movieAction.getMovieByGroup('year', (err, data) => {
+            if(err){
+                message.error(err.message);
+            }else{
                 if(data.success){
-                    data = _this.rebuildMoviesDataByYear(data.result);
                     this.setState({
-                        moviesOfEachYear: data
-                    });
+                        moviesOfEachYear: this.rebuildMoviesDataByYear(data.result)
+                    })
                 }else{
                     message.error(data.message);
                 }
-            });
+            }
+        })
     }
 
     getMoviesGroupByLanguage(){
-        const _this = this;
-        const groupArray = ['language'];
-        fetch(`${API.getMoviesByGroup}?groupArray=${JSON.stringify(groupArray)}`)
-            .then((res) => {
-                return res.json()
-            }).then((data) => {
-                if(data.success){
-                    data = _this.rebuildMoviesDataByLanguage(data.result);
+        this.props.movieAction.getMovieByGroup('language', (err, data) => {
+            if(err){
+                message.error(err.message);
+            }else{
+                if(data.success){                    
                     this.setState({
-                        moviesOfEachLanguage: data
-                    });
+                        moviesOfEachLanguage: this.rebuildMoviesDataByLanguage(data.result)
+                    })
                 }else{
                     message.error(data.message);
                 }
-            });
+            }
+        })
     }
 
     render(){
@@ -177,4 +171,11 @@ class MovieCount extends React.Component{
         );
     }
 }
-export default MovieCount;
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        movieAction: bindActionCreators(MovieAction, dispatch)
+    }
+};
+
+export default connect(undefined, mapDispatchToProps)(MovieCount);

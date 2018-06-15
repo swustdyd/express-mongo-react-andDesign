@@ -22,7 +22,8 @@ const api = {
     editUser: 'user/edit',
     uploadIcon: 'user/uploadIcon',
     getDoubanMovies: 'movie/getDoubanMovies',
-    getGroupInfoOfDouban: 'movie/getGroupInfoOfDouban'
+    getGroupInfoOfDouban: 'movie/getGroupInfoOfDouban',
+    getLanguage: 'movie/getLanguage'
 };
 
 for(const key in api){

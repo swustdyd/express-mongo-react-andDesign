@@ -4,6 +4,7 @@ import {dateFormatString} from '../../../baseConfig'
 
 export const OpType = {
     EQ: '=',
+    NEQ: '<>',
     GT: '>',
     LT: '<',
     GTE: '>=',

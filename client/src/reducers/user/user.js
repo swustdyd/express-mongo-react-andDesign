@@ -1,6 +1,8 @@
-import { combineReducers } from 'redux'
-import UserListReducer from './userList'
+const initState = {};
 
-export default combineReducers({
-    userList: UserListReducer
-});
+export default (state = initState, action) => {
+    switch (action.type){
+        default:
+            return state;
+    }
+}

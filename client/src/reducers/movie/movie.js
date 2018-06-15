@@ -1,9 +1,8 @@
-/**
- * Created by Aaron on 2018/3/10.
- */
-import { combineReducers } from 'redux'
-import MovieListReducer from './movieList'
+const initState = {};
 
-export default combineReducers({
-    movieList: MovieListReducer
-});
+export default (state = initState, action) => {
+    switch (action.type){
+        default:
+            return state;
+    }
+}

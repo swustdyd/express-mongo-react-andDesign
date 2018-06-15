@@ -27,6 +27,7 @@ export default class MovieController extends BaseController{
                 {
                     name: 'movie.createAt'
                 },
+                'movie.doubanMovieId',
                 'movie.picture',
                 'movie.year',
                 'movie.summary',
@@ -213,7 +214,7 @@ export default class MovieController extends BaseController{
     }
 
     /**
-     * 上传用户头像
+     * 上传电影海报
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
@@ -238,32 +239,38 @@ export default class MovieController extends BaseController{
     }
 
     /**
-     * 获取电影的分类信息
+     * 获取电影的分类统计信息
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
      */
     async getMoviesByGroup(req, res, next){
         try {
-            const groupArray = JSON.parse(req.query.groupArray || '[]');
-            const match = JSON.parse(req.query.match || '{}');
-            const resData = await this._movieService.getMoviesByGroup(groupArray, match);
-            res.json(resData);
+            const group = req.query.group || '';
+            const whereArray = JSON.parse(req.query.whereArray || '[]');
+            if(!group){
+                next(new BusinessException('分组字段不能为空'))
+            }else{                
+                const result = await this._movieService.getMoviesByGroup(group, whereArray);
+                res.json({success: true, result});
+            }
         }catch (e){
             next(e);
         }
     }
 
     /**
-     * 获取豆瓣电影信息
+     * 获取电影的所有语言信息
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
      */
-    async getDoubanMovie(req, res, next){
+    async getLanguage(req, res, next){
         try {
-            const {pageIndex, pageSize} = req.query;
-            res.json(await this._doubanMovieServie.getDoubanMovies(pageIndex, pageSize));
+            res.json({
+                success: true,
+                result: await this._movieService.getLanguage()
+            });
         } catch (error) {
             next(error);
         }

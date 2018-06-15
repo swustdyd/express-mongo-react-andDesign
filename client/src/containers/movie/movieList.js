@@ -12,7 +12,7 @@ import momont from 'moment'
 import { bindActionCreators } from 'redux';
 import MovieEdit from './movieEdit'
 import { connect } from 'react-redux';
-import MovieListAction from '../../actions/movie/movieList'
+import MovieAction from '../../actions/movie/movieAction'
 import ModalAction from '../../actions/common/customModal'
 import YearRangePicker from '../../components/yearRangePicker'
 import Common from '../../common/common'
@@ -27,7 +27,8 @@ class MovieList extends React.Component{
             total: 0,
             pageIndex: 0,
             pageSize: 10,
-            movies: []
+            movies: [],
+            languages: []
         };
     }
     getSearchCondition(){
@@ -47,7 +48,7 @@ class MovieList extends React.Component{
     }
     handleDeleteClick(id){
         const {pageIndex} = this.state;
-        this.props.movieListAction.deleteMovie(id, (err, data) => {
+        this.props.movieAction.deleteMovie(id, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -65,7 +66,7 @@ class MovieList extends React.Component{
         const condition = {
             _id: id
         };
-        this.props.movieListAction.searchMovies(condition, 0, pageSize, (err, data) => {
+        this.props.movieAction.searchMovies(condition, 0, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
             }else{
@@ -94,10 +95,23 @@ class MovieList extends React.Component{
     }
     componentDidMount(){
         this.searchAndLoadMovies();
+        this.props.movieAction.getLanguage((err, data) => {
+            if(err){
+                message.error(err.message);
+            }else{
+                if(data.success){
+                    this.setState({
+                        languages: data.result
+                    })
+                }else{
+                    message.error(err.message);
+                }
+            }
+        })
     }
     searchAndLoadMovies(pageIndex = 0, condition){
         const {pageSize} = this.state;
-        this.props.movieListAction.searchMovies(condition, pageIndex, pageSize, (err, data) => {
+        this.props.movieAction.searchMovies(condition, pageIndex, pageSize, (err, data) => {
             if(err){
                 message.error(err.message)
             }else {
@@ -128,7 +142,7 @@ class MovieList extends React.Component{
         });
     }
     render(){
-        const {total, pageIndex, pageSize, movies } = this.state;
+        const {total, pageIndex, pageSize, movies, languages} = this.state;
         const { getFieldDecorator } = this.props.form;
         const columns = [
             {
@@ -139,7 +153,10 @@ class MovieList extends React.Component{
             {
                 title: '电影名',
                 dataIndex: 'title',
-                key: 'title'
+                key: 'title',
+                render: (title, record) => {
+                    return <a href={`https://movie.douban.com/subject/${record.doubanMovieId}`} target="_blank">{title}</a>
+                }
             },
             {
                 title: '国家',
@@ -157,9 +174,9 @@ class MovieList extends React.Component{
                 key: 'year'
             },
             {
-                title: '最后更新时间',
-                dataIndex: 'update',
-                key: 'update',
+                title: '创建时间',
+                dataIndex: 'createAt',
+                key: 'createAt',
                 render: (time) => { return momont(time).format('YYYY-MM-DD HH:mm:ss')}
             },
             // {
@@ -168,14 +185,14 @@ class MovieList extends React.Component{
             //     key: 'comment',
             //     render: (id) => { return <Link to={`/moviePage/comment/${id}`} >查看评论</Link>}
             // },
-            {
-                title: '编辑',
-                dataIndex: '_id',
-                key: 'edit',
-                render: (id) => {
-                    return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
-                }
-            },
+            // {
+            //     title: '编辑',
+            //     dataIndex: '_id',
+            //     key: 'edit',
+            //     render: (id) => {
+            //         return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
+            //     }
+            // },
             {
                 title: '删除',
                 dataIndex: '_id',
@@ -237,8 +254,15 @@ class MovieList extends React.Component{
                     <Col xl={6}>
                         <FormItem {...formItemLayout} label="语言">
                             {getFieldDecorator('searchLanguage')(
-                                <Select allowClear>
-                                    {Common.createLanguageOptions()}
+                                <Select 
+                                    allowClear
+                                    showSearch
+                                    filterOption={(inputValue, option) => {
+                                        const reg = new RegExp(inputValue);
+                                        return reg.test(option.props.children);
+                                    }}
+                                >
+                                    {Common.createOptions(languages, 'languageName', 'languageId')}
                                 </Select>
                             )}
                         </FormItem>
@@ -246,8 +270,8 @@ class MovieList extends React.Component{
                 </Row>
                 <Row>
                     <Button type="primary" htmlType="submit" icon="search">搜索</Button>
-                    &emsp;
-                    <Button type="primary" icon="plus-circle-o" onClick={() => {this.handleNewClick()}}>新增电影</Button>
+                    {/* &emsp;
+                    <Button type="primary" icon="plus-circle-o" onClick={() => {this.handleNewClick()}}>新增电影</Button> */}
                 </Row>
                 <Divider />
                 <Table
@@ -261,13 +285,13 @@ class MovieList extends React.Component{
 }
 const mapStateToPros = (state) => {
     return {
-        movieListState: state.movie.movieList
+        movieState: state.movie
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        movieListAction: bindActionCreators(MovieListAction, dispatch),
+        movieAction: bindActionCreators(MovieAction, dispatch),
         modalAction: bindActionCreators(ModalAction, dispatch)
     }
 };

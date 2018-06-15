@@ -34,8 +34,8 @@ router.get('/', (req, res) => {
 router.get('/movie/getMovies', movieController.getMovies.bind(movieController));
 router.get('/movie/delete', movieController.delete.bind(movieController));
 router.get('/movie/getMoviesByGroup', movieController.getMoviesByGroup.bind(movieController));
-router.get('/movie/getDoubanMovies', movieController.getDoubanMovie.bind(movieController));
-router.get('/movie/getGroupInfoOfDouban', movieController.getGroupInfoOfDouban.bind(movieController));
+router.get('/movie/getLanguage', movieController.getLanguage.bind(movieController));
+// router.get('/movie/getGroupInfoOfDouban', movieController.getGroupInfoOfDouban.bind(movieController));
 router.post('/movie/uploadPoster', movieController.uploadPoster.bind(movieController));
 router.post('/movie/newOrUpdate', movieController.newOrUpdate.bind(movieController));
 
