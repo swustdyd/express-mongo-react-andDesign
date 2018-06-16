@@ -31,14 +31,16 @@ class IndexPage extends React.Component{
             pageSize: 20,
             total: 0,
             movies:[],
-            loading: false
+            loading: false,
+            animation: false
         }
     }
 
     getAndLoadMovies(pageIndex = 0){
         const {pageSize} = this.state;
         this.setState({
-            loading: true
+            loading: true,
+            animation: false
         })
         this.props.movieAction.searchMovies({}, pageIndex, pageSize, (err, data) => {
             if(err){
@@ -51,6 +53,11 @@ class IndexPage extends React.Component{
                         movies: data.result,
                         currentPoster: data.result.length ? data.result[0]._id : 0
                     });
+                    setTimeout(() => {
+                        this.setState({
+                            animation: true
+                        })
+                    }, 100);
                 }else{
                     message.error(data.message);
                 }
@@ -63,7 +70,7 @@ class IndexPage extends React.Component{
 
     getStyleMap(){
         const styleMap = {};
-        const { movies, currentPoster: currentId, centerStyle,
+        const { movies, currentPoster: currentId, centerStyle, animation,
             controllerHeight, windowInnerWidth, windowInnerHeight, minHeight, padding} = this.state;
         const height = Math.max(windowInnerHeight, minHeight) - padding.y - controllerHeight;
         const width = Math.max(windowInnerWidth, 500) - padding.x;
@@ -74,7 +81,7 @@ class IndexPage extends React.Component{
                 const style = {
                     transform: `rotate(${randomSymbol}${randomDeg}deg)`
                 };
-                if(item._id === currentId){
+                if(!animation || item._id === currentId){
                     style.top = (height - centerStyle.height) / 2;
                     style.left = (width - centerStyle.width) / 2;
                     style.transform = undefined;
