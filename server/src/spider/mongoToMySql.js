@@ -18,6 +18,7 @@ import PublishDate from '../models/publishDate'
 import Type from '../models/type'
 import MongoDoubanMovie from './models/doubanMovie'
 import {db} from '../db'
+import RedisLock, {LockCode} from './redisLock'
 const mysqldb = db;
 
 mongoose.connect(BaseConfig.dbConnectString);
@@ -27,8 +28,7 @@ doUpdate();
 async function doUpdate() {
     try {
         const total = await MongoDoubanMovie.count();
-        //const total = 20;
-        const pageSize = 20;
+        const pageSize = 100;
         const pageEndIndex = Math.ceil(total / pageSize);
         console.log(`电影总数为：${total}, pageEndIndex: ${pageEndIndex}, pageSize: ${pageSize}`);
         for(let pageIndex = 0; pageIndex < pageEndIndex; pageIndex++){
@@ -37,10 +37,10 @@ async function doUpdate() {
             const promiseList = [];
             for(let i = 0; i < result.length; i++){
                 const doubanMovie = result[i];
-                //promiseList.push(updateOne(doubanMovie));
-                await updateOne(doubanMovie)
+                promiseList.push(updateOne(doubanMovie));
+                //await updateOne(doubanMovie)
             }
-            //await Promise.all(promiseList);
+            await Promise.all(promiseList);
 
         }
         console.log('解析成功');
@@ -77,15 +77,9 @@ async function updateOne(mongoDoubanMovie){
                     season: mongoDoubanMovie.season,
                     count: mongoDoubanMovie.count
                 }, {transaction: t})
-                // await insertAka(mongoDoubanMovie, t, doubanMovie);
-                // await insertArtist(mongoDoubanMovie, t, doubanMovie);
-                // await insertCountry(mongoDoubanMovie, t, doubanMovie);
-                // await insertLanguage(mongoDoubanMovie, t, doubanMovie);
-                // await insertPubdate(mongoDoubanMovie, t, doubanMovie);
-                // await insertType(mongoDoubanMovie, t, doubanMovie);
                 await Promise.all([
                     insertAka(mongoDoubanMovie, t, doubanMovie),
-                    insertArtist(mongoDoubanMovie, t, doubanMovie),
+                    insertAllArtist(mongoDoubanMovie, t, doubanMovie),
                     insertCountry(mongoDoubanMovie, t, doubanMovie),
                     insertLanguage(mongoDoubanMovie, t, doubanMovie),
                     insertPubdate(mongoDoubanMovie, t, doubanMovie),
@@ -108,174 +102,224 @@ async function insertAka(mongoDoubanMovie, t, doubanMovie){
     if(mongoDoubanMovie.aka){
         for(let i = 0; i < mongoDoubanMovie.aka.length; i++){
             const item = mongoDoubanMovie.aka[i];
-            let aka = await Aka.findOne({
-                where: {
-                    akaName: item
-                }, 
-                transaction: t
-            });
-            if(!aka){
-                aka = await Aka.create({akaName: item}, {transaction: t});
+            const key = 'aka', uuid = '123456789';
+            while(true){
+                const result = await RedisLock.lock(key, uuid);
+                if(result.success){                                            
+                    let aka = await Aka.findOne({
+                        where: {
+                            akaName: item
+                        }
+                    });
+                    if(!aka){
+                        aka = await Aka.create({akaName: item});
+                    }
+                    await RedisLock.unlock(key, uuid)
+                    await AkaWithOther.create({akaId: aka.akaId, otherId: doubanMovie.movieId}, {transaction: t});
+                }
+                if(result.code !== LockCode.REDIS_LOCK_EXIST){
+                    break;
+                }
             }
-            await AkaWithOther.create({akaId: aka.akaId, otherId: doubanMovie.movieId}, {transaction: t});
         }
     }    
 }
 
-async function insertArtist(mongoDoubanMovie, t, doubanMovie){
-    await insertActor(mongoDoubanMovie, t, doubanMovie);
-    await insertWriter(mongoDoubanMovie, t, doubanMovie);
-    await insertDirector(mongoDoubanMovie, t, doubanMovie);
+async function insertAllArtist(mongoDoubanMovie, t, doubanMovie){
+    await Promise.all([
+        insertActor(mongoDoubanMovie, t, doubanMovie),
+        insertWriter(mongoDoubanMovie, t, doubanMovie),
+        insertDirector(mongoDoubanMovie, t, doubanMovie)
+    ])
 }
 
 async function insertActor(mongoDoubanMovie, t, doubanMovie){
-    //演员
-    let actorJob = await Job.findOne({
-        where: {
-            jobENName: 'actor'
-        },
-        transaction: t
-    })
-    if(!actorJob){
-        actorJob = await Job.create({jobName: '演员', jobENName: 'actor'});
-    }
-    if(mongoDoubanMovie.actors){
-        for(let i = 0; i < mongoDoubanMovie.actors.length; i++){
-            const item = mongoDoubanMovie.actors[i];
-            let artist = await Artist.findOne({
+    const key = 'actor', uuid = '123456789';
+    while(true){
+        const result = await RedisLock.lock(key, uuid);
+        if(result.success){
+            //演员
+            let actorJob = await Job.findOne({
                 where: {
-                    name: item
-                }, 
-                transaction: t
-            });
-            if(!artist){
-                artist = await Artist.create({name: item}, {transaction: t});
+                    jobENName: 'actor'
+                }
+            })
+            if(!actorJob){
+                logger.info(key, result);
+                actorJob = await Job.create({jobName: '演员', jobENName: 'actor'});
             }
-            await ArtistMovie.create({artistId: artist.artistId, movieId: doubanMovie.movieId});
-            await ArtistJob.create({artistId: artist.artistId, jobId: actorJob.jobId});
+            await RedisLock.unlock(key, uuid)
+            if(mongoDoubanMovie.actors){
+                for(let i = 0; i < mongoDoubanMovie.actors.length; i++){
+                    const item = mongoDoubanMovie.actors[i];
+                    await insertOneArtist(mongoDoubanMovie, t, doubanMovie, item, actorJob.jobId)                   
+                }
+            }    
         }
-    }
+        if(result.code !== LockCode.REDIS_LOCK_EXIST){
+            break;
+        }
+    }   
 }
 async function insertWriter(mongoDoubanMovie, t, doubanMovie){
-    //编剧
-    let writerJob = await Job.findOne({
-        where: {
-            jobENName: 'writer'
-        },
-        transaction: t
-    })
-    if(!writerJob){
-        writerJob = await Job.create({jobName: '编剧', jobENName: 'writer'});
-    }
-    if(mongoDoubanMovie.writers){
-        for(let i = 0; i < mongoDoubanMovie.writers.length; i++){
-            const item = mongoDoubanMovie.writers[i];
-            let artist = await Artist.findOne({
+    const key = 'writer', uuid = '123456789';
+    while(true){
+        const result = await RedisLock.lock(key, uuid);
+        if(result.success){                       
+            //编剧
+            let writerJob = await Job.findOne({
                 where: {
-                    name: item
-                }, 
-                transaction: t
-            });
-            if(!artist){
-                artist = await Artist.create({name: item}, {transaction: t});
+                    jobENName: 'writer'
+                }
+            })
+            if(!writerJob){
+                writerJob = await Job.create({jobName: '编剧', jobENName: 'writer'});
             }
-            await ArtistMovie.create({artistId: artist.artistId, movieId: doubanMovie.movieId});
-            await ArtistJob.create({artistId: artist.artistId, jobId: writerJob.jobId});
+            await RedisLock.unlock(key, uuid)
+            if(mongoDoubanMovie.writers){
+                for(let i = 0; i < mongoDoubanMovie.writers.length; i++){
+                    const item = mongoDoubanMovie.writers[i];
+                    await insertOneArtist(mongoDoubanMovie, t, doubanMovie, item, writerJob.jobId)
+                }
+            }         
+        }
+        if(result.code !== LockCode.REDIS_LOCK_EXIST){
+            break;
         }
     }
 }
 async function insertDirector(mongoDoubanMovie, t, doubanMovie){
-    //导演
-    let directorJob = await Job.findOne({
-        where: {
-            jobENName: 'director'
-        },
-        transaction: t
-    })
-    if(!directorJob){
-        directorJob = await Job.create({jobName: '导演', jobENName: 'director'});
+    const key = 'director', uuid = '123456789';
+    while(true){
+        const result = await RedisLock.lock(key, uuid);
+        if(result.success){                         
+            //导演
+            let directorJob = await Job.findOne({
+                where: {
+                    jobENName: 'director'
+                }
+            })
+            if(!directorJob){
+                directorJob = await Job.create({jobName: '导演', jobENName: 'director'});
+            }
+            await RedisLock.unlock(key, uuid)
+            if(mongoDoubanMovie.directors){                 
+                for(let i = 0; i < mongoDoubanMovie.directors.length; i++){
+                    const item = mongoDoubanMovie.directors[i];   
+                    await insertOneArtist(mongoDoubanMovie, t, doubanMovie, item, directorJob.jobId)
+                }
+            }      
+        }
+        if(result.code !== LockCode.REDIS_LOCK_EXIST){
+            break;
+        }
     }
-    if(mongoDoubanMovie.directors){
-        for(let i = 0; i < mongoDoubanMovie.directors.length; i++){
-            const item = mongoDoubanMovie.directors[i];
+}
+
+async function insertOneArtist(mongoDoubanMovie, t, doubanMovie, name, jobId){
+    const key = 'artist', uuid = '123456789';
+    while(true){
+        const result = await RedisLock.lock(key, uuid);
+        if(result.success){                                          
             let artist = await Artist.findOne({
                 where: {
-                    name: item
-                }, 
-                transaction: t
+                    name: name
+                }
             });
             if(!artist){
-                artist = await Artist.create({name: item}, {transaction: t});
+                artist = await Artist.create({name: name});
             }
+            await RedisLock.unlock(key, uuid)
             await ArtistMovie.create({artistId: artist.artistId, movieId: doubanMovie.movieId});
-            await ArtistJob.create({artistId: artist.artistId, jobId: directorJob.jobId});
+            await ArtistJob.create({artistId: artist.artistId, jobId: jobId});  
+        }
+        if(result.code !== LockCode.REDIS_LOCK_EXIST){
+            break;
         }
     }
 }
 
 async function insertCountry(mongoDoubanMovie, t, doubanMovie){
+    const key = 'country', uuid = '123456789';
     //国家/出版地
     if(mongoDoubanMovie.countries){
         for(let i = 0; i < mongoDoubanMovie.countries.length; i++){
             const item = mongoDoubanMovie.countries[i];
-            let country = await Country.findOne({
-                where: {
-                    countryName: item
-                }, 
-                transaction: t
-            });
-            if(!country){
-                country = await Country.create({countryName: item}, {transaction: t});
+            while(true){
+                const result = await RedisLock.lock(key, uuid);
+                if(result.success){
+                    let country = await Country.findOne({
+                        where: {
+                            countryName: item
+                        }
+                    });
+                    if(!country){
+                        country = await Country.create({countryName: item});
+                    }
+                    await RedisLock.unlock(key, uuid)
+                    await CountryMovie.create({countryId: country.countryId, movieId: doubanMovie.movieId}, {transaction: t});
+                }
+                if(result.code !== LockCode.REDIS_LOCK_EXIST){
+                    break;
+                }
             }
-            await CountryMovie.create({countryId: country.countryId, movieId: doubanMovie.movieId}, {transaction: t});
         }
     }
     
 }
 
 async function insertLanguage(mongoDoubanMovie, t, doubanMovie){
+    const key = 'language', uuid = '123456789';
     //语言
     if(mongoDoubanMovie.languages){
         for(let i = 0; i < mongoDoubanMovie.languages.length; i++){
             const item = mongoDoubanMovie.languages[i];
-            let language = await Language.findOne({
-                where: {
-                    languageName: item
-                }, 
-                transaction: t
-            });
-            if(!language){
-                language = await Language.create({languageName: item}, {transaction: t});
+            while(true){
+                const result = await RedisLock.lock(key, uuid);
+                if(result.success){                             
+                    let language = await Language.findOne({
+                        where: {
+                            languageName: item
+                        }
+                    });
+                    if(!language){
+                        language = await Language.create({languageName: item});
+                    }
+                    await RedisLock.unlock(key, uuid)
+                    await LanguageMovie.create({languageId: language.languageId, movieId: doubanMovie.movieId}, {transaction: t});         
+                }
+                if(result.code !== LockCode.REDIS_LOCK_EXIST){
+                    break;
+                }
             }
-            await LanguageMovie.create({languageId: language.languageId, movieId: doubanMovie.movieId}, {transaction: t});
         }
     }
 }
 
 async function insertType(mongoDoubanMovie, t, doubanMovie){
+    const key = 'movieType', uuid = '123456789';
     //类型
     if(mongoDoubanMovie.types){
         for(let i = 0; i < mongoDoubanMovie.types.length; i++){
             const item = mongoDoubanMovie.types[i];
-            let type = await Type.findOne({
-                where: {
-                    typeName: item
-                }, 
-                transaction: t
-            });
-            if(!type){
-                type = await Type.create({typeName: item}, {transaction: t});
-                // const now = Date.now();
-                // await db.query('insert into type(typeName,createAt,updateAt) values (:item, :createAt, :updateAt) on duplicate key update typeName = :item', {
-                //     replacements:{
-                //         item: item,
-                //         createAt: moment(now).format(BaseConfig.dateFormatString),
-                //         updateAt: moment(now).format(BaseConfig.dateFormatString)
-                //     },
-                //     transaction: t
-                // });
+            while(true){
+                const result = await RedisLock.lock(key, uuid);
+                if(result.success){
+                    let type = await Type.findOne({
+                        where: {
+                            typeName: item
+                        }
+                    });
+                    if(!type){
+                        type = await Type.create({typeName: item});
+                    }
+                    await RedisLock.unlock(key, uuid)
+                    await MovieType.create({movieId: doubanMovie.movieId, typeId: type.typeId}, {transaction: t});                    
+                }
+                if(result.code !== LockCode.REDIS_LOCK_EXIST){
+                    break;
+                }
             }
-            await MovieType.create({movieId: doubanMovie.movieId, typeId: type.typeId}, {transaction: t});
         }
     }
 }
