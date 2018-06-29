@@ -9,8 +9,8 @@ const config = {
     dbConnectString: 'mongodb://localhost:27017/imooc',
     clientHost: 'http://localhost',
     clientPort: 3000,
-    serverHost,
-    serverPort,
+    serverHost: serverHost,
+    serverPort: serverPort,
     staticPath: 'public',
     root: path.resolve(__dirname),
     indexPageTitle: 'Demo 首页',
@@ -18,8 +18,8 @@ const config = {
     dateFormatString: 'YYYY-MM-DD HH:mm:ss',
     dayFormatString: 'YYYY-MM-DD',
     tokenSecret: 'qwertyuiop',    
-    staticSourceHost: `${serverHost}:${serverPort}`,
-    userDefaultIcon: `${serverHost}:${serverPort}/images/default-icon.jpg`
+    staticSourceHost: serverHost + ':' + serverPort,
+    userDefaultIcon: serverHost + ':' + serverPort + '/images/default-icon.jpg'
 };
 
 
