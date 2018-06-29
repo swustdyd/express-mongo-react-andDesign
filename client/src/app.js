@@ -1,6 +1,7 @@
 /**
  * Created by Aaron on 2018/3/2.
  */
+import './common/polyfill';
 import React from 'react'
 import Cookies from 'js-cookie'
 import { HashRouter, Route } from 'react-router-dom'
@@ -37,15 +38,15 @@ const store = createStore(
     applyMiddleware(...middleware)
 );
 
-const customFetch = window.fetch;
+// const _customFetch = window.fetch;
 
-window.fetch = (url, options = {}) => {
-    options.headers = options.headers || {};
-    // options.headers.Authorization = Cookies.get('token') || '';
-    //默认带上cookie
-    options.credentials = 'include';
-    return customFetch(url, options)
-}
+// window.fetch = (url, options = {}) => {
+//     options.headers = options.headers || {};
+//     // options.headers.Authorization = Cookies.get('token') || '';
+//     //默认带上cookie
+//     options.credentials = 'include';
+//     return _customFetch(url, options)
+// }
 
 ReactDom.render(
     <Provider store={store}>
