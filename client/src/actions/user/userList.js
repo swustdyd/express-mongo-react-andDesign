@@ -18,7 +18,7 @@ export default {
                 cb = pageSize;
                 pageSize = 5;
             }
-            fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`)
+            ajax(`${API.getUsers}?pageIndex=${pageIndex || 0}&condition=${JSON.stringify(condition || {})}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -41,7 +41,7 @@ export default {
     },
     deleteUser: (id, cb) => {
         return () => {
-            fetch(`${API.deleteUser}?id=${id}`, {
+            ajax(`${API.deleteUser}?id=${id}`, {
                 //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
                 credentials: 'include'
             }).then((res) => {

@@ -24,7 +24,7 @@ export default {
                 cb = pageSize;
                 pageSize = 5;
             }
-            fetch(`${API.getUsers}?pageIndex=${pageIndex || 0}&${Common.parseCondition(condition)}`)
+            ajax(`${API.getUsers}?pageIndex=${pageIndex || 0}&${Common.parseCondition(condition)}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -36,7 +36,7 @@ export default {
     },
     deleteUser: (id, cb) => {
         return () => {
-            fetch(`${API.deleteUser}?id=${id}`)            
+            ajax(`${API.deleteUser}?id=${id}`)            
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -50,7 +50,7 @@ export default {
     },
     editUser:(user, cb: (err: Error, data) => {}) => {
         return () => {
-            fetch(API.editUser, {
+            ajax(API.editUser, {
                 method: 'post',
                 headers: {
                     'Content-type': 'application/json'

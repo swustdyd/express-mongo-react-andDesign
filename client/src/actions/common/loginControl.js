@@ -44,7 +44,7 @@ const loginControlAction = {
     },    
     login: (name, password, sevenDay) => {
         return (dispatch, getState) => {
-            fetch(API.signin, {
+            ajax(API.signin, {
                 method: 'post',
                 headers: {
                     'Content-type': 'application/json'
@@ -63,7 +63,7 @@ const loginControlAction = {
     },
     logout: () => {
         return (dispatch, getState) => {
-            fetch(API.logout, {
+            ajax(API.logout, {
                 credentials: 'include'
             }).then((res) => {
                 return res.json()
@@ -79,7 +79,7 @@ const loginControlAction = {
     },
     checkLogin: () => {
         return (dispatch, getState) => {
-            fetch(API.checkLogin).then((res) => {
+            ajax(API.checkLogin).then((res) => {
                 return res.json()
             }).then((data) => {
                 if(data.success){
@@ -90,7 +90,7 @@ const loginControlAction = {
     },
     modifyPwd: (originPwd, newPwd) => {
         return (dispatch) => {
-            fetch(API.updatePwd, {
+            ajax(API.updatePwd, {
                 method: 'post',
                 headers: {
                     'Content-type': 'application/json'
@@ -110,7 +110,7 @@ const loginControlAction = {
     },
     userRegister: (name, pwd) => {
         return (dispatch) => {
-            fetch(API.signup, {
+            ajax(API.signup, {
                 method: 'post',
                 headers: {
                     'Content-type': 'application/json'

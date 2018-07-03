@@ -23,7 +23,7 @@ export default {
                 callback = pageSize;
                 pageSize = 5;
             }
-            fetch(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&${Common.parseCondition(condition)}`)
+            ajax(`${API.getMovies}?pageIndex=${pageIndex || 0}&pageSize=${pageSize || 5}&${Common.parseCondition(condition)}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -35,7 +35,7 @@ export default {
     },
     deleteMovie: (id, cb) => {
         return () => {
-            fetch(`${API.deleteMovie}?id=${id}`)
+            ajax(`${API.deleteMovie}?id=${id}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -51,7 +51,7 @@ export default {
             whereArray = [];
         }
         return () => {
-            fetch(`${API.getMoviesByGroup}?group=${group}&whereArray=${JSON.stringify(whereArray)}`)
+            ajax(`${API.getMoviesByGroup}?group=${group}&whereArray=${JSON.stringify(whereArray)}`)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
@@ -67,7 +67,7 @@ export default {
     },
     getLanguage: (cb) => {
         return () => {
-            fetch(API.getLanguage)
+            ajax(API.getLanguage)
                 .then((res) => {
                     return res.json()
                 }).then((data) => {
