@@ -17,7 +17,8 @@ import IndexPage from './containers/index/index'
 import Nav from './common/nav'
 import Footer from './common/footer'
 import { asyncComponent } from './components/asyncComponent'
-import RouterAnimation from './common/routerAnimation'
+import RouterAnimation from './components/routerAnimation'
+import RouterWithConfigTest from './containers/routerWithConfigTest'
 
 //异步引用moviePage模块
 const MoviePage = asyncComponent(() => { return import('./containers/movie/moviePage')})
@@ -38,15 +39,14 @@ const store = createStore(
     applyMiddleware(...middleware)
 );
 
-// const _customFetch = window.fetch;
+const _customFetch = window.fetch;
 
-// window.fetch = (url, options = {}) => {
-//     options.headers = options.headers || {};
-//     // options.headers.Authorization = Cookies.get('token') || '';
-//     //默认带上cookie
-//     options.credentials = 'include';
-//     return _customFetch(url, options)
-// }
+window.ajax = (url, options = {}) => {
+    options.headers = options.headers || {};
+    //默认带上cookie
+    options.credentials = 'include';
+    return fetch(url, options)
+}
 
 ReactDom.render(
     <Provider store={store}>
@@ -58,6 +58,7 @@ ReactDom.render(
                         <Route exact path="/" component={IndexPage}/>
                         <Route path="/moviePage" component={MoviePage}/>
                         <Route path="/userPage" component={UserPage}/>
+                        <Route path="/routerTest" component={RouterWithConfigTest}/>
                     </RouterAnimation>
                 }
                 footer={Footer}
