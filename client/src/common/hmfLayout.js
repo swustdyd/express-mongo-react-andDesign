@@ -42,9 +42,13 @@ class HMFLayout extends React.Component{
         const {headerHeight, footerHeight, windowInnerHeight} = this.state;
         const headerStyle = {
             height: headerHeight,
-            lineHeight: `${headerHeight}px`
+            lineHeight: `${headerHeight}px`,
+            position: 'fixed',
+            zIndex: 1,
+            width: '100%'
         };
         const contentStyle = {
+            marginTop: `${headerHeight}px`,
             minHeight: windowInnerHeight - headerHeight - footerHeight
         };
         const footerStyle = {
