@@ -45,7 +45,8 @@ class HMFLayout extends React.Component{
             lineHeight: `${headerHeight}px`,
             position: 'fixed',
             zIndex: 1,
-            width: '100%'
+            width: '100%',
+            boxShadow: '0 0 5px #000'
         };
         const contentStyle = {
             marginTop: `${headerHeight}px`,
