@@ -36,6 +36,7 @@ class Nav extends React.Component {
                     <Menu.Item key="moviePage"><Link to="/moviePage/movieList">电影管理</Link></Menu.Item>
                     <Menu.Item key="userPage"><Link to="/userPage/userList">用户管理</Link></Menu.Item>
                     <Menu.Item key="routerTest"><Link to="/routerTest">RouterTest</Link></Menu.Item>
+                    <Menu.Item key="canvas"><Link to="/canvas">Canvas</Link></Menu.Item>
                 </HashRouterMenu>
                 <LoginControl />
             </div>

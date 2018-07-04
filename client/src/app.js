@@ -22,9 +22,10 @@ import RouterWithConfigTest from './containers/routerWithConfigTest'
 
 //异步引用moviePage模块
 const MoviePage = asyncComponent(() => { return import('./containers/movie/moviePage')})
-
 //异步引用userPage模块
 const UserPage = asyncComponent(() => { return import('./containers/user/userPage')})
+//异步引用canvasPage模块
+const CanvasPage = asyncComponent(() => { return import('./containers/canvas')})
 
 import './app.scss'
 
@@ -59,6 +60,7 @@ ReactDom.render(
                         <Route path="/moviePage" component={MoviePage}/>
                         <Route path="/userPage" component={UserPage}/>
                         <Route path="/routerTest" component={RouterWithConfigTest}/>
+                        <Route path="/canvas" component={CanvasPage}/>                        
                     </RouterAnimation>
                 }
                 footer={Footer}
