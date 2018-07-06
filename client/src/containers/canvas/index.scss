@@ -1,9 +1,34 @@
 .canvas-page{
+    min-height: 650px;
+    position: relative;
+    h2{
+        height: 20px;
+        margin: 10px 0;
+    }
     canvas{
         margin: 10px auto;
         width: 100%;
         height: 600px;
         box-shadow: 0 0 5px #000;
         display: block;
+        position: absolute;
+    }
+}
+
+.canvas-control{
+    margin-top: 10px;
+
+    *{
+        display: inline-block;
+        vertical-align: middle;
+    }
+    span{
+        margin: 0 10px;
+    }
+    .play{
+        width: 100px;
+    }
+    .ant-slider{
+        width: 100px;
     }
 }
