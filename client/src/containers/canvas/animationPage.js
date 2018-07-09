@@ -1,7 +1,7 @@
 import React from 'react'
 import {Button, Slider} from 'antd'
 
-import './index.scss'
+import './animationPage.scss'
 
 export default class CanvasPage extends React.Component{
     constructor(props){
