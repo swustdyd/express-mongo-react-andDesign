@@ -1,4 +1,4 @@
-import API from '../../common/api'
+import API from '../../confs/api'
 import Cookies from 'js-cookie'
 
 export const loginControlActionType = {

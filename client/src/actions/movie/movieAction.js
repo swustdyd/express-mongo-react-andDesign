@@ -1,7 +1,7 @@
 /**
  * Created by Aaron on 2018/3/10.
  */
-import API from '../../common/api'
+import API from '../../confs/api'
 import Common from '../../common/common'
 
 export const movieActionType = {

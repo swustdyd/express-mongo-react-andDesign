@@ -6,7 +6,7 @@ import React from 'react'
 import { Form, Input, Tooltip, Icon, Button, message, Spin, Select, Modal} from 'antd'
 import PicturesWall from '../../components/picturesWall'
 import Common from '../../common/common'
-import API from '../../common/api'
+import API from '../../confs/api'
 
 const {TextArea} = Input;
 const FormItem = Form.Item;

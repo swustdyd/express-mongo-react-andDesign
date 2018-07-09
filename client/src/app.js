@@ -19,6 +19,7 @@ import Footer from './common/footer'
 import { asyncComponent } from './components/asyncComponent'
 import RouterAnimation from './components/routerAnimation'
 import RouterWithConfigTest from './containers/routerWithConfigTest'
+import { navDatas } from './confs/nav'
 
 //异步引用moviePage模块
 const MoviePage = asyncComponent(() => { return import('./containers/movie/moviePage')})
@@ -53,7 +54,7 @@ ReactDom.render(
     <Provider store={store}>
         <HashRouter>          
             <HMFLayout
-                header={Nav}
+                header={<Nav defaultKey="index" datas={navDatas}/>}
                 content={
                     <RouterAnimation>
                         <Route exact path="/" component={IndexPage}/>

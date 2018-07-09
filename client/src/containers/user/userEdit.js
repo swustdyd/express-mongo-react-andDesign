@@ -6,7 +6,7 @@ import {Form, Button, Input, Select, Spin, message, Tooltip, Icon} from 'antd'
 import Common from '../../common/common'
 import PicturesWall from '../../components/picturesWall'
 import UserAction from '../../actions/user/userAction'
-import API from '../../common/api'
+import API from '../../confs/api'
 import path from 'path'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

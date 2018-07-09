@@ -1,7 +1,7 @@
 /**
  * Created by Aaron on 2018/3/12.
  */
-import API from '../../common/api'
+import API from '../../confs/api'
 import Cookies from 'js-cookie'
 import Common from '../../common/common'
 
