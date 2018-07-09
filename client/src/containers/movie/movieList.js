@@ -63,9 +63,7 @@ class MovieList extends React.Component{
     }
     handleEditClick(id){
         const {pageIndex, pageSize} = this.state;
-        const condition = {
-            _id: id
-        };
+        const condition = {id};
         this.props.movieAction.searchMovies(condition, 0, pageSize, (err, data) => {
             if(err){
                 message.error(err.message);
@@ -185,14 +183,14 @@ class MovieList extends React.Component{
             //     key: 'comment',
             //     render: (id) => { return <Link to={`/moviePage/comment/${id}`} >查看评论</Link>}
             // },
-            // {
-            //     title: '编辑',
-            //     dataIndex: '_id',
-            //     key: 'edit',
-            //     render: (id) => {
-            //         return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
-            //     }
-            // },
+            {
+                title: '编辑',
+                dataIndex: '_id',
+                key: 'edit',
+                render: (id) => {
+                    return <Button type="primary" size="small" onClick={() => {this.handleEditClick(id)}}> 编辑 </Button>
+                }
+            },
             {
                 title: '删除',
                 dataIndex: '_id',
