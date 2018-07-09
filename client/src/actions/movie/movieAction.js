@@ -80,5 +80,23 @@ export default {
                     }
                 });
         }
+    },
+    editMovie: (data: {movie: any, fileList: []}, cb: (err: Error, data) => {}) => {
+        ajax(API.newOrUpdateMovie, {
+            method: 'post',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                movie: data.movie,
+                fileList: data.fileList
+            })
+        }).then((res) => {
+            return res.json()
+        }).then((data) => {
+            cb(null, data);
+        }).catch((err) => {
+            cb(err);
+        });
     }
 }

@@ -7,6 +7,9 @@ import { Form, Input, Tooltip, Icon, Button, message, Spin, Select, Modal} from 
 import PicturesWall from '../../components/picturesWall'
 import Common from '../../common/common'
 import API from '../../confs/api'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import MovieAction from '../../actions/movie/movieAction'
 
 const {TextArea} = Input;
 const FormItem = Form.Item;
@@ -46,37 +49,28 @@ class MovieEdit extends React.Component{
                 }else {
                     movie.poster = '';
                 }
-                fetch(API.newOrUpdateMovie, {
-                    method: 'post',
-                    headers: {
-                        'Content-type': 'application/json'
-                    },
-                    //同域名下，会带上cookie，否则后端根据sessionid获取不到对应的session
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        movie: movie,
-                        fileList: fileList
-                    })
-                }).then((res) => {
-                    return res.json()
-                }).then((data) => {
-                    if(data.success){
-                        message.success(data.message);
-                        //window.location.href = '/#/moviePage/movieList';
-                        if( this.props.onSubmitSuccess){
-                            this.props.onSubmitSuccess();
-                        }
+                this.props.movieAction.editMovie({
+                    movie,
+                    fileList
+                }, (err, data) => {
+                    if(err){
+                        message.error(err.message)
                     }else{
-                        message.error(data.message);
-                        if( this.props.onSubmitFail){
-                            this.props.onSubmitFail();
+                        if(data.success){
+                            message.success(data.message);
+                            //window.location.href = '/#/moviePage/movieList';
+                            if( this.props.onSubmitSuccess){
+                                this.props.onSubmitSuccess();
+                            }
+                        }else{
+                            message.error(data.message);
+                            if( this.props.onSubmitFail){
+                                this.props.onSubmitFail();
+                            }
                         }
                     }
-                    this.setState({submiting: false});
-                }).catch((err) => {
-                    message.error(err.message);
-                    this.setState({submiting: false});
-                });
+                    this.setState({submiting: false})
+                })
             }
         });
     }
@@ -245,4 +239,12 @@ class MovieEdit extends React.Component{
     }
 }
 
-export default Form.create()(MovieEdit);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        movieAction: bindActionCreators(MovieAction, dispatch)
+    }
+};
+
+export default connect(undefined, mapDispatchToProps)(Form.create()(MovieEdit));
+
+// export default Form.create()(MovieEdit);
