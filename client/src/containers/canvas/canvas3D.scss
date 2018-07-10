@@ -1,0 +1,12 @@
+.canvas3d-page{
+    min-height: 600px;
+    position: relative;
+    canvas{
+        margin-top: 10px;
+        width: 100%;
+        height: 600px;
+        box-shadow: 0 0 5px #000;
+        display: block;
+        position: absolute;
+    }
+}

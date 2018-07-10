@@ -52,7 +52,48 @@ const routerConfig = [
     }
 ]
 
+
+
+class A {
+    constructor(value){
+        this._test = value;
+    }
+
+    set test(value){
+        if(typeof value !== 'number'){
+            throw 'test must be a number'
+        }else{
+            this._test = value;
+        }
+    }
+
+    get test(){
+        return Math.pow(this._test, 2);
+    }
+}
+
+class AProxy {
+    constructor(...params){
+        return new Proxy(new A(...params), {
+            get: function (target, key, receiver) {
+                console.log(`getting ${key}!`);
+                return Reflect.get(target, key, receiver);
+            },
+            set: function (target, key, value, receiver) {
+                console.log(`setting ${key}!`);
+                return Reflect.set(target, key, value, receiver);
+            }
+        })
+    }
+}
+
 export default class RouterWithConfigTest extends React.Component{
+
+    componentDidMount(){
+        const aProxy = new AProxy(2);
+        //aProxy.test = '45';
+        console.log(aProxy.test);
+    }
     
     renderTreeNodes(data = [], basePath = ''){
         return data.map((item) => {
