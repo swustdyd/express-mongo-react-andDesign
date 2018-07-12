@@ -3,7 +3,9 @@ import PublicFunc from '../common/publicFunc'
 import BusinessException from '../common/businessException'
 import BaseController from './baseController';
 import Condition, {OpType, LogicOpType, JoinType, OrderType} from '../db/condition'
+import {controller, route, Method} from '../common/decorator'
 
+@controller('/movie')
 export default class MovieController extends BaseController{
     constructor(){
         super();
@@ -16,6 +18,7 @@ export default class MovieController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @route('/getMovies')
     async getMovies(req, res, next) {
         try {            
             const {offset, pageSize, name, id, startYear, endYear, language} = req.query;
@@ -180,7 +183,8 @@ export default class MovieController extends BaseController{
      * @param {*} request 
      * @param {*} response 
      * @param {*} next 
-     */
+     */    
+    @route('/newOrUpdate', Method.POST)
     async newOrUpdate(request, response, next) {
         try {
             let {movie} = request.body;
@@ -203,6 +207,7 @@ export default class MovieController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/delete')
     async delete(request, response, next) {
         try {
             const {id} = request.query;
@@ -219,6 +224,7 @@ export default class MovieController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @route('/uploadPoster', Method.POST)
     async uploadPoster(req, res, next){
         try {
             const files = await PublicFunc.uploadFiles(req, res, {
@@ -244,6 +250,7 @@ export default class MovieController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @route('/getMoviesByGroup')
     async getMoviesByGroup(req, res, next){
         try {
             const group = req.query.group || '';
@@ -265,71 +272,13 @@ export default class MovieController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @route('/getLanguage')
     async getLanguage(req, res, next){
         try {
             res.json({
                 success: true,
                 result: await this._movieService.getLanguage()
             });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    /**
-     * 获取豆瓣电影分组信息
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
-    async getGroupInfoOfDouban(req, res, next){
-        try {
-            const dataList = await Promise.all([
-                this._doubanMovieServie.getGroupInfoByYear({year: {$gte: 2000}}),
-                this._doubanMovieServie.getGroupInfoByTypes(),
-                this._doubanMovieServie.getGroupInfoByLanguages(),
-                this._doubanMovieServie.getGroupInfoByCountries()
-            ]);
-            // const result = {
-            //     year: dataList[0],
-            //     types: dataList[1],
-            //     languages: dataList[2],
-            //     countries: dataList[3]
-            // }
-            const result = {
-                year: dataList[0],
-                types: [],
-                languages: [],
-                countries: []
-            }
-            dataList.forEach((items, index) => {
-                switch (index) {
-                    case 1:
-                        items.forEach((item) => {
-                            if(item.count >= 100){                                         
-                                result.types.push(item)
-                            }                   
-                        })
-                        break;
-                    case 2:
-                        items.forEach((item) => {
-                            if(item.count >= 100){                                         
-                                result.languages.push(item)
-                            }                   
-                        })
-                        break;
-                    case 3:
-                        items.forEach((item) => {
-                            if(item.count >= 100){                                         
-                                result.countries.push(item)
-                            }                   
-                        })
-                        break;
-                    default:
-                        break;
-                }
-            })
-            res.json({success: true, result});
         } catch (error) {
             next(error);
         }

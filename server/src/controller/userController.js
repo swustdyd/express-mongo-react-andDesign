@@ -5,7 +5,9 @@ import BusinessException from '../common/businessException'
 import BaseController from './baseController';
 import {tokenSecret} from '../../../baseConfig'
 import Condition, {OpType} from '../db/condition'
+import {controller, route, Method, requestSignin, requestAdmin} from '../common/decorator'
 
+@controller('/user')
 export default class UserController extends BaseController{
     constructor(){
         super();
@@ -18,6 +20,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/signup', Method.POST)
     async signup(request, response, next){
         try{
             const {user: _user} = request.body;
@@ -52,6 +55,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/signin', Method.POST)
     async signin(request, response, next){
         try{
             const {user: _user, sevenDay} = request.body;
@@ -98,6 +102,7 @@ export default class UserController extends BaseController{
      * @param {*} request 
      * @param {*} response 
      */
+    @route('/logout')
     logout(request, response, next) {
         request.session.destroy((err) => {
             if(err){
@@ -114,6 +119,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/getUsers')
     async getUsers(request, response, next) {
         try {
             const {offset, pageSize, name, role, userId} = request.query;
@@ -150,6 +156,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/updatePwd', Method.POST)
     async updatePwd(request, response, next) {
         try {
             const {originPwd, newPwd} = request.body;
@@ -184,6 +191,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/checkLogin')
     checkLogin(req, res, next) {
         try {            
             // const token = req.get('Authorization');
@@ -222,6 +230,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/delete')
     async delete(request, response, next) {
         try {
             const id = request.param('id');
@@ -242,6 +251,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @route('/edit', Method.POST)
     async edit(request, response, next) {
         try {
             const {user} = request.body;
@@ -298,6 +308,7 @@ export default class UserController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @route('/uploadIcon', Method.POST)
     async uploadIcon(req, res, next){
         try{
             const files = await PubFunction.uploadFiles(req, res, {

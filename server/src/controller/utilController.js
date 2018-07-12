@@ -9,8 +9,9 @@ import fs from 'fs'
 import BaseController from './baseController'
 import PubFunction from '../common/publicFunc'
 import BaseConfig from '../../../baseConfig'
+import {controller, route, Method} from '../common/decorator'
 
-
+@controller('/util')
 export default class UtilController extends BaseController{
     constructor(){
         super();
@@ -22,6 +23,7 @@ export default class UtilController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @route('/cutImg', Method.POST)
     async cutImg(req, res, next){
         try {
             const { file, cutArea, resizeWidth, resizeHeight } = req.body;
