@@ -5,7 +5,7 @@ import BusinessException from '../common/businessException'
 import BaseController from './baseController';
 import {tokenSecret} from '../../../baseConfig'
 import Condition, {OpType} from '../db/condition'
-import {controller, route, Method, requestSignin, requestAdmin} from '../common/decorator'
+import {controller, route, Method, requestSignin, requestAdmin, requestSuperAdmin} from '../common/decorator'
 
 @controller('/user')
 export default class UserController extends BaseController{
@@ -119,6 +119,8 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @requestSignin()
+    @requestAdmin()
     @route('/getUsers')
     async getUsers(request, response, next) {
         try {
@@ -156,6 +158,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @requestSignin()
     @route('/updatePwd', Method.POST)
     async updatePwd(request, response, next) {
         try {
@@ -230,6 +233,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @requestSuperAdmin()
     @route('/delete')
     async delete(request, response, next) {
         try {
@@ -251,6 +255,7 @@ export default class UserController extends BaseController{
      * @param {*} response 
      * @param {*} next 
      */
+    @requestAdmin()
     @route('/edit', Method.POST)
     async edit(request, response, next) {
         try {
@@ -308,6 +313,7 @@ export default class UserController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
+    @requestSignin()
     @route('/uploadIcon', Method.POST)
     async uploadIcon(req, res, next){
         try{
