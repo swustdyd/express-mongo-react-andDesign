@@ -15,7 +15,7 @@ export default class Canvas3D extends React.Component{
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         // Clear the color buffer with specified clear color
         gl.clear(gl.COLOR_BUFFER_BIT);
-        l.bufferData(
+        gl.bufferData(
             gl.ARRAY_BUFFER,
             new Float32Array([
                 0, -100,
