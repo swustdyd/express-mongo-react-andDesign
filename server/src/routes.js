@@ -21,11 +21,12 @@ const controllers = fs.readdirSync(dirPath).map((fileName) => {
     return new controller();
 })
 
+// 遍历路由配置，绑定到express的路由上
 controllers.forEach((controller) => {
     if(controller._routes && controller._routes.length > 0){
         controller._routes.forEach((item) => {
             const url = controller._basePath + item.path
-            console.log(url, item.fnName);
+            // console.log(url, item.fnName);
             router[item.method](url, controller[item.fnName].bind(controller));
         });
     }
