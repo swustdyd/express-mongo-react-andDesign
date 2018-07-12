@@ -22,40 +22,9 @@ import logger from '../common/logger';
 import MovieService from '../service/movie'
 import Condition, {JoinType, OpType, LogicOpType} from '../db/condition'
 import { db } from '../db';
+import {log, before, after, requestSignin, requestAdmin, requestSuperAdmin, route, Method, controller} from '../common/decorator'
 
-const log = (target, name, descriptor) => {
-    const oldValue = descriptor.value;
-
-    descriptor.value = function() {
-        console.log(target.constructor.name, name, descriptor);
-        oldValue.apply(this, arguments);
-    };
-
-    return descriptor;
-}
-
-const before = (target, name, descriptor) => {
-    const oldValue = descriptor.value;
-
-    descriptor.value = function() {
-        console.log('before', target.constructor.name, name);
-        oldValue.apply(this, arguments);
-    };
-
-    return descriptor;
-}
-
-const after = (target, name, descriptor) => {
-    const oldValue = descriptor.value;
-
-    descriptor.value = function() {
-        oldValue.apply(this, arguments);
-        console.log('after', target.constructor.name, name);
-    };
-
-    return descriptor;
-}
-
+@controller('/test')
 export default class TestController extends BaseController{
     constructor(){
         super();
@@ -68,31 +37,32 @@ export default class TestController extends BaseController{
      * @param {*} res 
      * @param {*} next 
      */
-    @after
-    @before
-    @log
+    @route('/route/js', Method.GET)
+    @requestSignin()
+    @after((req, res, next) => {
+        console.log('do something after');
+    })
+    @before((req, res, next) => {
+        console.log('do something before');
+        req._hahha = 'hahaha';
+    })
+    @log()
     testJS(req, res, next){
         try {
-            this.getTick();
             const message = 'test js';
-            console.log(message)
+            console.log(message, req._hahha);
             res.json(message);
+            res.end();
         } catch (error) {
             next(error);
         }
     }
 
-    @after
-    @before
-    @log
-    getTick(){
-        const message = 'get tick';
-        console.log(message)
-    }
-
-    @after
-    @before
-    @log
+    @requestAdmin()
+    @after()
+    @before()
+    @route('/route/cheerio', Method.GET)
+    @log()
     testCheerio(req, res, next){
         try {
             const message = 'test cheerio';

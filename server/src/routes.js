@@ -23,6 +23,14 @@ const testController = new TestController();
  */
 const router = express.Router();
 
+if(testController._routes && testController._routes.length > 0){
+    testController._routes.forEach((item) => {
+        const url = testController._basePath + item.path
+        console.log(url, item.fnName);
+        router[item.method](url, testController[item.fnName].bind(testController));
+    });
+}
+
 /**
  * 根目录重定向到index.html
  */
@@ -57,8 +65,8 @@ router.post('/comment/commit', commentController.commitComment.bind(commentContr
 //util模块路由配置
 router.post('/util/cutImg', utilController.cutImg.bind(utilController));
 
-//test模块路由配置
-router.get('/test/js', testController.testJS.bind(testController));
-router.get('/test/cheerio', testController.testCheerio.bind(testController));
+// //test模块路由配置
+// router.get('/test/js', testController.testJS.bind(testController));
+// router.get('/test/cheerio', testController.testCheerio.bind(testController));
 
 export default router;
