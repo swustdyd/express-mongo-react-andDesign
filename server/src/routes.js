@@ -26,7 +26,7 @@ controllers.forEach((controller) => {
     if(controller._routes && controller._routes.length > 0){
         controller._routes.forEach((item) => {
             const url = controller._basePath + item.path
-            // console.log(url, item.fnName);
+            //console.log(url, `${controller.constructor.name}.${item.fnName}`);
             router[item.method](url, controller[item.fnName].bind(controller));
         });
     }
