@@ -91,7 +91,7 @@ export default class MovieService extends BaseService{
                                     LEFT JOIN artist a ON am.artistId = a.artistId
                                     LEFT JOIN artistjob aj ON aj.artistId = a.artistId
                                     WHERE
-                                        am.movieId = 1 and jobId = 1
+                                        am.movieId = :movieId and jobId = 1
                                 ) result 
                         ) as actors,
                         ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
@@ -103,7 +103,7 @@ export default class MovieService extends BaseService{
                                     LEFT JOIN artist a ON am.artistId = a.artistId
                                     LEFT JOIN artistjob aj ON aj.artistId = a.artistId
                                     WHERE
-                                        am.movieId = 1 and jobId = 2
+                                        am.movieId = :movieId and jobId = 2
                                 ) result 
                         ) as writers,
                         ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
@@ -115,7 +115,7 @@ export default class MovieService extends BaseService{
                                     LEFT JOIN artist a ON am.artistId = a.artistId
                                     LEFT JOIN artistjob aj ON aj.artistId = a.artistId
                                     WHERE
-                                        am.movieId = 1 and jobId = 3
+                                        am.movieId = :movieId and jobId = 3
                                 ) result 
                         ) as directors
                     FROM
