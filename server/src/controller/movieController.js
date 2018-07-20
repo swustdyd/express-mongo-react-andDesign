@@ -179,6 +179,26 @@ export default class MovieController extends BaseController{
     }
 
     /**
+     * 获取单个电影详细信息
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    @route('/getMovieDetail')
+    async getMoviesDetail(req, res, next){
+        try {
+            const {movieId} = req.query;
+            const result = await this._movieService.getMovieDetailById(movieId);
+            res.json({
+                success: true,
+                result
+            })
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * 保存或者修改电影
      * @param {*} request 
      * @param {*} response 

@@ -44,6 +44,92 @@ export default class MovieService extends BaseService{
     }
 
     /**
+     * 根据id 获取电影详细信息
+     * @param movieId 电影id
+     */
+    async getMovieDetailById(movieId: number) : Promise<MovieModel> {        
+        if(!movieId){
+            throw new BusinessException('电影id不能为空');
+        }
+        const sql = `SELECT DISTINCT
+                        m. NAME AS title,
+                        m.doubanMovieId,
+                        m.picture,
+                        m. YEAR,
+                        m.summary,
+                        m.movieId AS _id,
+                        (
+                            SELECT  GROUP_CONCAT(c.countryName SEPARATOR '&&') from country c
+                            LEFT JOIN countrymovie cm on cm.countryId = c.countryId
+                            WHERE cm.movieId = m.movieId
+                        ) as countrys,
+                        (
+                            SELECT GROUP_CONCAT(aka.akaName SEPARATOR '&&') from aka
+                            LEFT JOIN akawithother ao on ao.akaId = aka.akaId
+                            WHERE ao.otherId = m.movieId
+                        ) as akas,
+                        (
+                            SELECT GROUP_CONCAT(p.publishDate SEPARATOR '&&') from publishdate p
+                            WHERE p.movieId = m.movieId
+                        ) as publishdates,
+                        (
+                            SELECT GROUP_CONCAT(l.languageName SEPARATOR '&&') from \`language\` l
+                            LEFT JOIN languagemovie lm on lm.languageId = l.languageId
+                            WHERE lm.movieId = m.movieId
+                        ) as languages,
+                        (
+                            SELECT GROUP_CONCAT(t.typeName SEPARATOR '&&') from type t
+                            LEFT JOIN movietype mt on mt.typeId = t.typeId
+                            WHERE mt.movieId = m.movieId
+                        ) as types,
+                        ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
+                                from (
+                                    SELECT DISTINCT
+                                        a.\`name\` as name, a.artistId, aj.jobId
+                                    FROM
+                                        artistmovie am
+                                    LEFT JOIN artist a ON am.artistId = a.artistId
+                                    LEFT JOIN artistjob aj ON aj.artistId = a.artistId
+                                    WHERE
+                                        am.movieId = 1 and jobId = 1
+                                ) result 
+                        ) as actors,
+                        ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
+                                from (
+                                    SELECT DISTINCT
+                                        a.\`name\` as name, a.artistId, aj.jobId
+                                    FROM
+                                        artistmovie am
+                                    LEFT JOIN artist a ON am.artistId = a.artistId
+                                    LEFT JOIN artistjob aj ON aj.artistId = a.artistId
+                                    WHERE
+                                        am.movieId = 1 and jobId = 2
+                                ) result 
+                        ) as writers,
+                        ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
+                                from (
+                                    SELECT DISTINCT
+                                        a.\`name\` as name, a.artistId, aj.jobId
+                                    FROM
+                                        artistmovie am
+                                    LEFT JOIN artist a ON am.artistId = a.artistId
+                                    LEFT JOIN artistjob aj ON aj.artistId = a.artistId
+                                    WHERE
+                                        am.movieId = 1 and jobId = 3
+                                ) result 
+                        ) as directors
+                    FROM
+                        movie m
+                    where m.movieId = :movieId`;
+        return await db.query(sql, {
+            type: db.QueryTypes.SELECT,
+            replacements: {
+                movieId
+            }
+        })
+    }
+
+    /**
      * 根据电影id删除电影
      * @param movieId 电影id
      */
