@@ -55,7 +55,7 @@ export default class MovieService extends BaseService{
                         m. NAME AS title,
                         m.doubanMovieId,
                         m.picture,
-                        m. YEAR,
+                        m. YEAR as \`year\`,
                         m.summary,
                         m.movieId AS _id,
                         (
