@@ -26,7 +26,7 @@ const rebuildMovie = (movie) => {
     for (const key in movie) {
         if (rebuildKeys[key]) {
             const item = movie[key];
-            item && (movie[key] = item.split('&&'))
+            movie[key] = item ?  item.split('&&') : [];
         }
     }
     return movie;
@@ -48,13 +48,20 @@ export default class MovieService extends BaseService{
         language?: number,
 
     } = {}, offset = 0, pageSize = QueryDefaultOptions.pageSize) : Promise<PageResult> {
-        let hasWhere = false;
-        for (const key in condition) {
-            if(condition[key]){
-                hasWhere = true;
-                break;
-            }
+        let where = [];
+        if(condition.id){
+            where.push('movie.movieId = :id')
         }
+        if(condition.name){
+            where.push('movie.name like :name')
+        }
+        if(condition.startYear){
+            where.push('movie.year >= :startYear')
+        }
+        if(condition.endYear){
+            where.push('movie.year <= :endYear')
+        }
+        where = `${where.length > 0 ? ' where ' : ''}${where.join(' and ')}`
         const sql = `SELECT DISTINCT
             movie. NAME AS title,
             movie.doubanMovieId,
@@ -62,6 +69,7 @@ export default class MovieService extends BaseService{
             movie. YEAR as \`year\`,
             movie.summary,
             movie.movieId AS _id,
+            movie.average,
             (
                 SELECT GROUP_CONCAT(c.countryName SEPARATOR '&&') from country c
                 LEFT JOIN countrymovie cm on cm.countryId = c.countryId
@@ -106,16 +114,17 @@ export default class MovieService extends BaseService{
             ) as directors
         FROM
             movie
-        ${hasWhere ? `where 
-            ${condition.id ? ' movie.movieId = :id' : ''}
-            ${condition.name ? ' and movie.name like \':name%\'' : ''}
-            ${condition.startYear ? ' and movie.year >= :startYear' : ''}
-            ${condition.endYear ? ' and movie.year <= :endYear' : ''}`
-        : ''}
-        limit ${offset}, ${pageSize}`;
-        const totalResult = await db.query('select count(*) as total from movie', {type: db.QueryTypes.SELECT});
+        ${where}`;
+        
+        condition.name && (condition.name = `${condition.name}%`);
+        
+        const totalResult = await db.query('select count(*) as movie', {
+            type: db.QueryTypes.SELECT,            
+            replacements: condition
+        });
         const {total} = totalResult[0];
-        let result = await db.query(sql, {
+        
+        let result = await db.query(`${sql} ${`limit ${offset}, ${pageSize}`}`, {
             type: db.QueryTypes.SELECT,
             replacements: condition
         });
