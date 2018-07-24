@@ -241,4 +241,15 @@ export default class PublicFunction{
             }, millisecond);
         })
     }
+
+    /**
+     * 是否空对象
+     * @param {*} obj 
+     */
+    static isEmptyObject(obj = {}){
+        for (const key in obj) {
+            return false
+        }
+        return true;
+    }
 }
