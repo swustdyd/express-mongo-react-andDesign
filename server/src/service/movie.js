@@ -11,20 +11,117 @@ import { PageResult } from '../common/type';
 import BaseService from './baseService';
 import Condition from '../db/condition';
 
+const rebuildKeys = {
+    countrys: 1,
+    akas: 1,
+    publishdates: 1,
+    languages: 1,
+    types: 1,
+    actors: 1,
+    writers: 1,
+    directors: 1
+}
+  
+const rebuildMovie = (movie) => {
+    for (const key in movie) {
+        if (rebuildKeys[key]) {
+            const item = movie[key];
+            item && (movie[key] = item.split('&&'))
+        }
+    }
+    return movie;
+}
+
 /**
  * 电影模块service
  */
 export default class MovieService extends BaseService{
     /**
      * 根据条件查询电影
-     * @param condition 查询条件
+     * @param condition 查询字段对象
      */
-    async getMoviesByCondition(condition: Condition) : Promise<PageResult> {
-        condition.setTableName('movie');
-        const total = await db.count(condition);
-        const result = await db.query(condition.toSql(), {
-            type: db.QueryTypes.SELECT
+    async getMoviesByCondition(condition: {
+        id?: number,
+        name?: string,
+        startYear?: number,
+        endYear?: number,
+        language?: number,
+
+    } = {}, offset = 0, pageSize = QueryDefaultOptions.pageSize) : Promise<PageResult> {
+        let hasWhere = false;
+        for (const key in condition) {
+            if(condition[key]){
+                hasWhere = true;
+                break;
+            }
+        }
+        const sql = `SELECT DISTINCT
+            movie. NAME AS title,
+            movie.doubanMovieId,
+            movie.picture,
+            movie. YEAR as \`year\`,
+            movie.summary,
+            movie.movieId AS _id,
+            (
+                SELECT GROUP_CONCAT(c.countryName SEPARATOR '&&') from country c
+                LEFT JOIN countrymovie cm on cm.countryId = c.countryId
+                WHERE cm.movieId = movie.movieId
+            ) as countrys,
+            (
+                SELECT GROUP_CONCAT(aka.akaName SEPARATOR '&&') from aka
+                LEFT JOIN akawithother ao on ao.akaId = aka.akaId
+                WHERE ao.otherId = movie.movieId
+            ) as akas,
+            (
+                SELECT GROUP_CONCAT(p.publishDate SEPARATOR '&&') from publishdate p
+                WHERE p.movieId = movie.movieId
+            ) as publishdates,
+            (
+                SELECT GROUP_CONCAT(l.languageName SEPARATOR '&&') from \`language\` l
+                LEFT JOIN languagemovie lm on lm.languageId = l.languageId
+                WHERE lm.movieId = movie.movieId${condition.language ? ' and l.languageId = :language' : ''}
+            ) as languages,
+            (
+                SELECT GROUP_CONCAT(t.typeName SEPARATOR '&&') from type t
+                LEFT JOIN movietype mt on mt.typeId = t.typeId
+                WHERE mt.movieId = movie.movieId
+            ) as types,
+            ( SELECT GROUP_CONCAT(DISTINCT a.\`name\` SEPARATOR '&&')
+                FROM artistmovie am				
+                LEFT JOIN artist a ON am.artistId = a.artistId
+                LEFT JOIN artistjob aj ON aj.artistId = a.artistId
+                WHERE am.movieId = movie.movieId and aj.jobId = 1
+            ) as actors,
+            ( SELECT GROUP_CONCAT(DISTINCT a.\`name\` SEPARATOR '&&')
+                FROM artistmovie am				
+                LEFT JOIN artist a ON am.artistId = a.artistId
+                LEFT JOIN artistjob aj ON aj.artistId = a.artistId
+                WHERE am.movieId = movie.movieId and aj.jobId = 2
+            ) as writers,
+            ( SELECT GROUP_CONCAT(DISTINCT a.\`name\` SEPARATOR '&&')
+                FROM artistmovie am				
+                LEFT JOIN artist a ON am.artistId = a.artistId
+                LEFT JOIN artistjob aj ON aj.artistId = a.artistId
+                WHERE am.movieId = movie.movieId and aj.jobId = 3
+            ) as directors
+        FROM
+            movie
+        ${hasWhere ? `where 
+            ${condition.id ? ' movie.movieId = :id' : ''}
+            ${condition.name ? ' and movie.name like \':name%\'' : ''}
+            ${condition.startYear ? ' and movie.year >= :startYear' : ''}
+            ${condition.endYear ? ' and movie.year <= :endYear' : ''}`
+        : ''}
+        limit ${offset}, ${pageSize}`;
+        const totalResult = await db.query('select count(*) as total from movie', {type: db.QueryTypes.SELECT});
+        const {total} = totalResult[0];
+        let result = await db.query(sql, {
+            type: db.QueryTypes.SELECT,
+            replacements: condition
         });
+        result = result.map((movie) => {
+            return rebuildMovie(movie);
+        })
         return {total, result}
     }
 
@@ -51,82 +148,8 @@ export default class MovieService extends BaseService{
         if(!movieId){
             throw new BusinessException('电影id不能为空');
         }
-        const sql = `SELECT DISTINCT
-                        m. NAME AS title,
-                        m.doubanMovieId,
-                        m.picture,
-                        m. YEAR as \`year\`,
-                        m.summary,
-                        m.movieId AS _id,
-                        (
-                            SELECT  GROUP_CONCAT(c.countryName SEPARATOR '&&') from country c
-                            LEFT JOIN countrymovie cm on cm.countryId = c.countryId
-                            WHERE cm.movieId = m.movieId
-                        ) as countrys,
-                        (
-                            SELECT GROUP_CONCAT(aka.akaName SEPARATOR '&&') from aka
-                            LEFT JOIN akawithother ao on ao.akaId = aka.akaId
-                            WHERE ao.otherId = m.movieId
-                        ) as akas,
-                        (
-                            SELECT GROUP_CONCAT(p.publishDate SEPARATOR '&&') from publishdate p
-                            WHERE p.movieId = m.movieId
-                        ) as publishdates,
-                        (
-                            SELECT GROUP_CONCAT(l.languageName SEPARATOR '&&') from \`language\` l
-                            LEFT JOIN languagemovie lm on lm.languageId = l.languageId
-                            WHERE lm.movieId = m.movieId
-                        ) as languages,
-                        (
-                            SELECT GROUP_CONCAT(t.typeName SEPARATOR '&&') from type t
-                            LEFT JOIN movietype mt on mt.typeId = t.typeId
-                            WHERE mt.movieId = m.movieId
-                        ) as types,
-                        ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
-                                from (
-                                    SELECT DISTINCT
-                                        a.\`name\` as name, a.artistId, aj.jobId
-                                    FROM
-                                        artistmovie am
-                                    LEFT JOIN artist a ON am.artistId = a.artistId
-                                    LEFT JOIN artistjob aj ON aj.artistId = a.artistId
-                                    WHERE
-                                        am.movieId = :movieId and jobId = 1
-                                ) result 
-                        ) as actors,
-                        ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
-                                from (
-                                    SELECT DISTINCT
-                                        a.\`name\` as name, a.artistId, aj.jobId
-                                    FROM
-                                        artistmovie am
-                                    LEFT JOIN artist a ON am.artistId = a.artistId
-                                    LEFT JOIN artistjob aj ON aj.artistId = a.artistId
-                                    WHERE
-                                        am.movieId = :movieId and jobId = 2
-                                ) result 
-                        ) as writers,
-                        ( SELECT GROUP_CONCAT(result.\`name\` SEPARATOR '&&') 
-                                from (
-                                    SELECT DISTINCT
-                                        a.\`name\` as name, a.artistId, aj.jobId
-                                    FROM
-                                        artistmovie am
-                                    LEFT JOIN artist a ON am.artistId = a.artistId
-                                    LEFT JOIN artistjob aj ON aj.artistId = a.artistId
-                                    WHERE
-                                        am.movieId = :movieId and jobId = 3
-                                ) result 
-                        ) as directors
-                    FROM
-                        movie m
-                    where m.movieId = :movieId`;
-        return await db.query(sql, {
-            type: db.QueryTypes.SELECT,
-            replacements: {
-                movieId
-            }
-        })
+        const {result} = await this.getMoviesByCondition({id: movieId})
+        return result;
     }
 
     /**
