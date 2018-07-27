@@ -20,6 +20,7 @@ const defaultOptions : SolrOptions = {
 
 export default class SolrSearch{
     constructor(options: SolrOptions){
+        options.q = options.q || defaultOptions.q;
         this.options = Object.assign({}, defaultOptions, options);
     }
 
