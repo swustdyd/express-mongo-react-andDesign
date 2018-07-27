@@ -90,7 +90,7 @@ export default class MovieService extends BaseService{
         startYear?: number,
         endYear?: number,
         language?: number,
-
+        orders?: []
     } = {}, offset = 0, pageSize = QueryDefaultOptions.pageSize) : Promise<PageResult> {
         let where = [];
         if(condition.id){
@@ -106,6 +106,15 @@ export default class MovieService extends BaseService{
             where.push('movie.year <= :endYear')
         }
         where = `${where.length > 0 ? ' where ' : ''}${where.join(' and ')}`
+        let order = [];
+        if(condition.orders && condition.orders.length > 0){
+            condition.orders.forEach((item) => {
+                if(!PubFunction.isEmptyObject(item)){
+                    order.push(`${item.key} ${item.sequence >= 1 ? 'asc' : 'desc'}`)
+                }
+            })
+        }        
+        order = `${order.length > 0 ? ' order by ' : ''}${order.join(', ')}`
         const sql = `SELECT DISTINCT
             movie. NAME AS title,
             movie.doubanMovieId,
@@ -158,7 +167,8 @@ export default class MovieService extends BaseService{
             ) as directors
         FROM
             movie
-        ${where}`;
+        ${where}
+        ${order}`;
         
         condition.name && (condition.name = `${condition.name}%`);
         

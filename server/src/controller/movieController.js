@@ -21,9 +21,16 @@ export default class MovieController extends BaseController{
     @route('/getMovies')
     async getMovies(req, res, next) {
         try {            
-            const {offset, pageSize, name, id, startYear, endYear, language} = req.query;
+            const {offset, pageSize, name, id, startYear, endYear, language, order} = req.query;
+            const orders = [];
+            if(order && order === 'avg'){
+                orders.push({
+                    key: 'average',
+                    sequence: -1
+                })
+            }
             const condition = {
-                name, id, startYear, endYear, language
+                name, id, startYear, endYear, language, orders
             }
             const resData = await this._movieService.getMoviesByCondition(condition, offset, pageSize);
             res.json({success: true, ...resData});
