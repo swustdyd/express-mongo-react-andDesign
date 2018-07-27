@@ -48,7 +48,11 @@ export default class MovieController extends BaseController{
     @route('/searchMovie')
     async searchMovies(req, res, next) {
         try {            
-            const {offset, pageSize, keyWords} = req.query;
+            const {offset, pageSize} = req.query;
+            let { keyWords } = req.query;
+            if(keyWords){
+                keyWords = encodeURIComponent(keyWords);
+            }
             const resData = await this._movieService.getMoviesFromSolr({
                 q: keyWords || '',
                 start: offset,
