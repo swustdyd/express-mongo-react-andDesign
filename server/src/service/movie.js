@@ -10,6 +10,10 @@ import { QueryDefaultOptions } from '../common/commonSetting'
 import { PageResult } from '../common/type';
 import BaseService from './baseService';
 import Condition from '../db/condition';
+import SolrSearchModel, {SolrOptions} from '../models/solrSearch'
+import HttpUtil from '../common/httpUtil'
+import BaseConfig from '../../../baseConfig'
+import {URL} from 'url'
 
 const rebuildKeys = {
     countrys: 1,
@@ -19,17 +23,57 @@ const rebuildKeys = {
     types: 1,
     actors: 1,
     writers: 1,
-    directors: 1
+    directors: 1,
+    'actors_name': 1,
+    'country_name': 1,
+    'directors_name': 1,
+    'language_name': 1,
+    'type_name': 1,
+    'writers_name': 1
 }
   
-const rebuildMovie = (movie) => {
+const stringToArrayForMovie = (movie, separator = '&&') => {
     for (const key in movie) {
         if (rebuildKeys[key]) {
             const item = movie[key];
-            movie[key] = item ?  item.split('&&') : [];
+            movie[key] = item ?  item.split(separator) : [];
         }
     }
     return movie;
+}
+
+const rebuildMovieDataFromSolr = (data = {}) => {
+    const translateKeys = {
+        'actors_name': 'actors',
+        'country_name': 'countrys',
+        'directors_name': 'directors',
+        'language_name': 'languages',
+        'type_name': 'types',
+        'writers_name': 'writers',
+        'movie_name': 'title',
+        'movie_no': '_id',
+        'movie_summary': 'summary'
+    };
+    const {response} = data;
+    const result = [];
+    response.docs.forEach((movie) => {
+        movie = stringToArrayForMovie(movie, ' ##');
+        const newMovie = {};
+        for (const key in movie) {
+            const newKey = translateKeys[key];
+            if(newKey){
+                newMovie[newKey] = movie[key];
+            }else{
+                newMovie[key] = movie[key];
+            }
+        }
+        result.push(newMovie);
+    });
+
+    return {
+        total: response.numFound,
+        result
+    };
 }
 
 /**
@@ -118,7 +162,7 @@ export default class MovieService extends BaseService{
         
         condition.name && (condition.name = `${condition.name}%`);
         
-        const totalResult = await db.query('select count(*) as movie', {
+        const totalResult = await db.query('select count(*) as total from movie ', {
             type: db.QueryTypes.SELECT,            
             replacements: condition
         });
@@ -129,7 +173,7 @@ export default class MovieService extends BaseService{
             replacements: condition
         });
         result = result.map((movie) => {
-            return rebuildMovie(movie);
+            return stringToArrayForMovie(movie);
         })
         return {total, result}
     }
@@ -246,5 +290,20 @@ export default class MovieService extends BaseService{
      */
     async getLanguage(){
         return await LanguageModel.findAll();
+    }
+
+    /**
+     * 从solr中搜索电影
+     * @param {*} options 
+     */
+    async getMoviesFromSolr(options: SolrOptions){
+        const solr = new SolrSearchModel(options);
+        const url = new URL( `${BaseConfig.solrBaseUrl}?${solr.toQueryString()}`);
+        const {data} = await HttpUtil.getAsync({
+            host: url.hostname,
+            port: url.port,
+            path: `${url.pathname}${url.search}`
+        }, 'utf-8');
+        return rebuildMovieDataFromSolr(JSON.parse(data));
     }
 }

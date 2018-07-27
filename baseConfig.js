@@ -19,7 +19,8 @@ const config = {
     dayFormatString: 'YYYY-MM-DD',
     tokenSecret: 'qwertyuiop',    
     staticSourceHost: serverHost + ':' + serverPort,
-    userDefaultIcon: serverHost + ':' + serverPort + '/images/default-icon.jpg'
+    userDefaultIcon: serverHost + ':' + serverPort + '/images/default-icon.jpg',
+    solrBaseUrl: 'http://localhost:8080/solr/select'
 };
 
 

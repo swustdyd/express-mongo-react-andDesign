@@ -33,6 +33,27 @@ export default class MovieController extends BaseController{
     }
 
     /**
+     * 搜索电影
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    @route('/searchMovie')
+    async searchMovies(req, res, next) {
+        try {            
+            const {offset, pageSize, keyWords} = req.query;
+            const resData = await this._movieService.getMoviesFromSolr({
+                q: keyWords || '',
+                start: offset,
+                rows: pageSize
+            })
+            res.json({success: true, ...resData});
+        }catch(e) {
+            next(e);
+        }
+    }
+
+    /**
      * 获取单个电影详细信息
      * @param {*} req 
      * @param {*} res 
