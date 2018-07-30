@@ -4,12 +4,18 @@ import BusinessException from '../common/businessException'
 import BaseController from './baseController';
 import Condition, {OpType, LogicOpType, JoinType, OrderType} from '../db/condition'
 import {controller, route, Method} from '../common/decorator'
+import Segment from '../segment'
+import Path from 'path'
 
 @controller('/movie')
 export default class MovieController extends BaseController{
     constructor(){
         super();
         this._movieService = new MovieService();
+        this._segment = new Segment(
+            Path.resolve(__dirname, '../segment/stopword.txt'),
+            Path.resolve(__dirname, '../segment/synonym.txt')
+        );
     }
 
     /**
@@ -50,6 +56,9 @@ export default class MovieController extends BaseController{
         try {            
             const {offset, pageSize} = req.query;
             let { keyWords } = req.query;
+            const segmentResult = this._segment.doSegement(keyWords);
+            //使用空格符连接分词
+            keyWords = segmentResult.join(' ');
             if(keyWords){
                 keyWords = encodeURIComponent(keyWords);
             }
