@@ -21,7 +21,7 @@ class IndexPage extends React.Component{
             minHeight: 600,
             padding: {
                 x: 100,
-                y: props.pageStyle.headerHeight + props.pageStyle.footerHeight
+                y: 110
             },
             centerStyle: {
                 width: 350,
@@ -221,18 +221,18 @@ class IndexPage extends React.Component{
     }
 }
 
-const mapStateToPros = (state) => {
-    return {
-        pageStyle: state.style
-    }
-}
+// const mapStateToPros = (state) => {
+//     return {
+//         pageStyle: state.style
+//     }
+// }
 const mapDispatchToProps = (dispatch) => {
     return {
         movieAction: bindActionCreators(MovieAction, dispatch)
     }
 }
 
-export default connect(mapStateToPros, mapDispatchToProps)(IndexPage);
+export default connect(undefined, mapDispatchToProps)(IndexPage);
 //export default IndexPage;
 
 
