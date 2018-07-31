@@ -15,7 +15,8 @@ const defaultOptions : SolrOptions = {
     start: 0, 
     rows: QueryDefaultOptions.pageSize, 
     wt: 'json',
-    indent: 'on'
+    indent: 'on',
+    df: 'a_spell'
 }
 
 export default class SolrSearch{
