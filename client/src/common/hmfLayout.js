@@ -11,78 +11,63 @@ class HMFLayout extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            windowInnerHeight: window.innerHeight,
-            windowInnerWidth: window.innerWidth,
-            headerHeight: this.props.pageStyle.headerHeight,
-            footerHeight: this.props.pageStyle.footerHeight
+            minHeight: 0
         }
     }
 
-    getWindowInnerArea(){
-        return {
-            windowInnerHeight: window.innerHeight,
-            windowInnerWidth: window.innerWidth
-        }
+    getMinHeight(){
+        const headerHeight = this.refs.header.clientHeight;
+        const footerHeight = this.refs.footer.clientHeight;
+        console.log(headerHeight, footerHeight);
+        return  window.innerHeight - headerHeight - footerHeight;
     }
 
-    componentDidMount(){
-        const _this = this;
-        window.addEventListener('resize', () => {
-            _this.setState(_this.getWindowInnerArea());
+    componentDidMount(){        
+        this.setState({
+            minHeight: this.getMinHeight()
         });
-    }
 
-    componentWillUnmount(){
-        window.removeEventListener('resize', () => {
-            _this.setState(_this.getWindowInnerArea());
+        window.addEventListener('resize', () => {
+            this.setState({
+                minHeight: this.getMinHeight()
+            });
         });
     }
 
     render(){
-        const {headerHeight, footerHeight, windowInnerHeight} = this.state;
-        const headerStyle = {
-            height: headerHeight,
-            lineHeight: `${headerHeight}px`,
-            position: 'fixed',
-            zIndex: 1,
-            width: '100%',
-            boxShadow: '0 0 5px #000'
-        };
-        const contentStyle = {
-            marginTop: `${headerHeight}px`,
-            minHeight: windowInnerHeight - headerHeight - footerHeight
-        };
-        const footerStyle = {
-            height: footerHeight,
-            lineHeight: `${footerHeight}px`
-        };
+        const {minHeight} = this.state;
         return(
-            <Layout className="layout">
-                <Header style={headerStyle}>
-                    {(typeof this.props.header) === 'function' ?  <this.props.header /> : this.props.header }
-                </Header>
-                <Content className="content" style={contentStyle}>
+            <Layout className="hmf-layout">
+                <div className="header" ref="header">
+                    <Header className="header">
+                        {(typeof this.props.header) === 'function' ?  <this.props.header /> : this.props.header }
+                    </Header>
+                </div>
+                <Content className="content" style={{minHeight: `${minHeight}px`}}>
                     {(typeof this.props.content) === 'function' ?  <this.props.content /> : this.props.content }
                     {this.props.children}
                 </Content>
-                <Footer className="footer" style={footerStyle}>
-                    {(typeof this.props.footer) === 'function' ?  <this.props.footer /> : this.props.footer }
-                </Footer>
+                <div ref="footer">
+                    <Footer className="footer">
+                        {(typeof this.props.footer) === 'function' ?  <this.props.footer /> : this.props.footer }
+                    </Footer>
+                </div>
             </Layout>
         );
     }
 }
-const mapStateToPros = (state) => {
-    return {
-        pageStyle: state.style
-    }
-}
+export default HMFLayout;
+// const mapStateToPros = (state) => {
+//     return {
+//         pageStyle: state.style
+//     }
+// }
 
 /*const mapDispatchToProps = dispatch => ({
     modalAction: bindActionCreators(modalAction, dispatch)
 });*/
 
-export default connect(mapStateToPros, undefined, undefined, { pure: false })(HMFLayout);
+// export default connect(mapStateToPros, undefined, undefined, { pure: false })(HMFLayout);
 /*
 但是当搭配react-router的时候，在进行路由跳转的时候，组件不会重新render。这个时候看react-redux的connect方法的说明：
 

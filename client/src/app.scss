@@ -4,15 +4,49 @@ $headerHeight: 60px;
 body{
   overflow-y: scroll;
 }
-/*** 上中下布局 start ***/
-div.content{
-  padding: 0 20px;
+// header高度
+$headerHeight: 60px;
+// footer高度
+$footerHeight: 50px;
+/*** nav导航栏 start ***/
+.nav{
+  .logo{
+    width: 120px;
+    height: $headerHeight;
+    line-height: $headerHeight;
+    float: left;
+    text-align: center;
+    color: #ffffff;
+    font-size: 30px;
+  }
+  .hash-router-menu{
+    line-height: $headerHeight;
+    border: none;
+  }
 }
-div.footer{
-  text-align: center;
-  background-color: #001529;
-  padding: 0;
-  color: #ddd;
+/*** nav导航栏 end ***/
+
+/*** 上中下布局 start ***/
+.hmf-layout{
+  .header{
+    height: $headerHeight;
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    box-shadow: 0 0 5px #000;
+  }
+  .content{
+    margin-top: $headerHeight;
+    padding: 0 20px;
+  }
+  .footer{
+    height: $footerHeight;
+    line-height: $footerHeight;
+    text-align: center;
+    background-color: #001529;
+    padding: 0;
+    color: #ddd;
+  }
 }
 /*** 上中下布局 end ***/
 
