@@ -20,7 +20,7 @@ const config = {
     tokenSecret: 'qwertyuiop',    
     staticSourceHost: serverHost + ':' + serverPort,
     userDefaultIcon: serverHost + ':' + serverPort + '/images/default-icon.jpg',
-    solrBaseUrl: 'http://localhost:8080/solr/select'
+    solrBaseUrl: 'http://localhost:8080/solr/movie_core/select'
 };
 
 
