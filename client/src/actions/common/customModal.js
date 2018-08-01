@@ -2,8 +2,8 @@
  * Created by Aaron on 2018/3/10.
  */
 export const modalActionType = {
-    SHOW_MODAL: 'SHOW_MODAL',
-    HIDE_MODAL: 'HIDE_MODAL'
+    SHOW_MODAL: Symbol('SHOW_MODAL'),
+    HIDE_MODAL: Symbol('HIDE_MODAL')
 }
 
 export default {

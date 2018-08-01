@@ -2,10 +2,10 @@ import API from '../../confs/api'
 import Cookies from 'js-cookie'
 
 export const loginControlActionType = {
-    LOGIN_SUCCESS: 'LOGIN_SUCCESS',
-    LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
-    ACTION_SUCCESS: 'ACTION_SUCCESS',
-    ACTION_FAIL: 'ACTION_FAIL'
+    LOGIN_SUCCESS: Symbol('LOGIN_SUCCESS'),
+    LOGOUT_SUCCESS: Symbol('LOGOUT_SUCCESS'),
+    ACTION_SUCCESS: Symbol('ACTION_SUCCESS'),
+    ACTION_FAIL: Symbol('ACTION_FAIL')
 }
 
 const loginControlAction = {
