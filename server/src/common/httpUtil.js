@@ -12,7 +12,9 @@ export default class HttpUtil {
      * @param {*} resEncoding 对response的编码，不设置则返回buffer
      */
     static getAsync(options: {}|string|URL, resEncoding?: string) : Promise<{statusCode: number, headers: {}, data: string|Buffer}>{
-        options = Object.assign({}, options, { method: 'GET'});
+        if((typeof options) !== 'string'){
+            options = Object.assign({}, options, { method: 'GET'});
+        }
         return new Promise((resolve, reject) => {
             const req = http.request(options, (res) => {
                 if(resEncoding){
@@ -52,7 +54,9 @@ export default class HttpUtil {
      * @param {*} resEncoding 对response的编码，不设置则返回buffer
      */
     static postAsync(options: {}|string|URL, postData?: any, resEncoding?: string) : Promise<{statusCode: number, headers: {}, data: string|Buffer}>{
-        options = Object.assign({}, options, { method: 'POST'});
+        if((typeof options) !== 'string'){
+            options = Object.assign({}, options, { method: 'POST'});
+        }
         return new Promise((resolve, reject) => {
             const req = http.request(options, (res) => {
                 if(resEncoding){

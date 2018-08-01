@@ -10,7 +10,9 @@ export default class HttpsUtil {
      * @param {*} resEncoding 对response的编码，不设置则返回buffer
      */
     static getAsync(options: {}|string|URL, resEncoding?: string) : Promise<{statusCode: number, headers: {}, body: string|Buffer}>{
-        //options = Object.assign({}, options, { method: 'GET'});
+        if((typeof options) !== 'string'){
+            options = Object.assign({}, options, { method: 'GET'});
+        }
         return new Promise((resolve, reject) => {
             const req = https.request(options, (res) => {
                 if(resEncoding){
