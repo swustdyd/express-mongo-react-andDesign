@@ -19,10 +19,7 @@ class IndexPage extends React.Component{
             currentPoster: 0,
             controllerHeight: 50,
             minHeight: 600,
-            padding: {
-                x: 100,
-                y: 110
-            },
+            paddingX: 50,
             centerStyle: {
                 width: 350,
                 height: 350
@@ -70,10 +67,11 @@ class IndexPage extends React.Component{
 
     getStyleMap(){
         const styleMap = {};
+        const {commonSetting} = this.props;
         const { movies, currentPoster: currentId, centerStyle, animation,
-            controllerHeight, windowInnerWidth, windowInnerHeight, minHeight, padding} = this.state;
-        const height = Math.max(windowInnerHeight, minHeight) - padding.y - controllerHeight;
-        const width = Math.max(windowInnerWidth, 500) - padding.x;
+            controllerHeight, windowInnerWidth, windowInnerHeight, minHeight, paddingX} = this.state;
+        const height = Math.max(windowInnerHeight, minHeight) - - commonSetting.headerHeight - commonSetting.footerHeight - controllerHeight;
+        const width = Math.max(windowInnerWidth, 500) - paddingX;
         if(movies && movies.length > 0){
             movies.forEach((item) => {
                 const randomDeg = Math.ceil(Math.random() * 30);
@@ -174,10 +172,11 @@ class IndexPage extends React.Component{
         return controllers;
     }
 
-    render(){        
+    render(){
+        const {commonSetting} = this.props;
         const { movies, pageIndex, total, pageSize, loading,
-            windowInnerHeight, minHeight: settingMinHeight, padding, controllerHeight} = this.state;
-        const minHeight = Math.max(windowInnerHeight, settingMinHeight) - padding.y - controllerHeight;
+            windowInnerHeight, minHeight: settingMinHeight, controllerHeight} = this.state;
+        const minHeight = Math.max(windowInnerHeight, settingMinHeight) - commonSetting.headerHeight - commonSetting.footerHeight - controllerHeight;
         const lastPageProps = {};
         if(pageIndex <= 0){
             lastPageProps.disabled = true;
@@ -221,18 +220,18 @@ class IndexPage extends React.Component{
     }
 }
 
-// const mapStateToPros = (state) => {
-//     return {
-//         pageStyle: state.style
-//     }
-// }
+const mapStateToPros = (state) => {
+    return {
+        commonSetting: state.common.setting
+    }
+}
 const mapDispatchToProps = (dispatch) => {
     return {
         movieAction: bindActionCreators(MovieAction, dispatch)
     }
 }
 
-export default connect(undefined, mapDispatchToProps)(IndexPage);
+export default connect(mapStateToPros, mapDispatchToProps)(IndexPage);
 //export default IndexPage;
 
 

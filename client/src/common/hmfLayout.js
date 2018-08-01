@@ -3,7 +3,9 @@
  */
 import React from 'react'
 import {Layout} from 'antd'
+import {bindActionCreators} from 'redux'
 import { connect } from 'react-redux';
+import SettingAction from '../actions/common/settingAction'
 
 const { Header, Content, Footer } = Layout;
 
@@ -18,7 +20,10 @@ class HMFLayout extends React.Component{
     getMinHeight(){
         const headerHeight = this.refs.header.clientHeight;
         const footerHeight = this.refs.footer.clientHeight;
-        console.log(headerHeight, footerHeight);
+
+        this.props.commonSettingAction.changeHeaderHeight(headerHeight);
+        this.props.commonSettingAction.changeFooterHeight(footerHeight);
+
         return  window.innerHeight - headerHeight - footerHeight;
     }
 
@@ -56,18 +61,20 @@ class HMFLayout extends React.Component{
         );
     }
 }
-export default HMFLayout;
-// const mapStateToPros = (state) => {
-//     return {
-//         pageStyle: state.style
-//     }
-// }
+// export default HMFLayout;
+const mapStateToPros = (state) => {
+    return {
+        commonSetting: state.common.setting
+    }
+}
 
-/*const mapDispatchToProps = dispatch => ({
-    modalAction: bindActionCreators(modalAction, dispatch)
-});*/
+const mapDispatchToProps = (dispatch) => {
+    return {
+        commonSettingAction: bindActionCreators(SettingAction, dispatch)
+    }
+};
 
-// export default connect(mapStateToPros, undefined, undefined, { pure: false })(HMFLayout);
+export default connect(mapStateToPros, mapDispatchToProps, undefined, { pure: false })(HMFLayout);
 /*
 但是当搭配react-router的时候，在进行路由跳转的时候，组件不会重新render。这个时候看react-redux的connect方法的说明：
 
