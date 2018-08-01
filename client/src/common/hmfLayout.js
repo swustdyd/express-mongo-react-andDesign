@@ -13,28 +13,27 @@ class HMFLayout extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            minHeight: 0
+            minHeight: 0,
+            headerHeight: 0,
+            footerHeight: 0
         }
     }
 
-    getMinHeight(){
+    componentDidMount(){
+        
         const headerHeight = this.refs.header.clientHeight;
         const footerHeight = this.refs.footer.clientHeight;
 
         this.props.commonSettingAction.changeHeaderHeight(headerHeight);
         this.props.commonSettingAction.changeFooterHeight(footerHeight);
 
-        return  window.innerHeight - headerHeight - footerHeight;
-    }
-
-    componentDidMount(){        
         this.setState({
-            minHeight: this.getMinHeight()
+            minHeight: window.innerHeight - headerHeight - footerHeight
         });
 
         window.addEventListener('resize', () => {
             this.setState({
-                minHeight: this.getMinHeight()
+                minHeight: window.innerHeight - headerHeight - footerHeight
             });
         });
     }
