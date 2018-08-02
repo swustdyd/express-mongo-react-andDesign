@@ -70,7 +70,7 @@ class IndexPage extends React.Component{
         const {commonSetting} = this.props;
         const { movies, currentPoster: currentId, centerStyle, animation,
             controllerHeight, windowInnerWidth, windowInnerHeight, minHeight, paddingX} = this.state;
-        const height = Math.max(windowInnerHeight, minHeight) - - commonSetting.headerHeight - commonSetting.footerHeight - controllerHeight;
+        const height = Math.max(windowInnerHeight, minHeight) - commonSetting.headerHeight - commonSetting.footerHeight - controllerHeight;
         const width = Math.max(windowInnerWidth, 500) - paddingX;
         if(movies && movies.length > 0){
             movies.forEach((item) => {

@@ -268,6 +268,10 @@ export default class MovieService extends BaseService{
             country: {
                 groupKey: 'c.countryId',
                 select: 'c.countryName'
+            },
+            type: {
+                groupKey: 't.typeId',
+                select: 't.typeName'
             }
         }
         const group = groups[key]
@@ -282,11 +286,13 @@ export default class MovieService extends BaseService{
                 [item.key]: item.value
             }
         }).join(', ');
-        const sql = `select count(movie.movieId) as count, ${group.select} as \`${key}\`  from movie 
+        const sql = `select count(DISTINCT movie.movieId) as count, ${group.select} as \`${key}\`  from movie 
             left join languagemovie AS lm ON lm.movieId = movie.movieId
             left join LANGUAGE AS l ON l.languageId = lm.languageId
             left join countrymovie AS cm ON cm.movieId = movie.movieId
             left join country AS c ON c.countryId = cm.countryId
+            LEFT JOIN movietype mt on mt.movieId = movie.movieId
+            LEFT JOIN type t on t.typeId = mt.typeId
             ${whereStr ? `where ${whereStr}` : ''}
             group by ${group.groupKey}`;
         return await db.query(sql, {
